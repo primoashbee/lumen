@@ -1,3 +1,3 @@
-##About Lumen
+#About Lumen
 
 Project for LIGHT MFI
