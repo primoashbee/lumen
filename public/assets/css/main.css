@@ -328,7 +328,7 @@ margin-left: 1px;}
 .mt-1	{margin-top: 0.25rem;}
 .mt-2	{margin-top: 0.5rem;}
 .mt-3	{margin-top: 0.75rem;}
-.mt-4	{margin-top: 1rem;}
+.mt-4	{margin-top: 1rem!important;}
 .mt-5	{margin-top: 1.25rem;}
 .mt-6	{margin-top: 1.5rem;}
 .mt-8	{margin-top: 2rem;}
@@ -448,9 +448,7 @@ body{
     top: 130px;
 }
 
-.l-text{
-	font-weight: 300;
-}
+
 
 /*CLASSES FOR CARDS*/
 
@@ -474,21 +472,26 @@ body{
 
 /*CHART SUB MENU*/
 .btn-primary{
-    color: #e14eca;
-    border-color: #e14eca;
+    color: rgb(30, 29, 44);
+    border-color: #fdad7d;
+    background: transparent;
+}
+body.dark-mode .btn-primary{
+    color: #fff;
+    border-color: #fdad7d;
     background: transparent;
 }
 
 .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, 
 .show>.btn-primary.dropdown-toggle{
     color: #fff;
-    background-color: #d725bb;
-    border: 1px solid #e14eca;
+    background-color: #fdad7d;
+    border: 1px solid #fdad7d;
     box-shadow: none;
 }
 .btn-simple:not(.active):hover{
-    color: #e14eca;
-    border-color: #e14eca;
+    color: rgb(30, 29, 44);
+    border-color: #fdad7d;
     background-color: transparent!important;
     background-image: none!important;
     box-shadow: none;
@@ -518,7 +521,7 @@ body{
 
 /*TABLE STYLE*/
 .table>thead>tr>td{
-    border:1px solid hsla(0,0%,100%,.1);
+    /*border:1px solid hsla(0,0%,100%,.1);*/
 }
 .table td{
     padding: 0.75rem 0;
@@ -540,8 +543,16 @@ body{
     text-decoration: none;
 }
 .table tr td a.actions{
-    padding: 10px;
+    /*padding: 10px;*/
     border: 1px solid #fdad7d;
+    display: inline-block;
+    width: 34px;
+    text-align: center;
+    height: 30px;
+    vertical-align: middle;
+}
+.table tr td a.actions i{
+    vertical-align: text-bottom;
 }
 tbody span.active:after {
     content: '';
@@ -597,7 +608,7 @@ ul.pagination li:nth-child(5),
 ul.pagination li:nth-child(6),
 ul.pagination li:nth-child(7){
     margin-right: 10px;
-    padding: 5px 10px;
+    padding: 3px 10px;
     border: 1px solid #fdad7d;
     cursor: pointer;
 }
@@ -615,7 +626,15 @@ ul.pagination li button:hover{
 /*END OF PAGINATIO*/
 
 /*Dark Mode CSS*/
-
+body.dark-mode .navbar.fixed-top{
+    padding-bottom: 0!important;
+    border-bottom: 1px solid #fdad7d;
+    background: #1e1e2f;
+    transition: all ease 0.3s;
+}
+body.dark-mode #search::placeholder{
+    color:#fff;
+}
 
 body.dark-mode .card{
 	background-color: #27293d;
@@ -623,8 +642,8 @@ body.dark-mode .card{
     margin-bottom: 30px;
 }
 
-body.dark-mode a.l-text,.sidebar-nav ul li:hover a,
-.sidebar-nav ul li.active a,
+body.dark-mode a.l-text,.sidebar-nav ul.main-nav li:hover a,
+.sidebar-nav ul.main-nav li.active a,
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
@@ -652,12 +671,15 @@ body.dark-mode #search_icon,
 body.dark-mode .nav-pills .show>.nav-link{
     color: #fff!important;
 }
-
+body.dark-mode ul.pagination li a{
+    color:#fff;
+}
 body.dark-mode .card .table tr p.title,
 body.dark-mode .card .table tr p.text-body,
 body.dark-mode .card .table tbody tr:first-child td,
 body.dark-mode .card .table>tbody>tr>td,
 body.dark-mode .table tr a,body.dark-mode .form-group p.title,
+body.dark-mode label.entries,
 body.dark-mode .row p.title{
     color: hsla(0,0%,100%,.8)!important;
 }
@@ -680,12 +702,26 @@ body.light-mode input[type=number].form-control {
   background: transparent;
   background-image: none;
 }
+
+ body.dark-mode ul.nav.nav-pills li ul li:nth-child(2) {
+    padding: .5rem .7rem;
+    background: transparent;
+    color: #e3e3e3;
+    font-weight: 600;
+    vertical-align: text-top;
+    font-size: 1rem;
+    }
 /*END OF DARK MODE*/
 
 
 
 /*LIGHT MODE CSS*/
-
+body.light-mode .navbar.fixed-top{
+    padding-bottom: 0!important;
+    border-bottom: 1px solid #fdad7d;
+    background: #f5f6fa;
+    transition: all ease 0.3s;
+}
 body.light-mode .card{
     background: #fff;
     box-shadow: 0 1px 15px 0 hsla(0,0%,48%,.05);
@@ -753,6 +789,7 @@ body.light-mode select {
     width: 100%;
     max-width: 250px;
 }
+
 .card .avatar
 {
     overflow: hidden;
@@ -784,6 +821,10 @@ a.btn-create:hover{
 }
 body div.navbar, body div.navbar ul li{
 	background-color: transparent;
+}
+.theme-selector label{
+    color: #fff;
+    vertical-align: text-bottom;
 }
 .theme-selector a,.theme-selector a:focus,.theme-selector a:hover{
     background-color: transparent!important;
@@ -844,6 +885,56 @@ body div.navbar, body div.navbar ul li{
     box-shadow: 0px 0px 45px 0px rgba(0, 0, 0, 0.2);
     border: none;
 }
+
+.navbar-brand.l-text{
+    font-weight: 300;
+    padding: 0;
+    margin-left: 0rem;
+    margin-left: .5rem;
+    margin-top: 8px;
+    transition: all ease 0.5s;
+    
+}
+
+a.navbar-brand.full-nav{
+    display: inline-block;
+    margin-left: 2.5rem;
+    margin-top: 8px;
+    /*margin-left: 6rem;*/
+    /*transition: all ease 1s;*/
+}
+
+.navbar .logo-container{
+    width: 103px;
+    height: 50px;
+    /*transform: */
+    margin-left: 0rem;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(-200px);
+    transition: all ease 0.3s;
+}
+.logo-wrapper{
+    overflow: hidden;
+    display: inherit;
+}
+.logo-container.full-nav{
+    width: 103px;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    margin-left: 6rem;
+}
+
+
+a.dropdown-toggle.l-text+.dropdown-menu {
+    top: 95%!important;
+}
+.navbar .logo-container img{
+    width: 100%;
+    height: 100%;
+    margin-top: -7px;
+}
 .navbar div.dropdown-menu ul li{
 	padding: 5px 0;
 }
@@ -859,7 +950,15 @@ body div.navbar, body div.navbar ul li{
     font-size: 20px;
     border:1px solid #2b3553;
     position: fixed;
-    top: 20px;
+    top: 15px;
+    left: 27px;
+    padding: 0 10px;
+    z-index: 1000;
+}
+.sidebar-toggle{
+     margin: auto 0;
+     display: flex;
+     overflow: hidden;
 }
 .sidebar.sidebar-full{
     width: 200px;
@@ -886,10 +985,10 @@ body div.navbar, body div.navbar ul li{
     background-position: center center;
     display: block;
     box-shadow: 0px 0px 45px 0px rgba(0, 0, 0, 0.2);
-    margin-top: 85px;
+    margin-top: 81px;
     margin-left: 30px;
     border-radius: 5px;
-    transition: 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    transition: 0.3s cubic-bezier(0.685, 0.0473, 0.346, 1);
 }
 
 .sidebar-wrapper{
@@ -900,7 +999,30 @@ body div.navbar, body div.navbar ul li{
     position: relative;
     overflow: hidden;
 }
-.sidebar-nav ul li a,.logo a{
+.sidebar-nav ul.main-nav li{
+    position: relative;
+}
+.caret{
+    width: 0;
+    height: 0;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    margin-top: -5px;
+    position: absolute;
+    top: 18px;
+    right: 10px;
+    margin-left: 5px;
+    transition: all .15s ease 0s;
+    visibility: hidden;
+    opacity: 0;
+}
+.sidebar-full ul.main-nav li a .caret{
+    visibility: visible;
+    opacity: 1;
+}
+.sidebar-nav ul.main-nav li a,.logo a{
 	border-radius: 30px;
     display: block;
     text-decoration: none;
@@ -908,22 +1030,29 @@ body div.navbar, body div.navbar ul li{
     text-transform: uppercase;
     cursor: pointer;
     font-size: 0.8rem;
-    padding: 10px 8px;
+    padding: 10px 8px 10px 0;
     line-height: 1.625rem;
 }
-.sidebar-nav ul li:not(active) a, .logo a{
+.sidebar-nav ul.main-nav li:not(active) a, .logo a{
 	color: rgb(30, 29, 44);
 	transition: 0.2s all ease;
 }
+/*.logo{
+    margin-left: 8px;
+}*/
+.logo a{
+    padding-left: 2px!important;
+}
 #content-full{
-    transition: 0.6s all ease;
+    transition: 0.4s all ease;
 }
 .sidebar-nav ul li i,.logo a i{
 	float: left;
-    margin-right: 12px;
+    margin-right: 20px;
     line-height: 30px;
     width: 34px;
     position: relative;
+    text-align: center;
 }
 .logo i{
 	line-height: 10px!important;
@@ -983,9 +1112,10 @@ input[type=number].form-control:focus,
 input[type=number].form-control:hover,
 input[type=date].form-control:focus,
 input[type=date].form-control:hover,
+input[type=number].form-control:hover,
 textarea.form-control:focus,
 textarea.form-control:hover{
-    border-color: #fdad7d;
+    border-color: #fdad7d!important;
     background-color: transparent;
     box-shadow: none;
 }
@@ -1082,14 +1212,33 @@ button.btn-primary:hover{
 /*END BUTTONS*/
 /*FILES*/
 
-.file-input-contain {
+.file-input-profile,.file-input-signature {
     width: 100%;
+    height: 160px;
     margin: 0 auto;
-    max-width: 180px;
+    max-width: 294px;
+    max-height: 160px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
-.btn-file{
-    padding: 10px 20px!important;
+
+
+
+.file-input-profile:hover .file-input,.file-input-signature:hover .file-input{
+    opacity: 1;
+    visibility: visible;
 }
+.file-input{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin:0 auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: all ease-in 0.3s;
+}
+
 
 div.file-input span.btn input[type="file"] {
     position: absolute;
@@ -1103,29 +1252,20 @@ div.file-input span.btn input[type="file"] {
     filter: alpha(opacity=0);
     opacity: 0;
     direction: ltr;
+
 }
 
 .btn-round{
-    border-width: 2px;
     border: none;
     position: relative;
     overflow: hidden;
-    margin: 4px 1px;
-    border-radius: 2rem;
     cursor: pointer;
-    background: #344675;
-    background-image: -webkit-linear-gradient(to bottom left, #344675, #263148, #344675);
-    background-image: -o-linear-gradient(to bottom left, #344675, #263148, #344675);
-    background-image: -moz-linear-gradient(to bottom left, #344675, #263148, #344675);
-    background-image: linear-gradient(to bottom left, #344675, #263148, #344675);
-    background-size: 210% 210%;
-    background-position: top right;
-    background-color: #344675;
+    background-color: rgba(243, 108, 27, 0.87);
     transition: all 0.15s ease;
     box-shadow: none;
     color: #ffffff;
     width: 100%;
-    max-width: 200px;
+    max-width: 100%;
 }
 
 
@@ -1166,6 +1306,32 @@ select {
   color: #fdad7d;
 }
 
+
+/*PAGINATION*/
+.page-item.disabled .page-link{
+  border-color: #fdad7d;
+}
+.pagination-container .page-item a{
+  color: #1d253b!important;
+  border: 1px solid #fdad7d;
+  transition: all ease 0.3s;
+}
+.pagination-container .page-link:hover{
+  background-color: #fdad7d;
+  color: #fff!important;
+}
+.pagination-container .page-link:focus{
+  box-shadow: none;
+}
+
+.pagination-container .page-item:not(:last-child){
+  margin-right: 10px;
+}
+.pagination-container .page-item.active .page-link{
+  background-color: #fdad7d!important;
+  border: 1px solid #fdad7d;
+}
+/*END OF PAGINATIO*/
 
 
 
