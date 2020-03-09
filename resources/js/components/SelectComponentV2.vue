@@ -44,7 +44,18 @@ export default {
 }
 
 </script>
-<style scoped>
+<style>
     @import "~vue-multiselect/dist/vue-multiselect.min.css";
+    .multiselect__tags{
+      background: #27293d;
+    }
+    .multiselect__input{
+      background: #27293d!important;
+      border-color:#2b3553
+    }
+    .multiselect__single{
+      background: #27293d!important;
+      color: white;
+    }
 </style>
 

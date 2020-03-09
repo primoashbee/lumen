@@ -14,15 +14,15 @@ const mix = require('laravel-mix');
 mix.js('resources/js/app.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css')
    .styles([
-      'public/template/css/bootstrap.css',
-      'public/template/css/main.css',
-      'public/template/css/all.css',
-   ], 'public/css/main.css')
+      'public/assets/css/bootstrap.css',
+      'public/assets/css/all.css',
+      'public/assets/css/main.css',
+   ], 'public/css/lumen.css')
    .scripts([
-      'public/template/js/jquery.min.js',
-      'public/template/js/popper.min.js',
-      'public/template/js/bootstrap.min.js',
-      'public/template/js/chartjs.min.js',
-      'public/template/js/font-awesome.min.js',
-      'public/template/js/main.js',
-   ], 'public/js/main.js');
+      'public/assets/js/jquery.min.js',
+      'public/assets/js/popper.min.js',
+      'public/assets/js/bootstrap.min.js',
+      // 'public/template/js/chartjs.min.js',
+      // 'public/template/js/font-awesome.min.js',
+      'public/assets/js/main.js',
+   ], 'public/js/lumen.js');

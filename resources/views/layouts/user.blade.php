@@ -2,7 +2,7 @@
 <html>
 <x-head />
 
-<body class="light-mode">
+<body class="dark-mode">
 	<div class="wrapper" id="app">
 
         <x-navbar />
@@ -11,9 +11,9 @@
 
         @yield('content')
 
-        <x-theme-switch/>
+        
 
-	</div x="aaaaa">
+	</div>
 </body>
 
 </html>

@@ -1,19 +1,18 @@
 @extends('layouts.user')
 @section('content')
 <div class="content pl-32 pr-8 mt-4" id="content-full">
-    <form class="row" method="POST" action="{{url()->current()}}">
-        @csrf
+    <form class="row">
        <div class="col-md-9">
          <div class="card">
                <div class="card-header">
-                 <h3 class="h3">Profile</h3>
+                 <h3 class="h3 ml-4">Profile</h3>
                </div>
                <div class="card-body">
-                 <h1 class="px-3 h3">Basic Information</h1>
+                 <h3 class="px-3">Basic Information</h3>
                      <div class="row px-3">
                        <div class="form-group col-md-6 col-lg-3">
-                        <label for="office_id">Assigned To</label>
-                        <v2-select ></v2-select>
+                         <label for="client_id">Linked To</label>
+                         <v2-select></v2-select>
                        </div>
                        <div class="form-group col-md-3 col-lg-3">
                          <label for="firstname">First Name</label>
@@ -121,8 +120,8 @@
                                <input value="{{old('province_address')}}" type="text" name="province_address" id="province_address" class="form-control" required>
                            </div>
                            <div class="form-group col-md-4 px-2">
-                               <label for="requiredipcode">Postal/requiredip code</label>
-                               <input value="{{old('requiredipcode')}}" type="text" name="requiredipcode" id="requiredipcode" class="form-control" required>
+                               <label for="zipcode">Postal/Zip code</label>
+                               <input value="{{old('zipcode')}}" type="text" name="zipcode" id="zipcode" class="form-control" required>
                            </div>
                    </div>
                    <h3 class="px-3 my-3 h3">Family Information</h3>	
@@ -139,8 +138,8 @@
                                <input value="{{ old('number_of_dependents') }}" type="number" name="number_of_dependents" id="number_of_dependents" class="form-control" required>
                            </div>
                            <div class="form-group px-3 col-md-6">
-                               <label for="household_sirequirede">Household Sirequirede</label>
-                               <input type="number" value="{{ old('household_sirequirede') }}" name="household_sirequirede" id="household_sirequirede" class="form-control" required>
+                               <label for="household_size">Household Size</label>
+                               <input type="number" value="{{ old('household_size') }}" name="household_size" id="household_size" class="form-control" required>
                            </div>
                            <div class="form-group px-3 col-md-5">
                                <label for="years_of_stay_on_house">Years of Residency</label>
@@ -341,33 +340,15 @@
        <div class="col-md-3">
            <div class="card">
                <div class="card-header">
-                   <h4 class="text-center">Attachment</h4>
+                   <h4 class="text-center h4">Attachment</h4>
                </div>
 
                <div class="card-body">
-                   <div  class="file-input-contain d-block text-center position-relative">
-                       <img src="{{asset('template/img/anime3.png')}}" data-attribute="profile_picture_path" class="w-100" alt="Profile Photo" id="sample">
-                   </div>
-                   <div class="file-input text-center my-2">
-                       <span class="position-relative btn btn-rose btn-round btn-file">
-                         <span class="fileinput-new">Image</span>
-                         <input value="{{ old('profile_picture_path') }}" type="file" class="attachment" name="profile_picture_path" id="profile_picture_path">
-                       </span>
-                   </div>
-
-
-                   <div  class="file-input-contain d-block text-center position-relative">
-                       <img src="{{asset('template/img/signature.png')}}" data-attribute="signature_path" class="w-100" alt="Profile Photo">
-                   </div>
-                   <div class="file-input text-center my-2">
-                       <span class="position-relative btn btn-rose btn-round btn-file">
-                         <span class="fileinput-new">Signature</span>
-                         <input value="{{ old('signature_path') }}" type="file" class="attachment" name="signature_path" id="signature_path">
-                       </span>
-                   </div>
+                <img src="{{ asset('assets/img/default.png')}}" class="img-thumbnail" alt="Cinque Terre"> 
+                <img src="{{ asset('assets/img/signature.png')}}" class="img-thumbnail" alt="Cinque Terre"> 
                </div>
            </div>
        </div> 
      </form>
-</div>
+   </div>
 @endsection
