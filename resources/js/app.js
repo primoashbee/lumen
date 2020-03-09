@@ -21,6 +21,8 @@ window.Vue = require('vue');
 
 Vue.component('org-structure', require('./components/OfficeStructureComponent.vue').default);
 Vue.component('structure-filter', require('./components/StructureFilterComponent.vue').default);
+Vue.component('v-select', require('./components/SelectComponent.vue').default);
+Vue.component('v2-select', require('./components/SelectComponentV2.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

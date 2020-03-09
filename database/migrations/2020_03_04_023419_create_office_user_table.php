@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOfficeUsersTable extends Migration
+class CreateOfficeUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateOfficeUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('office_users', function (Blueprint $table) {
+        Schema::create('office_user', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('office_id');
@@ -28,6 +28,6 @@ class CreateOfficeUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('office_users');
+        Schema::dropIfExists('office_user');
     }
 }

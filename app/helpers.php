@@ -37,7 +37,7 @@ use Maatwebsite\Excel\Facades\Excel;
      
         Office::insert($data);
     }
-
+    
     function createUser($branches=5){
         $data = array(
             'firstname'=>'Angeles',

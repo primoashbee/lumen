@@ -20,3 +20,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/structure','API\StructureController@index');
 Route::get('/auth/structure','API\StructureController@auth');
+Route::get('/auth/branches','API\StructureController@branches');    

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Office extends Model
 {
+    // protected $with = ['parent'];
+
     public function parent(){
         return $this->belongsTo(static::class, 'parent_id');
     }

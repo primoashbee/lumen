@@ -25,4 +25,8 @@ class StructureController extends Controller
         dd(auth('api')->user());
         return auth()->user()->scopes();
     }
+    public function branches(){
+        dd(auth('api')->user());
+        return auth()->user()->scopes();
+    }
 }
