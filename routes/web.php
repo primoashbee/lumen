@@ -30,8 +30,7 @@ Route::get('/z',function(){
     // $role->revokePermissionTo(['create client']);
 
     auth()->user()->assignRole($role);
-
-
+    ECHO 'HEY';
 });
 Auth::routes();
 
