@@ -30,8 +30,21 @@ Route::get('/z',function(){
     // $role->revokePermissionTo(['create client']);
 
     auth()->user()->assignRole($role);
-    ECHO 'HEY';
+
 });
+
+
+Route::get('/create/role', function(){
+    return view('pages.create-role');
+});
+Route::get('/create/user', function(){
+    return view('pages.create-user');
+});
+Route::get('/settings', function(){
+    return view('pages.create-user');
+});
+
+
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {

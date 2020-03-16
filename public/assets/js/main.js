@@ -63,6 +63,7 @@ $(document).ready(function(){
   });
 
   $(window).scroll(function(){
+    console.log($('#lastname').val());
     var scroll = $(window).scrollTop();
     if (scroll >= 80) {
       $('.navbar').addClass('fixed-top');

@@ -5,7 +5,7 @@
        <div class="col-md-9">
          <div class="card">
                <div class="card-header">
-                 <h3 class="h3 ml-4">Profile</h3>
+                 <h3 class="h3 ml-3">Profile</h3>
                </div>
                <div class="card-body">
                  <h3 class="px-3">Basic Information</h3>
@@ -41,7 +41,7 @@
                            <div class="form-group px-3 col-md-3">
                                <label for="gender">Gender</label>
                                <div class="select">
-                                 <select name="gender" id="slct">
+                                 <select name="gender" id="gender">
                                    <option selected disabled>Choose an option</option>
                                    <option value="1">Male</option>
                                    <option value="2">Female</option>
@@ -52,7 +52,7 @@
                            <div class="form-group col-md-4 px-3">
                                <label for="civil_status">Marital Status</label>
                                <div class="select">
-                                 <select name="civil_status" id="slct">
+                                 <select name="civil_status" id="civil_status">
                                    <option selected disabled>Choose an option</option>
                                    <option value="1">Single</option>
                                    <option value="2">Married</option>
@@ -89,7 +89,7 @@
                            <div class="form-group col-md-5 px-3">
                                <label for="education">Educational Attainment</label>
                                <div class="select">
-                                 <select name="education" id="slct">
+                                 <select name="education" id="civil_status">
                                    <option selected disabled>Choose an option</option>
                                    <option value="college">College</option>
                                    <option value="vocational">Vocational</option>
@@ -344,8 +344,24 @@
                </div>
 
                <div class="card-body">
-                <img src="{{ asset('assets/img/default.png')}}" class="img-thumbnail" alt="Cinque Terre"> 
-                <img src="{{ asset('assets/img/signature.png')}}" class="img-thumbnail" alt="Cinque Terre"> 
+                <div  class="file-input-profile d-block text-center position-relative mb-4">
+                  <img src="{{ asset('assets/img/default.png')}}" class="img-thumbnail" alt="Cinque Terre"> 
+                    <div class="file-input text-center">
+                        <span class="position-relative btn btn-rose btn-round btn-file">
+                            <span class="fileinput-new">Image</span>
+                            <input value="{{ old('profile_picture_path') }}" type="file" class="attachment" name="profile_picture_path" id="profile_picture_path">
+                            </span>
+                    </div>
+                  </div>
+                  <div  class="file-input-signature d-block text-center position-relative">
+                    <img src="{{ asset('assets/img/signature.png')}}" class="img-thumbnail" alt="Cinque Terre"> 
+                      <div class="file-input text-center">
+                          <span class="position-relative btn btn-rose btn-round btn-file">
+                          <span class="fileinput-new">Signature</span>
+                          <input value="{{ old('signature_path') }}" type="file" class="attachment" name="signature_path" id="signature_path">
+                          </span>
+                      </div>
+                  </div>
                </div>
            </div>
        </div> 

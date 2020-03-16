@@ -19,9 +19,9 @@ mix.js('resources/js/app.js', 'public/js')
       'public/assets/css/main.css',
    ], 'public/css/lumen.css')
    .scripts([
-      'public/assets/js/jquery.min.js',
+      // 'public/assets/js/jquery.min.js',
       'public/assets/js/popper.min.js',
-      'public/assets/js/bootstrap.min.js',
+      // 'public/assets/js/bootstrap.min.js',
       // 'public/template/js/chartjs.min.js',
       // 'public/template/js/font-awesome.min.js',
       'public/assets/js/main.js',
