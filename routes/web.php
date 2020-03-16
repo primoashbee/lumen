@@ -49,7 +49,7 @@ Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard','DashboardController@index')->name('dashboard');
-    Route::group(['middleware' => ['can:create client']], function () { 
+    Route::group(['middleware' => []], function () { 
         Route::get('/create/client','ClientController@index')->name('precreate.client');
         Route::post('/create/client','ClientController@create')->name('create.client'); 
     });

@@ -17,14 +17,14 @@ $(document).ready(function(){
     $('body').addClass('dark-mode');
   });
 
-  $('#self_employed').click(function(){
+  $('#is_self_employed').click(function(){
     $('#is_employed').toggleClass('disabled').toggle().prop('disabled',function(){
       return ! $(this).prop('disabled');
     })
   });
 
   $('#is_employed').click(function(){
-    $('#self_employed').toggleClass('disabled').toggle().prop('disabled',function(){
+    $('#is_self_employed').toggleClass('disabled').toggle().prop('disabled',function(){
       return ! $(this).prop('disabled');
     })
   });
@@ -41,17 +41,17 @@ $(document).ready(function(){
     })
   });
 
-  $('#has_remittance').click(function(){
-    $('#has_pension').toggleClass('disabled').toggle().prop('disabled',function(){
-      return ! $(this).prop('disabled');
-    })
-  });
+  // $('#has_remittance').click(function(){
+  //   $('#has_pension').toggleClass('disabled').toggle().prop('disabled',function(){
+  //     return ! $(this).prop('disabled');
+  //   })
+  // });
 
-  $('#has_pension').click(function(){
-    $('#has_remittance').toggleClass('disabled').toggle().prop('disabled',function(){
-      return ! $(this).prop('disabled');
-    })
-  });
+  // $('#has_pension').click(function(){
+  //   $('#has_remittance').toggleClass('disabled').toggle().prop('disabled',function(){
+  //     return ! $(this).prop('disabled');
+  //   })
+  // });
 
   $('.white-badge').click(function(){
     $('body').removeClass('dark-mode');

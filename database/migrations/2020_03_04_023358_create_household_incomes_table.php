@@ -18,23 +18,25 @@ class CreateHouseholdIncomesTable extends Migration
             $table->string('client_id')->unique();
             $table->boolean('is_self_employed');
             $table->string('service_type')->nullable();
+            $table->string('service_type_monthly_gross_income')->nullable();
             $table->boolean('is_employed');
-            $table->string('position')->nullable();
-            $table->string('company_name')->nullable();
-            $table->integer('monthly_gross_income');
+            $table->string('employed_position')->nullable();
+            $table->string('employed_company_name')->nullable();
+            $table->integer('employed_monthly_gross_income')->nullable();
 
             //spouse
             $table->boolean('spouse_is_self_employed');
             $table->string('spouse_service_type')->nullable();
+            $table->string('spouse_service_type_monthly_gross_income')->nullable();
             $table->boolean('spouse_is_employed');
-            $table->string('spouse_position')->nullable();
-            $table->string('spouse_company_name')->nullable();
-            $table->integer('spouse_monthly_gross_income');
+            $table->string('spouse_employed_position')->nullable();
+            $table->string('spouse_employed_company_name')->nullable();
+            $table->integer('spouse_employed_monthly_gross_income')->nullable();
 
-            $table->boolean('has_remittance');
+            $table->boolean('has_remittance')->default(false);
             $table->integer('remittance_amount')->nullable();
 
-            $table->boolean('has_pension');
+            $table->boolean('has_pension')->default(false);
             $table->integer('pension_amount')->nullable();
 
             $table->integer('total_household_income');

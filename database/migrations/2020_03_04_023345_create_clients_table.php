@@ -15,7 +15,7 @@ class CreateClientsTable extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('client_id');
+            $table->string('client_id')->unique();
             $table->string('firstname');
             $table->string('middlename')->nullable();
             $table->string('lastname');
@@ -28,7 +28,7 @@ class CreateClientsTable extends Migration
             $table->string('birthplace');
             $table->string('civil_status');
             $table->string('education');
-            $table->string('fb_account');
+            $table->string('fb_account')->nullable();
             $table->string('contact_number');            
 
             //Address information
