@@ -71,4 +71,36 @@ class Office extends Model
         return $ids;
     }
 
+    public function getParent(){
+        return $this->parent;
+    }
+    public function getBranch(){
+        $parents = [];
+        echo $this->name;
+        if($this->level=="branch"){
+            return 'nice';
+        }
+
+        array_push($parents, $this);
+        $this->getBranch();
+        return $parents;
+    
+                
+    }
+
+    function getTopOffice($level="main_office"){
+        $parent = $this->getParent();
+        if($parent == null){
+            return $parent;
+        }
+        if($parent->level == $level){
+         return $parent;
+        }else{
+            return  $parent->getTopOffice($level);
+        }
+    }
+    
+    public function generateClientID(){
+        
+    }
 }

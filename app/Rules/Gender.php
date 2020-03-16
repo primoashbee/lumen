@@ -2,10 +2,9 @@
 
 namespace App\Rules;
 
-use App\Office;
 use Illuminate\Contracts\Validation\Rule;
 
-class OfficeID implements Rule
+class Gender implements Rule
 {
     /**
      * Create a new rule instance.
@@ -14,7 +13,7 @@ class OfficeID implements Rule
      */
     public function __construct()
     {
-        
+        //
     }
 
     /**
@@ -26,14 +25,9 @@ class OfficeID implements Rule
      */
     public function passes($attribute, $value)
     {
-        if($value=="[]"){
-            return false;
-        }
-        if(Office::find($value)==null){
-            return false;
-        }
         
-        return true;
+       $genders = ["Male","Female"];
+       return in_array($value,$genders) ?  true : false;
     }
 
     /**
@@ -43,6 +37,6 @@ class OfficeID implements Rule
      */
     public function message()
     {
-        return 'You should select atleast 1 office';
+        return 'Must select valid gender.';
     }
 }

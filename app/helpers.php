@@ -13,7 +13,23 @@ use App\Imports\OfficeImport;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
   
-
+    function createAdminAccount(){
+        $user = User::create([
+            'firstname' => 'Ashbee',
+            'lastname' => 'Morgado',
+            'middlename' => 'Allego',
+            'gender' => 'Male',
+            'birthday' => Carbon::parse('1994-11-26'),
+            'email' => 'ashbee.morgado@icloud.com',
+            'notes'=>'ajalksdjfdlksafjaldf',
+            'password' => Hash::make('sv9h4pld')
+        ]);
+        
+            OfficeUser::create([
+                'user_id'=>$user->id,
+                'office_id'=>2
+            ]);    
+    }
     function generateStucture   (){
         $structure = Excel::toCollection(new OfficeImport, "public/OFFICE STRUCTURE.xlsx");
         $data = array();
@@ -121,6 +137,24 @@ use Maatwebsite\Excel\Facades\Excel;
         }
 
         return $ids;
+    }
+
+    function makeClientID($office_id){
+
+        $office = Office::find($office_id);
+
+        if($office->level=="branch"){
+            $code = $office->code;
+            $count = Client::where('office_id',$office_id)->count();
+            return $code . '-PC' . pad($count + 1, 5);
+        }
+
+        $office = $office->getTopOffice('branch');
+        $code = $office->code;
+        $count = Client::where('office_id',$office_id)->count();
+    
+        return $code . '-PC' . pad($count + 1, 5);
+
     }
     function getNextID($string){
         // substr("ASDASDAS",)
