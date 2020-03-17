@@ -31,7 +31,7 @@
 								</a>
 							</li>
 							<li class="sub-list">
-								<a class="sub-nav" href="">
+								<a class="sub-nav" href="/create/cluster">
 									<i class="">CL</i>
 									<p>Cluster</p>
 								</a>
@@ -64,7 +64,7 @@
 					</a>
 				</li>
 				<li class="py-2">
-					<a href="{{ request()->is('administration') ? 'active' : '' }}">
+					<a href="/settings" class="{{ request()->is('administration') ? 'active' : '' }}">
 						<i class="fas fa-2x fa-cogs"></i>
 						<p>Administration</p>
 					</a>

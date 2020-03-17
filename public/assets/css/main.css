@@ -525,6 +525,10 @@ body.dark-mode .btn-primary{
 /*TABLE STYLE*/
 .table>thead>tr>td{
     /*border:1px solid hsla(0,0%,100%,.1);*/
+    width: 10%;
+}
+.table>thead>tr>td:not(:first-child),.table>tbody>tr>td:not(:first-child){
+    text-align: center;
 }
 .table td{
     padding: 0.75rem 0;
@@ -535,6 +539,7 @@ body.dark-mode .btn-primary{
 }
 .table td{
     border: none;
+    font-size: 1rem;
 }
 .table tr{
     border-bottom: 1px solid #dee2e6;
@@ -572,6 +577,16 @@ tbody span.active:after {
 }
 
 /*END OF TABLE STYLE*/
+
+/*TABLE STYLE FOR ROLES*/
+
+.table tr td .form-check .form-check-label{
+    position: relative;
+    height: 15px;
+    
+}
+/*END OF ROLE TABLE STYLE*/
+
 
 /*PAGINATION*/
 
@@ -622,6 +637,7 @@ ul.pagination li button{
     outline: none;
     padding: 5px 10px;
     cursor: pointer;
+    color: #fff;
 }
 ul.pagination li button:hover{
     background-color: hsla(0,0%,60%,.1);
@@ -719,9 +735,25 @@ body.light-mode input[type=number].form-control {
     vertical-align: text-top;
     font-size: 1rem;
     }
+
+input[type=text].form-control.error:not(.search_text){
+        border-color: #f9425c!important;
+}
 /*END OF DARK MODE*/
 
-
+/*input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+input:-internal-autofill-selected{
+    background: transparent!important;
+    color:-internal-light-dark-color(black, transparent) !important;;
+}*/
 
 /*LIGHT MODE CSS*/
 body.light-mode .navbar.fixed-top{
@@ -1361,11 +1393,11 @@ select {
 }
 #setting-tabs a.nav-link{
     color: #fff;
-    padding: 15px 10px;
+    padding: 35px 15px;
     border-radius: 0;
-    height: 65px;
+    height: 100px;
     display: block;
-    width: 65px;
+    width: 100px;
     text-align: center;
     margin: auto 0;
     background: transparent;
@@ -1380,6 +1412,9 @@ select {
 }
 #setting-tabs li{
     padding-bottom: 20px;
+}
+.fa-sign-in-alt{
+    transform: rotateY(180deg);
 }
 
 /*CREATE USER PAGE*/

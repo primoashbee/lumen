@@ -16,21 +16,36 @@
                        </div>
                        <div class="form-group col-md-3 col-lg-3">
                          <label for="firstname">First Name</label>
-                         <input value="{{ old('firstname') }}" type="text" id="firstname" name="firstname" class="form-control" required>
+                         <input value="{{ old('firstname') }}" type="text" id="firstname" name="firstname" class="form-control @error('firstname') error @enderror" required>
+                         @error('firstname')
+                              <span class="invalid-feedback" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
                        </div>
                        <div class="form-group col-md-3">
                          <label for="middlename">Middle name</label>
-                         <input value="{{ old('middlename') }}" type="text" id="middlename" name="middlename" class="form-control">
+                         <input value="{{ old('middlename') }}" type="text" id="middlename" name="middlename" class="form-control @error('firstname') error @enderror">
+                         @error('middlename')
+                              <span class="invalid-feedback" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
                        </div>
                        <div class="form-group col-md-3">
                          <label for="lastname">Last name</label>
-                         <input value="{{ old('lastname') }}" id="lastname" type="text" name="lastname" class="form-control" required>
+                         <input value="{{ old('lastname') }}" id="lastname" type="text" name="lastname" class="form-control @error('lastname') error @enderror" required>
+                         @error('middlename')
+                              <span class="invalid-feedback" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
                        </div>
                      </div>
                      <div class="row px-3">
                            <div class="form-group col-md-2">
                                <label for="suffix">Suffix </label>
-                               <input value="{{ old('suffix') }}" type="text" name="suffix" id="suffix" class="form-control" >
+                               <input value="{{ old('suffix') }}" type="text" name="suffix" id="suffix" class="form-control">
                            </div>
 
                            <div class="form-group col-md-3">
@@ -89,7 +104,7 @@
                            <div class="form-group col-md-5 px-3">
                                <label for="education">Educational Attainment</label>
                                <div class="select">
-                                 <select name="education" id="civil_status">
+                                 <select name="education" id="education">
                                    <option selected disabled>Choose an option</option>
                                    <option value="college">College</option>
                                    <option value="vocational">Vocational</option>

@@ -41,9 +41,19 @@ Route::get('/create/user', function(){
     return view('pages.create-user');
 });
 Route::get('/settings', function(){
-    return view('pages.create-user');
+    return view('pages.settings');
 });
 
+Route::get('/create/cluster', function(){
+    return view('pages.create-cluster');
+});
+
+Route::get('/create/fees', function(){
+    return view('pages.create-fees');
+});
+Route::get('/client/list', function(){
+    return view('pages.client-list');
+});
 
 Auth::routes();
 
