@@ -46,6 +46,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Office::class)->orderBy('office_id');
     }
 
+
     public function scopes(){
        
         $offices = $this->office;
@@ -99,9 +100,9 @@ class User extends Authenticatable
         });
         
         $filtered = [
-            ['level' => 'Branches', 'data' => $branches], 
-            ['level' => 'Clusters', 'data' => $clusters], 
-            ['level' => 'Officers', 'data' => $officers]
+            ['level' => 'Branches', 'data' => collect($branches)->sortBy('name')->values()], 
+            ['level' => 'Clusters', 'data' => collect($clusters)->sortBy('name')->values()], 
+            ['level' => 'Officers', 'data' => collect($officers)->sortBy('name')->values()]
         ];
 
         return $filtered;

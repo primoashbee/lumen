@@ -21,7 +21,7 @@ class CreateOfficesTable extends Migration
             $table->string('code')->unique();
             $table->timestamps();
         });
-        generateStucture();
+        
     }
 
     /**

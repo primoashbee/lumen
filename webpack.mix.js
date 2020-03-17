@@ -12,6 +12,7 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
+mix.js('resources/js/nondeferrables.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css')
    .styles([
       'public/assets/css/bootstrap.css',
@@ -20,7 +21,7 @@ mix.js('resources/js/app.js', 'public/js')
    ], 'public/css/lumen.css')
    .scripts([
       // 'public/assets/js/jquery.min.js',
-      'public/assets/js/popper.min.js',
+      // 'public/assets/js/popper.min.js',
       // 'public/assets/js/bootstrap.min.js',
       // 'public/template/js/chartjs.min.js',
       // 'public/template/js/font-awesome.min.js',

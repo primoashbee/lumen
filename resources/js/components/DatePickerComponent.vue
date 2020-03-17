@@ -1,21 +1,35 @@
 <template>
-                        <div class="form-group row">
-                            <label for="lastname" class="col-md-4 col-form-label text-md-right">{{ __('Last Name') }}</label>
+    <datepicker @input="emitToParent" v-model="date" input-class="form-control" :value="value"  :format="format"></datepicker>
 
-                            <div class="col-md-6">
-                                <input id="lastname" type="text" class="form-control @error('lastname') is-invalid @enderror" name="lastname" value="{{ old('lastname') }}" required autocomplete="lastname">
-
-                                @error('lastname')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
 </template>
 
+
 <script>
-    export default{
-        
-    }
+
+import Datepicker from 'vuejs-datepicker';
+export default {
+  components: {
+    Datepicker
+  },
+  props: ['name','id','value'],
+  methods:{
+      emitToParent(){
+          this.$emit('datePicked', this.date)
+      }
+  },
+  data(){
+      return {
+          format: 'MMMM dd, yyyy',
+          date: null,
+      }
+  },
+
+}
+
 </script>
+
+<style>
+    .form-control:disabled, .form-control[readonly]{
+        background-color: transparent;
+    }
+</style>

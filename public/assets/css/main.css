@@ -925,7 +925,7 @@ body div.navbar, body div.navbar ul li{
 .dropdown-menu{
     box-shadow: 0px 0px 45px 0px rgba(0, 0, 0, 0.2);
     border: none;
-    left: auto!important;
+    left: auto;
 }
 
 .navbar-brand.l-text{
@@ -1206,7 +1206,7 @@ div.hi.active{
     border: none;
     background-color: #fdad7d;
  }
- .form-check input[type="checkbox"]:checked+.form-check-sign::after{
+ .form-check input[type="radio"]:checked+.form-check-sign::after{
     content: "\02713";
     border: 0;
     left: 3px;
@@ -1383,8 +1383,8 @@ select {
   background-color: #fdad7d!important;
   border: 1px solid #fdad7d;
 }
-/*END OF PAGINATION*/
 
+/*END OF PAGINATIO*/
 
 /*SETTINGS PAGE*/
 

@@ -9,10 +9,11 @@
     placeholder="Select Level" 
     track-by="name" 
     label="name"
+    @input = "emitToParent"
     >
       <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
     </multiselect>
-    <input type="hidden" name="office_id" :value="value.id">
+    <input type="hidden" name="office_id" :value="value.id" @change="emitToParent">
     
   
   </div>
@@ -40,6 +41,9 @@ export default {
     }
   },
   methods: {
+    emitToParent(){
+      this.$emit('officeSelected', this.value);
+    }
   }
 }
 

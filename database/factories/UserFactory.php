@@ -123,26 +123,34 @@ $factory->define(HouseholdIncome::class, function (Faker $faker, $client_id){
     $spouse_position=null;
     $spouse_company_name=null;
 
+    $service_type_monthly_gross_income = 0;
+    $employed_monthly_gross_income = 0;
+    $spouse_service_type_monthly_gross_income = 0;
+    $spouse_employed_monthly_gross_income = 0;
     //if self-emplyoed service type should be not null
     if($is_self_employed){
         $is_employed = false;
         $service_type = $faker->randomElement(['Agriculture','Trading/Merchandising','Manufacturing','Service','Others']);
+        $service_type_monthly_gross_income = rand(100,200) * 500;
     }else{
         $is_employed = true;
         $position = $faker->randomElement(['Assistant','Officer','Supervisor','Manager','Executive','Board Member']);
         $company_name=$faker->randomElement(['LIGHT Microfinance','TPKI','KMBI','Valve','Activision','Marvel','Netflix','Apple']);
+        $employed_monthly_gross_income = rand(100,200) * 500;
     }
     
     if($spouse_is_self_employed){
         $spouse_is_employed = false;
         $spouse_service_type = $faker->randomElement(['Agriculture','Trading/Merchandising','Manufacturing','Service','Others']);
+        $spouse_service_type_monthly_gross_income = rand(100,200) * 500;
     }else{
         $spouse_is_employed = true;
         $spouse_position = $faker->randomElement(['Assistant','Officer','Supervisor','Manager','Executive','Board Member']);
         $spouse_company_name=$faker->randomElement(['LIGHT Microfinance','TPKI','KMBI','Valve','Activision','Marvel','Netflix','Apple']);
+        $spouse_employed_monthly_gross_income = rand(100,200) * 500;
     }
     
-    $monthly_gross_income = rand(100,200) * 500;
+    
     $spouse_monthly_gross_income = rand(100,200) * 500;
     
 
@@ -158,25 +166,38 @@ $factory->define(HouseholdIncome::class, function (Faker $faker, $client_id){
         $pension_amount=rand(100,200) * 500;
     }
 
-    $total_household_income = $monthly_gross_income + $spouse_monthly_gross_income+$remittance_amount+$pension_amount;
+    $total_household_income = 
+            $service_type_monthly_gross_income + 
+            $employed_monthly_gross_income + 
+            $spouse_service_type_monthly_gross_income + 
+            $spouse_employed_monthly_gross_income + 
+            $remittance_amount +
+            $pension_amount;
 
     return[
         'client_id' => $client_id,
         'is_self_employed' => $is_self_employed,
+        
         'service_type' => $service_type,
+        'service_type_monthly_gross_income' => $service_type_monthly_gross_income,
+        
         'client_id' => $client_id,
+
         'is_employed' => $is_employed,
-        'position' => $position,
-        'company_name' => $company_name,
-        'monthly_gross_income' => $monthly_gross_income,
+        'employed_position' => $position,
+        'employed_company_name' => $company_name,
+        'employed_monthly_gross_income' => $employed_monthly_gross_income,
 
 
         'spouse_is_self_employed' => $spouse_is_self_employed,
+        
         'spouse_service_type' => $spouse_service_type,
+        'spouse_service_type_monthly_gross_income' => $spouse_service_type_monthly_gross_income,
+        
         'spouse_is_employed' => $spouse_is_employed,
-        'spouse_position' => $spouse_position,
-        'spouse_company_name' => $spouse_company_name,
-        'spouse_monthly_gross_income' => $spouse_monthly_gross_income,
+        'spouse_employed_position' => $spouse_position,
+        'spouse_employed_company_name' => $spouse_company_name,
+        'spouse_employed_monthly_gross_income' => $spouse_employed_monthly_gross_income,
 
         'has_remittance' => $has_remittance,
         'remittance_amount' => $remittance_amount,

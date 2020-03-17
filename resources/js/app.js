@@ -21,8 +21,9 @@ window.Vue = require('vue');
 
 Vue.component('org-structure', require('./components/OfficeStructureComponent.vue').default);
 Vue.component('structure-filter', require('./components/StructureFilterComponent.vue').default);
-Vue.component('v-select', require('./components/SelectComponent.vue').default);
+Vue.component('date-picker', require('./components/DatePickerComponent.vue').default);
 Vue.component('v2-select', require('./components/SelectComponentV2.vue').default);
+Vue.component('create-client-form', require('./components/ClientCreateFormComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -33,3 +34,5 @@ Vue.component('v2-select', require('./components/SelectComponentV2.vue').default
 const app = new Vue({
     el: '#app',
 });
+
+
