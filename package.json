@@ -28,8 +28,10 @@
         "bootstrap-datepicker": "^1.9.0",
         "js-datepicker": "^5.4.0",
         "sweetalert2": "^9.10.0",
-        "vue-loading-overlay": "^3.3.0",
+        "vue-debounce": "^2.5.1",
+        "vue-loading-overlay": "^3.3.2",
         "vue-multiselect": "^2.1.6",
+        "vue-paginate": "^3.6.0",
         "vue2-selectize": "^1.1.7",
         "vuejs-datepicker": "^1.6.2"
     }

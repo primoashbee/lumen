@@ -25,7 +25,7 @@
 					<div class="collapse" id="create">
 						  <ul class="sub-collapse">
 							<li class="sub-list">
-								<a class="sub-nav" href="/create/client">
+								<a class="sub-nav" href="{{ route('precreate.client')}}">
 									<i class="">C</i>
 									<p>Client</p>
 								</a>
@@ -40,7 +40,7 @@
 					 </div>
 				</li>
 				<li class="{{ request()->is('client') ? 'active' : '' }} py-2">
-					<a href="">
+					<a href="{{ route('client.list') }}">
 						<i class="fas fa-2x fa-user"></i>
 						<p>Client</p>
 					</a>

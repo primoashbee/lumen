@@ -32,4 +32,9 @@ export default {
     .form-control:disabled, .form-control[readonly]{
         background-color: transparent;
     }
+
+    .is-invalid {
+        border-color: red;
+    }
+ 
 </style>

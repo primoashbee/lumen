@@ -12,7 +12,7 @@ use App\Rules\CivilStatus;
 use Illuminate\Http\Request;
 use App\Rules\EducationalAttainment;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\MessageBag;
 
 class ClientController extends Controller
 {
@@ -24,7 +24,11 @@ class ClientController extends Controller
     
     public function create(Request $request){
 
-        return response()->json(['success' => 'success','msg'=>'Client Succesfully Created'], 200);
+       // return response()->json(['msg'=>'Client succesfully created'],200);
+        $req = Client::clientExists($request);
+        if($req['exists']){
+            return response()->json($req,422);
+        }
         $this->validator($request->all())->validate();
         $client_id = makeClientID($request->office_id);
 
@@ -96,7 +100,7 @@ class ClientController extends Controller
             'total_household_income'=>$total_household_income
         ]);
 
-
+        return response()->json(['msg'=>'Client succesfully created'],200);
        
     }
 
@@ -131,6 +135,40 @@ class ClientController extends Controller
                 'mother_maiden_name'=>'required',
                 'mother_maiden_name'=>'required',
                 'total_household_income'=>'required|integer|gt:0'
+            ],[
+                'office_id.required' => 'The Linked to field is required'
             ]);
+    }
+
+
+    public function list(){
+        // $lists = Client::where('office_id',null)->get();
+        // if($request->office_id!=null){
+        //     $lists = Client::where('office_id',$request->office_id)->paginate();
+        // }
+        
+        return view('pages.client-list');
+    }
+    public function getList(Request $request){
+        // sleep(3);
+        return response()->json(Client::with('office')->where('office_id',$request->office_id)->paginate(30));
+    }
+
+    public function query(Request $request){
+        $q = $request->query;
+        $res = Client::whereLike('firstname',$q)
+            ->whereLike('lastname', $q)
+            ->paginate(30);
+        return response()->json($res);
+    }
+
+    public function getClient(Request $request){
+        $client = Client::where('client_id',$request->client_id)->first();
+        if($client===null){
+            abort(503);
+            return response()->route('client.list');
+        }
+        return view('pages.client-profile',compact('client'));
+        
     }
 }

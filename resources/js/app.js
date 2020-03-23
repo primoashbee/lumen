@@ -7,7 +7,9 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-
+window.Swal = require('sweetalert2');
+// import VuePaginate from 'vue-paginate'
+// Vue.use(VuePaginate)
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -24,6 +26,8 @@ Vue.component('structure-filter', require('./components/StructureFilterComponent
 Vue.component('date-picker', require('./components/DatePickerComponent.vue').default);
 Vue.component('v2-select', require('./components/SelectComponentV2.vue').default);
 Vue.component('create-client-form', require('./components/ClientCreateFormComponent.vue').default);
+Vue.component('client-list', require('./components/ClientListComponent.vue').default);
+Vue.component('paginator', require('./components/PaginatorComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

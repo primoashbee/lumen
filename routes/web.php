@@ -58,6 +58,9 @@ Route::group(['middleware' => ['auth']], function () {
         return auth()->user()->scopesBranch();
     });
     Route::get('/usr/branches','UserController@branches');
+    Route::get('/clients','ClientController@list')->name('client.list');
+    Route::get('/clients/list','ClientController@getList')->name('get.client.list');
+    Route::get('/client/{client_id}','ClientController@getClient')->name('get.client.info');
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

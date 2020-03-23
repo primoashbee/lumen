@@ -12,6 +12,7 @@ try {
     
     require('bootstrap');
     require('bootstrap-datepicker');
+   
 
     
 } catch (e) {}

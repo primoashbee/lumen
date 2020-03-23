@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Office;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
@@ -51,5 +53,30 @@ class Client extends Model
 
     public function household_income(){
         return $this->hasOne(HouseholdIncome::class, 'client_id','client_id');
+    }
+
+    public static function clientExists($request){
+        $client = Client::where('firstname',$request->firstname)
+                ->where('lastname',$request->lastname)
+                ->where('birthday',Carbon::parse($request->birthday)->toDateString());
+        
+        if($client->count() > 0 ){
+            
+            return ['msg' => 'Already exists','exists' => true, 'errors' => ['client' => ['msg'=>'Client Already Exists','client_id'=>$client->first()->client_id,'exists_at' => $client->first()->branch()->name]]];
+        }
+
+        return ['msg' => 'Does not exists','exists' => false, 'client_info'=>null];
+    }
+
+    public function office(){
+        return $this->belongsTo(Office::class);
+    }
+    
+    public function branch(){
+        return $this->office->getTopOffice('branch');
+    }
+    
+    public function name(){
+        return $this->firstname.' '.$this->lastname;
     }
 }

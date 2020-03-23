@@ -42,7 +42,11 @@ export default {
   },
   methods: {
     emitToParent(){
-      this.$emit('officeSelected', this.value);
+      if(this.value!=null){
+        
+        this.$emit('officeSelected', this.value);
+      }
+      
     }
   }
 }

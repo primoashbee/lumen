@@ -1,6 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
+    "/js/nondeferrables.js": "/js/nondeferrables.js",
     "/css/lumen.css": "/css/lumen.css",
     "/js/lumen.js": "/js/lumen.js"
 }
