@@ -17,29 +17,30 @@ $(document).ready(function(){
     $('body').addClass('dark-mode');
   });
 
-  $('#is_self_employed').click(function(){
-    $('#is_employed').toggleClass('disabled').toggle().prop('disabled',function(){
-      return ! $(this).prop('disabled');
-    })
-  });
+  // $('#is_self_employed').click(function(){
+  //   $('#is_employed').toggleClass('disabled').toggle().prop('disabled',function(){
+  //     return ! $(this).prop('disabled');
+  //   })
+  // });
 
-  $('#is_employed').click(function(){
-    $('#is_self_employed').toggleClass('disabled').toggle().prop('disabled',function(){
-      return ! $(this).prop('disabled');
-    })
-  });
+  // $('#is_employed').click(function(){
+  //   $('#is_self_employed').toggleClass('disabled').toggle().prop('disabled',function(){
+  //     return ! $(this).prop('disabled');
+  //   })
+  // });
 
-  $('#spouse_is_self_employed').click(function(){
-    $('#spouse_is_employed').toggleClass('disabled').toggle().prop('disabled',function(){
-      return ! $(this).prop('disabled');
-    })
-  });
+  // $('#spouse_is_self_employed').click(function(){
+  //   $('#spouse_is_employed').toggleClass('disabled').toggle().prop('disabled',function(){
+  //     return ! $(this).prop('disabled');
+  //   })
+  // });
 
-  $('#spouse_is_employed').click(function(){
-    $('#spouse_is_self_employed').toggleClass('disabled').toggle().prop('disabled',function(){
-      return ! $(this).prop('disabled');
-    })
-  });
+  // $('#spouse_is_employed').click(function(){
+  //   $('#spouse_is_self_employed').toggleClass('disabled').toggle().prop('disabled',function(){
+  //     return ! $(this).prop('disabled');
+  //   })
+  // });
+
 
   // $('#has_remittance').click(function(){
   //   $('#has_pension').toggleClass('disabled').toggle().prop('disabled',function(){

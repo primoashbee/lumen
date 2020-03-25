@@ -1174,7 +1174,7 @@ div.hi.active{
     border: none;
     background-color: #fdad7d;
  }
- .form-check input[type="radio"]:checked+.form-check-sign::after{
+ .form-check input[type="checkbox"]:checked+.form-check-sign::after{
     content: "\02713";
     border: 0;
     left: 3px;
@@ -1238,12 +1238,10 @@ button.btn-primary:hover{
 .file-input-signature{
     height: 120px!important;
 }
-.file-input-profile img{
+.file-input-profile img, .file-input-signature img.img-thumbnail{
     height: 100%!important;
     width: 100%;
 }
-
-
 
 .file-input-profile:hover .file-input,.file-input-signature:hover .file-input{
     opacity: 1;

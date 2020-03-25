@@ -61,6 +61,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/clients','ClientController@list')->name('client.list');
     Route::get('/clients/list','ClientController@getList')->name('get.client.list');
     Route::get('/client/{client_id}','ClientController@getClient')->name('get.client.info');
+    Route::get('/edit/client/{client_id}','ClientController@editClient');
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

@@ -46,7 +46,6 @@ export default {
         
         this.$emit('officeSelected', this.value);
       }
-      
     }
   }
 }

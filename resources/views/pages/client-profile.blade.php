@@ -78,6 +78,7 @@
 		              </div>
 		            </div>
 		          </div>
+		          <a href="/edit/client/{{$client->client_id}}" type="submit" class="btn btn-primary mt-8 px-8">Edit Client</a	>
 		        </div>
 		      </div>
 		    </div>

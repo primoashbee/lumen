@@ -11,7 +11,7 @@
                 <div class="row px-3">
                 <div class="form-group col-md-6 col-lg-3">
                     <label for="client_id">Linked To</label>
-                    <v2-select @officeSelected="assignOffice" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
+                    <v2-select @officeSelected="assignOffice" :value="this.fields.office_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
                     <div class="invalid-feedback" v-if="officeHasError">
                         {{ errors.office_id[0]}}
                     </div>
@@ -402,7 +402,7 @@
                     </div>
                 </div>
             
-                <h3 class="px-3 my-4 h3">Other Income</h3>	
+                <h3 class="px-3 my-4 h3">Other Income</h3> 
                 <div class="row px-3">
                     <div class="form-group col-md-3">
                         <div class="form-check p0">
@@ -414,7 +414,7 @@
                                 <label for="has_remittance">Remittance</label>
                             </label>
                         </div>
-                        <div class="hi form-group col-md-12 p0 my-2" data-attribute="has_remittance">
+                        <div class="hi form-group col-md-12 p0 my-2" :class="this.fields.has_remittance ? 'active' : ''" data-attribute="has_remittance">
                             <label for="remittance_amount">Remittance Amount</label>
                             <input value="" type="number" v-model="fields.remittance_amount" class="form-control" id="remittance_amount">
                         </div>
@@ -430,7 +430,7 @@
                                 <label for="has_pension">Pension</label>
                             </label>
                         </div>
-                        <div class="hi form-group col-md-12 p0 my-2" data-attribute="has_pension">
+                        <div class="hi form-group col-md-12 p0 my-2" :class="this.fields.has_pension ? 'active' : ''" data-attribute="has_pension">
                             <label for="pension_amount">Pension Amoount</label>
                             <input value="" type="number" v-model="fields.pension_amount" class="form-control" id="pension_amount">
                         </div>
@@ -500,6 +500,8 @@ export default {
     components: {
         SelectComponentV2
     },
+    props:["clientId"],
+
     data(){
         return {
             fields: {
@@ -571,6 +573,70 @@ export default {
 
 
         }
+    },
+    mounted(){
+        console.log(this.clientId);
+            axios.get('/api/edit/client/'+this.clientId)
+            .then(res => {
+                
+                this.fields.firstname = res.data[0].firstname,
+                this.fields.middlename = res.data[0].middlename,
+                this.fields.lastname = res.data[0].lastname,
+                this.fields.suffix = res.data[0].suffix,
+                this.fields.nickname = res.data[0].nickname,
+                this.fields.gender = res.data[0].gender,
+                this.fields.civil_status = res.data[0].civil_status,
+                this.fields.fb_account = res.data[0].fb_account,
+                this.fields.contact_number = res.data[0].contact_number,
+                this.fields.birthday = res.data[0].birthday,
+                this.fields.birthplace = res.data[0].birthplace,
+                this.fields.education = res.data[0].education,
+                this.fields.street_address = res.data[0].street_address,
+                this.fields.barangay_address = res.data[0].barangay_address,
+                this.fields.city_address = res.data[0].city_address,
+                this.fields.province_address = res.data[0].province_address,
+                this.fields.zipcode = res.data[0].zipcode,
+                this.fields.business_address = res.data[0].business_address,
+                this.fields.number_of_dependents = res.data[0].number_of_dependents,
+                this.fields.household_size = res.data[0].household_size,
+                this.fields.years_of_stay_on_house = res.data[0].years_of_stay_on_house,
+                this.fields.house_type = res.data[0].house_type,
+                this.fields.spouse_name = res.data[0].spouse_name,
+                this.fields.spouse_birthday = res.data[0].spouse_birthday,
+                this.fields.spouse_contact_number = res.data[0].spouse_contact_number,
+                this.fields.tin = res.data[0].tin,
+                this.fields.sss = res.data[0].sss,
+                this.fields.umid = res.data[0].umid,
+                this.fields.mother_maiden_name = res.data[0].mother_maiden_name,
+                this.fields.profile_picture_path = res.data[0].profile_picture_path,
+                this.fields.signature_path = res.data[0].signature_path,
+                this.fields.notes = res.data[0].notes,
+
+
+                // this.fields.is_self_employed = res.data[1].is_self_employed,
+                // this.fields.service_type = res.data[1].service_type,
+                // this.fields.service_type_gross_income = res.data[1].service_type_gross_income,
+                // this.fields.is_employed = res.data[1].is_employed,
+                // this.fields.employed_position = res.data[1].employed_position,
+                // this.fields.employed_company_name = res.data[1].employed_company_name,
+                // this.fields.employed_monthly_gross_income = res.data[1].employed_monthly_gross_income,
+
+                // this.fields.spouse_is_self_employed = res.data[1].spouse_is_self_employed,
+                // this.fields.spouse_service_type = res.data[1].spouse_service_type,
+                // this.fields.spouse_service_type_gross_income = res.data[1].spouse_service_type_gross_income,
+
+                // this.fields.spouse_is_employed = res.data[1].spouse_is_employed,                
+                // this.fields.spouse_employed_position = res.data[1].spouse_employed_position,
+                // this.fields.spouse_employed_company_name = res.data[1].spouse_employed_company_name,
+                // this.fields.spouse_employed_monthly_gross_income = res.data[1].spouse_employed_monthly_gross_income,        
+                // this.fields.has_pension = res.data[1].has_pension,
+                // this.fields.pension_amount = res.data[1].pension_amount,
+
+                // this.fields.has_remittance = res.data[1].has_remittance,                
+                // this.fields.remittance_amount = res.data[1].remittance_amount,
+
+                this.fields.office_id = res.data[0].office_id
+            })
     },
     computed:{
         total_household_income(){
@@ -672,37 +738,6 @@ export default {
         },
         totalHouseholdIncomeHasError(){
             return this.errors.hasOwnProperty('total_household_income')
-        },
-        duplicateClient(){
-            return this.errors.hasOwnProperty('client')
-        },
-        // isEmployedDisabled(){
-        //     return this.fields.is_self_employed
-        // },
-        // isSelfEmployedDisabled(){
-        //     return this.fields.is_employed
-        // },
-        // isSpouseSelfEmployedDisabled(){
-        //     return this.fields.spouse_is_employed
-        // },
-        // isSpouseEmployedDisabled(){
-        //     return this.fields.spouse_is_self_employed
-        // }
-
-    },
-    watch:{
-        'fields.is_self_employed' : function (newVal,oldVal){
-           if(newVal){
-               this.fields.employed_position = null
-               this.fields.employed_company_name =  null
-               this.fields.employed_monthly_gross_income =  0
-           }
-        },
-        'fields.is_employed' : function (newVal,oldVal){
-           if(newVal){
-               this.fields.service_type = null
-               this.fields.service_type_gross_income =  0
-           }
         }
     },
     methods: {
@@ -729,19 +764,17 @@ export default {
             alert(this.fromChild)
         },
         assignOffice(value){
-            this.fields.office_id = value['id']
+            this.fields.office_id = value
         },
         getDate(value, field){
            this.fields[field] = value
         },
-        clientExists(){
-            return Object.keys(this.errors.client).length > 0
-        },
         submit(){
             this.errors = {}
             this.fields['total_household_income'] = this.total_household_income
-            axios.post('/create/client', this.fields)
+            axios.post('/api/edit/client/'+this.clientId, this.fields)
                 .then(res=>{
+                    console.log(res);
                     Swal.fire({
                         icon: 'success',
                         title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
@@ -749,19 +782,11 @@ export default {
                         confirmButtonText: 'OK'
                     })
                     .then(res=>{
-                        location.reload();
+                       location.reload();
                     })
                 })
                 .catch(error=>{
                     this.errors = error.response.data.errors || {}
-                    if(this.duplicateClient){
-                        Swal.fire({
-                            icon: 'error',
-                            title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">OOPPPSSSSS!</span>',
-                            text: this.errors.client.msg,
-                            footer: '<a href="#">Client ['+this.errors.client.client_id+'] already existing at: ' +this.errors.client.exists_at +'</a>'
-                        })
-                    }
                 })
         },
     }
