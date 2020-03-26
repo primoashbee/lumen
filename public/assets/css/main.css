@@ -1225,6 +1225,12 @@ button.btn-primary:hover{
 /*END BUTTONS*/
 /*FILES*/
 
+
+.file-input-signature img.img-thumbnail{
+    height:100% !important;
+    width:100% !important
+}
+
 .file-input-profile,.file-input-signature {
     width: 100%;
     height: 160px;
@@ -1234,6 +1240,7 @@ button.btn-primary:hover{
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+    
 }
 .file-input-signature{
     height: 120px!important;
@@ -1242,7 +1249,6 @@ button.btn-primary:hover{
     height: 100%!important;
     width: 100%;
 }
-
 
 
 .file-input-profile:hover .file-input,.file-input-signature:hover .file-input{

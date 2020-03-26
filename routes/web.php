@@ -1,10 +1,10 @@
 <?php
 
+use Carbon\Carbon;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
-
-
+use Symfony\Component\HttpFoundation\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -44,7 +44,6 @@ Route::get('/settings', function(){
     return view('pages.create-user');
 });
 
-
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
@@ -61,6 +60,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/clients','ClientController@list')->name('client.list');
     Route::get('/clients/list','ClientController@getList')->name('get.client.list');
     Route::get('/client/{client_id}','ClientController@getClient')->name('get.client.info');
+    Route::get('/administration',function(){
+        return view('pages.settings');
+    })->name('administration');
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

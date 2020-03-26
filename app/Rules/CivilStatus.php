@@ -26,7 +26,7 @@ class CivilStatus implements Rule
     public function passes($attribute, $value)
     {   
 
-        $types = ["Single","Married","Divorced","Widowed"];
+        $types = ["SINGLE","MARRIED","DIVORCED","WIDOWED"];
         return in_array($value,$types) ?  true : false;
     }
 

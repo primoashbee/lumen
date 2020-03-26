@@ -6,8 +6,13 @@
 
 require('./bootstrap');
 
+
+import { VueMaskDirective } from 'v-mask'
+
 window.Vue = require('vue');
+
 window.Swal = require('sweetalert2');
+window.moment = require('moment');
 // import VuePaginate from 'vue-paginate'
 // Vue.use(VuePaginate)
 /**
@@ -21,6 +26,8 @@ window.Swal = require('sweetalert2');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+Vue.directive('mask', VueMaskDirective);
+
 Vue.component('org-structure', require('./components/OfficeStructureComponent.vue').default);
 Vue.component('structure-filter', require('./components/StructureFilterComponent.vue').default);
 Vue.component('date-picker', require('./components/DatePickerComponent.vue').default);
@@ -28,6 +35,7 @@ Vue.component('v2-select', require('./components/SelectComponentV2.vue').default
 Vue.component('create-client-form', require('./components/ClientCreateFormComponent.vue').default);
 Vue.component('client-list', require('./components/ClientListComponent.vue').default);
 Vue.component('paginator', require('./components/PaginatorComponent.vue').default);
+Vue.component('upload-file', require('./components/UploadSampleComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

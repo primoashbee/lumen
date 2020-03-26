@@ -164,4 +164,13 @@ use Maatwebsite\Excel\Facades\Excel;
     function hasString($string, $match){
         return  Str::contains($string, $match);
     }
+
+    function checkClientPaths(){
+        if(!Storage::disk('local')->exists('signatures')){
+            Storage::makeDirectory('public/signatures');
+        }
+        if(!Storage::disk('local')->exists('profile_photos')){
+            Storage::makeDirectory('public/profile_photos');
+        }
+    }
 ?>

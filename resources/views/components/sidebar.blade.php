@@ -64,7 +64,7 @@
 					</a>
 				</li>
 				<li class="py-2">
-					<a href="{{ request()->is('administration') ? 'active' : '' }}">
+					<a href="{{ route('administration')}}" class ="{{ request()->is('administration') ? 'active' : '' }}">
 						<i class="fas fa-2x fa-cogs"></i>
 						<p>Administration</p>
 					</a>

@@ -10,7 +10,7 @@
 						</a>
 						<p class="title text-center">Structure</p>
 					</li>
-					<!-- <li>
+					<li>
 						<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">
 							<i class="fas fa-2x fa-sitemap"></i>
 						</a>
@@ -117,7 +117,7 @@
 							<i class="fas fa-2x fa-sitemap"></i>
 						</a>
 						<p class="title text-center">Structure</p>
-					</li> -->
+					</li>
 				</ul>
 			</div>
 		</div>

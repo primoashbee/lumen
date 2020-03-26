@@ -25,7 +25,7 @@ class EducationalAttainment implements Rule
      */
     public function passes($attribute, $value)
     {
-        $types = ["Elementary","value","Vocational","College"];
+        $types = ["ELEMENTARY","HIGH SCHOOL","VOCATIONAL","COLLEGE"];
         return in_array($value,$types) ?  true : false;
     }
 
@@ -36,6 +36,6 @@ class EducationalAttainment implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'Must select valid educational attainment.';
     }
 }
