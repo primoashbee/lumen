@@ -193,7 +193,6 @@ class ClientController extends Controller
 
     public function update(Request $request, $client_id){
         $client = $this->validator($request->all())->validate();
-        dd($request->office_id);
         
         Client::where('client_id', $client_id)->update(
             [

@@ -48887,16 +48887,7 @@ var render = function() {
                     }
                   })
                 ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-primary mx-3",
-                  attrs: { type: "submit" }
-                },
-                [_vm._v("Submit")]
-              )
+              ])
             ]
           )
         ])

@@ -453,7 +453,7 @@
                         <textarea value="notes" rows="3" cols="40" v-model="fields.notes" class="form-control"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary mx-3">Submit</button>
+                    
                 </form>
           </div>
     </div>

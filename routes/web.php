@@ -40,9 +40,24 @@ Route::get('/create/role', function(){
 Route::get('/create/user', function(){
     return view('pages.create-user');
 });
-Route::get('/settings', function(){
-    return view('pages.create-user');
+
+Route::get('/create/fee', function(){
+    return view('pages.create-fees');
 });
+
+Route::get('/create/penalty', function(){
+    return view('pages.create-penalty');
+});
+
+Route::get('/create/branch', function(){
+    return view('pages.create-branch');
+});
+
+
+Route::get('/settings', function(){
+    return view('pages.settings');
+});
+
 
 
 Auth::routes();

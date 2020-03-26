@@ -25,5 +25,6 @@ mix.js('resources/js/nondeferrables.js', 'public/js')
       // 'public/assets/js/bootstrap.min.js',
       // 'public/template/js/chartjs.min.js',
       // 'public/template/js/font-awesome.min.js',
+      'public/assets/js/isotope.js',
       'public/assets/js/main.js',
    ], 'public/js/lumen.js');

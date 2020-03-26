@@ -1350,20 +1350,20 @@ select {
   border: 1px solid #fdad7d;
 }
 
-/*END OF PAGINATIO*/
+/*END OF PAGINATION*/
 
 /*SETTINGS PAGE*/
 
 .setting-container ul li:not(:last-child){
-    margin-right: 30px;
+    margin-right: 20px;
 }
 #setting-tabs a.nav-link{
     color: #fff;
     padding: 15px 10px;
     border-radius: 0;
-    height: 65px;
+    height: 110px;
     display: block;
-    width: 65px;
+    width: 110px;
     text-align: center;
     margin: auto 0;
     background: transparent;
@@ -1396,5 +1396,28 @@ select {
     border:1px solid #fdad7d;
     box-shadow: none;
 }
+
+.filters-container .btn-filters{
+    display: inline-block;
+    padding: 5px 15px;
+    margin-bottom: 10px;
+    background-image: linear-gradient( hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0.1) );
+    border: 1px solid #fdad7d;
+    margin-left: -4px;
+    outline: none;
+    background: transparent;
+    color: #fff;
+    transition: all ease 0.3s;
+}
+
+.filters-container .btn-filters:hover{
+    background: #fdad7d;
+}
+
+.filter-container h4.h4{
+    vertical-align: top;
+    line-height: 40px;
+}
+/*END SETTINGS PAGE*/
 
 
