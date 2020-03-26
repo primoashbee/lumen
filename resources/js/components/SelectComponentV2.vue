@@ -1,6 +1,8 @@
-<template>
+`<template>
   <div>
-  <multiselect v-model="value" 
+  <multiselect 
+    
+    v-model="value" 
     :options="options" 
     :multiple="false" 
     group-values="data" 
@@ -28,10 +30,12 @@ export default {
   },
   props: ['name'],
   created(){
+    
       axios.get('/usr/branches')
         .then(res=>{
           this.options=res.data
         })
+      
   },
   data () {
     return {
@@ -42,7 +46,11 @@ export default {
   },
   methods: {
     emitToParent(){
-      this.$emit('officeSelected', this.value);
+      if(this.value!=null){
+        
+        this.$emit('officeSelected', this.value);
+      }
+      
     }
   }
 }

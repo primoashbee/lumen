@@ -19,6 +19,9 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
+label{
+    cursor: pointer;
+}
 a{
     text-decoration: none!important;
 }
@@ -642,8 +645,8 @@ body.dark-mode .card{
     margin-bottom: 30px;
 }
 
-body.dark-mode a.l-text,.sidebar-nav ul.main-nav li:hover a,
-.sidebar-nav ul.main-nav li.active a,
+body.dark-mode a.l-text,.sidebar-nav ul.main-nav li:not(.sub-list):hover a:not(.sub-nav),
+.sidebar-nav ul.main-nav li.active a:not(.sub-nav),
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
@@ -653,8 +656,13 @@ body.dark-mode h6,
 body.dark-mode input[type=text].form-control:not(.search_text){
 	color: #fff;
 }
+a[aria-expanded="true"] p,a[aria-expanded="true"] i,.sub-list:hover a.sub-nav{
+    color: #fff!important;
+}
 option:selected { background-color: transparent; }
-
+.nav-item .dropdown-item:active{
+    background-color: #f8f9fa;
+}
 body.dark-mode .navbar a.dropdown-item{
 	color:#9a9a9a;
 	font-weight: 300;
@@ -795,6 +803,7 @@ body.light-mode select {
     overflow: hidden;
     border-radius: 50%;
     margin-bottom: 15px;
+    border: 1px solid hsla(0,0%,100%,.8)!important;
 }
 .client-image img{
     width: 124px!important;
@@ -875,7 +884,7 @@ body div.navbar, body div.navbar ul li{
     vertical-align: middle;
     content: "";
     top: -5px;
-    right: 25px;
+    right: 12px;
     color: #fff;
     border-bottom: .4em solid;
     border-right: .4em solid transparent;
@@ -1015,7 +1024,7 @@ a.dropdown-toggle.l-text+.dropdown-menu {
     top: 18px;
     right: 10px;
     margin-left: 5px;
-    transition: all .15s ease 0s;
+    transition: all ease 0s;
     visibility: hidden;
     opacity: 0;
 }
@@ -1066,7 +1075,7 @@ a.dropdown-toggle.l-text+.dropdown-menu {
     height: auto;
     white-space: nowrap;
 }
-.sidebar-nav ul li.active a:after{
+.sidebar-nav ul.main-nav:not(.sub-collapse) li.active a:not(.sub-nav):after{
 	content: " ";
     position: absolute;
     height: 6px;
@@ -1080,6 +1089,9 @@ a.dropdown-toggle.l-text+.dropdown-menu {
 
 
 /*FORMS*/
+button[data-dismiss='modal']{
+    outline: none;
+}
 .modal-search .modal-header .close span{
    vertical-align: -webkit-baseline-middle;
 }
@@ -1213,17 +1225,30 @@ button.btn-primary:hover{
 /*END BUTTONS*/
 /*FILES*/
 
+
+.file-input-signature img.img-thumbnail{
+    height:100% !important;
+    width:100% !important
+}
+
 .file-input-profile,.file-input-signature {
     width: 100%;
     height: 160px;
     margin: 0 auto;
-    max-width: 294px;
-    max-height: 160px;
+    max-width: 220px;
+    /*max-height: 160px;*/
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+    
 }
-
+.file-input-signature{
+    height: 120px!important;
+}
+.file-input-profile img{
+    height: 100%!important;
+    width: 100%;
+}
 
 
 .file-input-profile:hover .file-input,.file-input-signature:hover .file-input{
@@ -1335,5 +1360,49 @@ select {
 
 /*END OF PAGINATIO*/
 
+/*SETTINGS PAGE*/
+
+.setting-container ul li:not(:last-child){
+    margin-right: 30px;
+}
+#setting-tabs a.nav-link{
+    color: #fff;
+    padding: 15px 10px;
+    border-radius: 0;
+    height: 65px;
+    display: block;
+    width: 65px;
+    text-align: center;
+    margin: auto 0;
+    background: transparent;
+    border: 1px solid #fdad7d;
+    transition: all ease 0.3s;
+}
+#setting-tabs a.nav-link:hover{
+    background: #fdad7d;
+}
+#setting-tabs a.nav-link p{
+    color: #fff;
+}
+#setting-tabs li{
+    padding-bottom: 20px;
+}
+
+/*CREATE USER PAGE*/
+.user-form .tags-input-wrapper-default{
+    background: transparent;
+    transition: all ease 0.3s;
+    border-color: #2b3553;
+}
+.user-form .tags-input input[type="text"]{
+    color: #fff!important;
+}
+.user-form .tags-input-wrapper-default:hover{
+    border:1px solid #fdad7d;
+}
+.user-form .tags-input-wrapper-default.active{
+    border:1px solid #fdad7d;
+    box-shadow: none;
+}
 
 

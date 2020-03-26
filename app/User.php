@@ -100,9 +100,9 @@ class User extends Authenticatable
         });
         
         $filtered = [
-            ['level' => 'Branches', 'data' => collect($branches)->sortBy('name')->values()], 
-            ['level' => 'Clusters', 'data' => collect($clusters)->sortBy('name')->values()], 
-            ['level' => 'Officers', 'data' => collect($officers)->sortBy('name')->values()]
+            ['level' => 'Branches', 'data' => collect($branches)->sortBy('name')->unique()->values()], 
+            ['level' => 'Clusters', 'data' => collect($clusters)->sortBy('name')->unique()->values()], 
+            ['level' => 'Officers', 'data' => collect($officers)->sortBy('name')->unique()->values()]
         ];
 
         return $filtered;

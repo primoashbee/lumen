@@ -15,23 +15,7 @@ class UserController extends Controller
         return auth()->user()->scopes();
     }
 
-    public function branches(){ 
-        // return array(
-        //     array(
-        //         'level'=>'Javascript',
-        //         'data' => array(
-        //             array('name'=>'Vue.js','category'=>'front-end'),
-        //             array('name'=>'Adonis','category'=>'backend'),
-        //         )
-        //     ),
-        //     array(
-        //         'level'=>'ex',
-        //         'data' => array(
-        //             array('name'=>'a.js','category'=>'front-end'),
-        //             array('name'=>'d','category'=>'backend'),
-        //         )
-        //     )
-        // );
+    public function branches(){     
         return auth()->user()->scopesBranch();
     }
 }

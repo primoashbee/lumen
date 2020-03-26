@@ -19,7 +19,7 @@
         <i class="fas fa-search"></i>
       </a>
     </li>
-    <li class="" ss="nav-item dropdown">
+    <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle l-text" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{auth()->user()->name()}}</a>
       <div class="dropdown-menu">
         <ul>
@@ -33,7 +33,8 @@
       </div>
     </li>
   </ul>
-  <div class="modal fade modal-search" id="search_bar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+</nav>
+<div class="modal fade modal-search" id="search_bar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -45,4 +46,3 @@
       </div>
     </div>
   </div>
-</nav>

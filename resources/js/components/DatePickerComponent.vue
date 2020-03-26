@@ -1,5 +1,5 @@
 <template>
-    <datepicker @input="emitToParent" v-model="date" input-class="form-control" :value="value"  :format="format"></datepicker>
+    <datepicker @input="emitToParent" v-model="date" :input-class="inputClass"  :format="customFormatter"></datepicker>
 
 </template>
 
@@ -11,18 +11,45 @@ export default {
   components: {
     Datepicker
   },
-  props: ['name','id','value'],
+  props: ['name','id','default_value','has-error'],
+  created(){
+    if(this.default_value!==undefined){
+        this.react()
+    }
+  },
   methods:{
       emitToParent(){
-          this.$emit('datePicked', this.date)
+          this.$emit('datePicked', this.returnData)
+      },
+      customFormatter(){
+        return moment(this.date).format('MMMM D, YYYY');
+      },
+      react(){
+          this.date = this.default_value
       }
   },
   data(){
       return {
-          format: 'MMMM dd, yyyy',
           date: null,
+          class: 'form-control'
       }
   },
+  watch: {
+      date:{
+          immediate: false,
+          handler(){
+            this.emitToParent()
+          }
+      }
+  },
+  computed : {
+      inputClass(){
+          return this.class+ ' '+this.hasError
+      },
+      returnData(){
+          return this.date.toString().replace("(Philippine Standard Time)", "");
+      }
+  }
 
 }
 
@@ -32,4 +59,9 @@ export default {
     .form-control:disabled, .form-control[readonly]{
         background-color: transparent;
     }
+
+    .is-invalid {
+        border-color: red;
+    }
+ 
 </style>

@@ -53,6 +53,7 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+  
         return Validator::make($data, [
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
@@ -61,7 +62,8 @@ class RegisterController extends Controller
             'birthday' => ['required','date'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'user_to_office_id'=> ['required', new OfficeID]
+            // 'user_to_office_id'=> ['required', new OfficeID]
+            'user_to_office_id'=> ['required']
         ],[
             'user_to_office_id.required'=>'You should select atleast 1 office'
         ]);
@@ -75,6 +77,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        
         $user = User::create([
             'firstname' => $data['firstname'],
             'lastname' => $data['lastname'],

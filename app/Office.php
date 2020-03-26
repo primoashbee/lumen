@@ -89,6 +89,9 @@ class Office extends Model
     }
 
     function getTopOffice($level="main_office"){
+        if($this->level=="branch"){
+            return $this;
+        }
         $parent = $this->getParent();
         if($parent == null){
             return $parent;
