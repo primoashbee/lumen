@@ -8,6 +8,7 @@
     group-values="data" 
     group-label="level" 
     :group-select="false" 
+    :allow-empty="false"
     placeholder="Select Level" 
     track-by="name" 
     label="name"

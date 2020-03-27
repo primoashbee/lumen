@@ -150,9 +150,9 @@ use Maatwebsite\Excel\Facades\Excel;
         }
 
         $office = $office->getTopOffice('branch');
+        $office_ids = $office->getAllChildrenIDS();
         $code = $office->code;
-        $count = Client::where('office_id',$office_id)->count();
-    
+        $count = Client::whereIn('office_id',$office_ids)->count();
         return $code . '-PC' . pad($count + 1, 5);
 
     }

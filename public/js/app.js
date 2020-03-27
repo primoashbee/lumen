@@ -2898,6 +2898,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
@@ -2927,7 +2928,7 @@ Vue.use(vue_debounce__WEBPACK_IMPORTED_MODULE_3___default.a, {
       return this.toClient + client_id;
     },
     inputSearch: function inputSearch() {
-      console.log(this.query);
+      this.fetchBySearch();
     },
     filter: function filter() {
       if (this.office_id == null) {
@@ -2938,26 +2939,52 @@ Vue.use(vue_debounce__WEBPACK_IMPORTED_MODULE_3___default.a, {
     },
     assignOffice: function assignOffice(value) {
       this.office_id = value['id'];
+      this.fetch();
     },
     checkIfHasRecords: function checkIfHasRecords() {
       this.hasRecords = false;
 
-      if (Object.keys(this.lists).length > 0) {
+      if (this.totalRecords > 0) {
         this.hasRecords = true;
       }
     },
-    fetch: function fetch(page) {
+    noOfficeSelected: function noOfficeSelected() {
+      if (this.office_id == null) {
+        return true;
+      }
+
+      return false;
+    },
+    fetchBySearch: function fetchBySearch() {
       var _this = this;
 
+      if (this.noOfficeSelected()) {
+        return;
+      }
+
       this.isLoading = true;
-      axios.get(this.url(page), {
-        'office_id': this.office_id
+      axios.get(this.searchQuery, {
+        'query': this.query
       }).then(function (res) {
         _this.lists = res.data;
 
         _this.checkIfHasRecords();
 
         _this.isLoading = false;
+      })["catch"](function (err) {});
+    },
+    fetch: function fetch(page) {
+      var _this2 = this;
+
+      this.isLoading = true;
+      axios.get(this.url(page), {
+        'office_id': this.office_id
+      }).then(function (res) {
+        _this2.lists = res.data;
+
+        _this2.checkIfHasRecords();
+
+        _this2.isLoading = false;
       });
     },
     url: function url() {
@@ -2969,7 +2996,18 @@ Vue.use(vue_debounce__WEBPACK_IMPORTED_MODULE_3___default.a, {
     //     this.fetch();
     // }
   },
-  computed: {}
+  computed: {
+    totalRecords: function totalRecords() {
+      return Object.keys(this.lists.data).length;
+    },
+    searchQuery: function searchQuery() {
+      if (this.query == "") {
+        return "/clients/list?office_id=" + this.office_id;
+      }
+
+      return "/clients/list?office_id=" + this.office_id + "&search=" + this.query;
+    }
+  }
 });
 
 /***/ }),
@@ -3220,6 +3258,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_0__);
+//
 //
 //
 //
@@ -66769,41 +66808,41 @@ var render = function() {
         1
       ),
       _vm._v(" "),
+      _c("label", { attrs: { for: "" } }, [_vm._v("Search")]),
+      _vm._v(" "),
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.query,
+            expression: "query"
+          },
+          {
+            name: "debounce",
+            rawName: "v-debounce:300ms",
+            value: _vm.inputSearch,
+            expression: "inputSearch",
+            arg: "300ms"
+          }
+        ],
+        staticClass: "form-control",
+        attrs: { type: "text" },
+        domProps: { value: _vm.query },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.query = $event.target.value
+          }
+        }
+      }),
+      _vm._v(" "),
       _vm.hasRecords
         ? _c(
             "div",
             [
-              _c("label", { attrs: { for: "" } }, [_vm._v("Search")]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.query,
-                    expression: "query"
-                  },
-                  {
-                    name: "debounce",
-                    rawName: "v-debounce:300ms",
-                    value: _vm.inputSearch,
-                    expression: "inputSearch",
-                    arg: "300ms"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: { type: "text" },
-                domProps: { value: _vm.query },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.query = $event.target.value
-                  }
-                }
-              }),
-              _vm._v(" "),
               _c("paginator", {
                 attrs: { dataset: _vm.lists },
                 on: { updated: _vm.fetch }
@@ -67158,6 +67197,7 @@ var render = function() {
             "group-values": "data",
             "group-label": "level",
             "group-select": false,
+            "allow-empty": false,
             placeholder: "Select Level",
             "track-by": "name",
             label: "name"

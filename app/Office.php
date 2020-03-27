@@ -60,14 +60,20 @@ class Office extends Model
     }
     public function getAllChildren(){
         $children = $this->children;
-        // $count = $this->children->count();
         $ids = [];
-        //if ($count>0) {
             foreach ($children as $child) {
                 array_push($ids,$child);
                 $ids = array_merge($ids, $child->getAllChildren());
             }
-        //}
+        return $ids;
+    }
+    public function getAllChildrenIDS(){
+        $children = $this->children;
+        $ids = [];
+            foreach ($children as $child) {
+                array_push($ids,$child->id);
+                $ids = array_merge($ids, $child->getAllChildrenIDs());
+            }
         return $ids;
     }
 

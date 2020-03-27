@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Client;
+use App\Office;
 use Carbon\Carbon;
 use App\Rules\Gender;
 use App\Rules\OfficeID;
@@ -31,16 +32,16 @@ class ClientController extends Controller
     }
 
     public function create(Request $request){
+        
         $request->is_self_employed =  filter_var($request->is_self_employed, FILTER_VALIDATE_BOOLEAN);
         $request->is_employed =  filter_var($request->is_employed, FILTER_VALIDATE_BOOLEAN);
         $request->spouse_is_self_employed =  filter_var($request->spouse_is_self_employed, FILTER_VALIDATE_BOOLEAN);
         $request->spouse_is_employed =  filter_var($request->spouse_is_employed, FILTER_VALIDATE_BOOLEAN);
         $request->has_remittance =  filter_var($request->has_remittance, FILTER_VALIDATE_BOOLEAN);
         $request->has_pension =  filter_var($request->has_pension, FILTER_VALIDATE_BOOLEAN);
-        // return Carbon::parse($request->birthday);
-        // return(Carbon::createFromFormat('MMMM D, YYYY ',$request->birthday));
-        $this->validator($request->all())->validate();
         
+
+        $this->validator($request->all())->validate();
         $req = Client::clientExists($request);
         if($req['exists']){
             return response()->json($req,422);
@@ -53,10 +54,7 @@ class ClientController extends Controller
         $signature_path = 'storage/signatures/';
 
         DB::beginTransaction();
-
-
         try {
-           
             Client::create([
                 'client_id' => $client_id,
                 'firstname' => $request->firstname,
@@ -204,7 +202,7 @@ class ClientController extends Controller
                 'mother_maiden_name'=>'required',
                 'mother_maiden_name'=>'required',
                 'total_household_income'=>'required|integer|gt:0',
-                'profile_picture_path' =>'required|image|mimes:jpeg,png,jpg|max:6000',
+                'profile_picture_path' =>'required|image|mimes:jpeg,png,jpg|max:9000',
                 'signature_path' =>'required|image|mimes:jpeg,png,jpg|max:2048',
 
             ],
@@ -231,8 +229,46 @@ class ClientController extends Controller
         return view('pages.client-list');
     }
     public function getList(Request $request){
-        // sleep(3);
-        return response()->json(Client::with('office')->where('office_id',$request->office_id)->paginate(30));
+        
+        $office = Office::find($request->office_id);
+        //Office id is branch
+        $office_ids = $office->getAllChildrenIDS();
+       
+        if(count($office_ids)>0){
+            array_push($office_ids, $office->id);
+            if($request->has('search')){
+                $query = $request->search;
+                
+                $clients =  Client::with('office')
+                        ->whereIn('office_id',$office_ids)
+                        ->where('firstname', 'LIKE' , '%' . $query .'%')
+                        ->paginate(30);
+                return response()->json($clients);
+            }
+
+            $clients = Client::with('office')
+                        ->whereIn('office_id',$office_ids)
+                        ->paginate(30);
+                return response()->json($clients);
+
+        }
+
+        // if query has search
+        if($request->has('search')){
+            $query = $request->search;
+            $clients =  Client::with('office')
+                    ->where('office_id',$office->id)
+                    ->where('firstname', 'LIKE' , '%' . $query .'%')
+                    ->where('lastname', 'LIKE' , '%' . $query .'%')
+                    ->paginate(30);
+            return response()->json($clients);
+        }
+
+        //if query has office_id only
+        $clients = Client::with('office')
+                    ->where('office_id',$office->id)
+                    ->paginate(30);
+        return response()->json($clients);
     }
 
     public function query(Request $request){
