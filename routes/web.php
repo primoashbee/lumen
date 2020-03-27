@@ -1,10 +1,10 @@
 <?php
 
+use Carbon\Carbon;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
-
-
+use Symfony\Component\HttpFoundation\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -57,8 +57,6 @@ Route::get('/create/branch', function(){
 Route::get('/settings', function(){
     return view('pages.settings');
 });
-
-
 
 Auth::routes();
 

@@ -63,8 +63,8 @@
 						<p>Reports</p>
 					</a>
 				</li>
-				<li class="py-2 {{ request()->is('settings') ? 'active' : '' }}">
-					<a href="/settings">
+				<li class="py-2">
+					<a href="{{ route('administration')}}" class ="{{ request()->is('administration') ? 'active' : '' }}">
 						<i class="fas fa-2x fa-cogs"></i>
 						<p>Administration</p>
 					</a>
