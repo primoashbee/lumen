@@ -40,8 +40,22 @@ Route::get('/create/role', function(){
 Route::get('/create/user', function(){
     return view('pages.create-user');
 });
+
+Route::get('/create/fee', function(){
+    return view('pages.create-fees');
+});
+
+Route::get('/create/penalty', function(){
+    return view('pages.create-penalty');
+});
+
+Route::get('/create/branch', function(){
+    return view('pages.create-branch');
+});
+
+
 Route::get('/settings', function(){
-    return view('pages.create-user');
+    return view('pages.settings');
 });
 
 Auth::routes();
@@ -60,9 +74,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/clients','ClientController@list')->name('client.list');
     Route::get('/clients/list','ClientController@getList')->name('get.client.list');
     Route::get('/client/{client_id}','ClientController@getClient')->name('get.client.info');
-    Route::get('/administration',function(){
-        return view('pages.settings');
-    })->name('administration');
+    Route::get('/edit/client/{client_id}','ClientController@editClient');
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

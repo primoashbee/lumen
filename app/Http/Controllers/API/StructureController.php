@@ -30,3 +30,5 @@ class StructureController extends Controller
         return auth()->user()->scopes();
     }
 }
+
+

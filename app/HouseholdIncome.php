@@ -26,4 +26,13 @@ class HouseholdIncome extends Model
         'has_pension',
         'total_household_income',
     ];
+
+    protected $casts = [
+        'is_self_employed' => 'boolean',
+        'is_employed' => 'boolean',
+        'spouse_is_self_employed' => 'boolean',
+        'spouse_is_employed' => 'boolean',
+        'has_remittance' => 'boolean',
+        'has_pension' => 'boolean'
+    ];
 }
