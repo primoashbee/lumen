@@ -56,6 +56,7 @@ class Client extends Model
     }
 
     public static function clientExists($request){
+            
         $client = Client::where('firstname',$request->firstname)
                 ->where('lastname',$request->lastname)
                 ->where('birthday',Carbon::parse($request->birthday)->toDateString());
@@ -75,8 +76,11 @@ class Client extends Model
     public function branch(){
         return $this->office->getTopOffice('branch');
     }
-    
     public function name(){
         return $this->firstname.' '.$this->lastname;
     }
+    public function officeGet(){
+        return ['id'=>$this->branch()->id,'name'=>$this->branch()->name];
+    }
+    
 }

@@ -25,7 +25,7 @@ class HouseType implements Rule
      */
     public function passes($attribute, $value)
     {
-        $types = ["Owned","Rented"];
+        $types = ["OWNED","RENTED"];
         return in_array($value,$types) ?  true : false;
     }
 
@@ -36,6 +36,6 @@ class HouseType implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'Must select a valid house type';
     }
 }

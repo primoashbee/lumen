@@ -26,7 +26,7 @@ class Gender implements Rule
     public function passes($attribute, $value)
     {
         
-       $genders = ["Male","Female"];
+       $genders = ["MALE","FEMALE"];
        return in_array($value,$genders) ?  true : false;
     }
 

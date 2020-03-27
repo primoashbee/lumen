@@ -1,11 +1,14 @@
-<template>
+`<template>
   <div>
-  <multiselect v-model="value" 
+  <multiselect 
+    
+    v-model="value" 
     :options="options" 
     :multiple="false" 
     group-values="data" 
     group-label="level" 
     :group-select="false" 
+    :allow-empty="false"
     placeholder="Select Level" 
     track-by="name" 
     label="name"
@@ -28,10 +31,12 @@ export default {
   },
   props: ['name'],
   created(){
+    
       axios.get('/usr/branches')
         .then(res=>{
           this.options=res.data
         })
+      
   },
   data () {
     return {
