@@ -150,8 +150,8 @@ class ClientController extends Controller
                 $image = $request->file('profile_picture_path');
                 // $filename = $image->getClientOriginalName();   
                 $image_resize = Image::make($image->getRealPath());
-                $image_resize->resize(600, 600);
-                $image_resize->save(public_path($this->profile_path . $filename));
+                // $image_resize->resize(600, 600);
+                $image_resize->save(public_path($this->profile_path . $filename), 50);
                 ini_set('memory_limit','128M');
             }
             if($request->hasFile('signature_path')){
@@ -159,8 +159,8 @@ class ClientController extends Controller
                 $image = $request->file('signature_path');
                 // $filename = $image->getClientOriginalName();   
                 $image_resize = Image::make($image->getRealPath());
-                $image_resize->resize(600, 600);
-                $image_resize->save(public_path($this->signature_path . $filename));
+                // $image_resize->resize(600, 600);
+                $image_resize->save(public_path($this->signature_path . $filename),50);
                 ini_set('memory_limit','128M');
             }
             DB::commit();
