@@ -20,18 +20,20 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
-    protected $profile_path = 'public/client_photos/';
-    protected $signature_path = 'public/client_photos/';
+  
+    protected $profile_path = 'storage/profile_photos/';
+    protected $signature_path = 'storage/signatures/';
+
+    //get branches of logged in user upon creating client
     public function index(){
         $branches = auth()->user()->scopesBranch();
         return view('pages.create-client',compact('branches'));
     }
-    
-    public function view($client_id){
-        $res = Client::find($client_id);
-    }
 
+    //create client using post
     public function create(Request $request){
+        
+
         
         $request->is_self_employed =  filter_var($request->is_self_employed, FILTER_VALIDATE_BOOLEAN);
         $request->is_employed =  filter_var($request->is_employed, FILTER_VALIDATE_BOOLEAN);
@@ -41,7 +43,11 @@ class ClientController extends Controller
         $request->has_pension =  filter_var($request->has_pension, FILTER_VALIDATE_BOOLEAN);
         
 
+
+
+        
         $this->validator($request->all())->validate();
+        $client_id = makeClientID($request->office_id);
         $req = Client::clientExists($request);
         if($req['exists']){
             return response()->json($req,422);
@@ -50,8 +56,7 @@ class ClientController extends Controller
         $client_id = makeClientID($request->office_id);
         $filename = $client_id.'.jpeg';
         checkClientPaths();
-        $profile_path = 'storage/profile_photos/';
-        $signature_path = 'storage/signatures/';
+        
 
         DB::beginTransaction();
         try {
@@ -63,8 +68,8 @@ class ClientController extends Controller
                 'suffix'=>$request->suffix,
                 'nickname'=>$request->firstname,
                 'gender'=> $request->gender,
-                'profile_picture_path' => $profile_path . $filename,
-                'signature_path' => $signature_path . $filename,
+                'profile_picture_path' => $this->profile_path . $filename,
+                'signature_path' => $this->signature_path . $filename,
                 'birthday' => Carbon::parse($request->birthday),
                 'birthplace' => $request->birthplace,
                 'civil_status' => $request->civil_status,
@@ -94,18 +99,20 @@ class ClientController extends Controller
                 
             ]);
             
-            $service_type_gross_income = intval($request->service_type_gross_income);
+            $service_type_monthly_gross_income = intval($request->service_type_monthly_gross_income);
             $employed_monthly_gross_income = intval($request->employed_monthly_gross_income);
-            $spouse_service_type_gross_income = intval($request->spouse_service_type_gross_income);
+            $spouse_service_type_monthly_gross_income = intval($request->spouse_service_type_monthly_gross_income);
             $spouse_employed_monthly_gross_income = intval($request->spouse_employed_monthly_gross_income);
                 
             $remittance = intval($request->remittance_amount);
             $pension = intval($request->pension_amount);
 
+            
+
             $total_household_income = 
-                $service_type_gross_income + 
+                $service_type_monthly_gross_income + 
                 $employed_monthly_gross_income + 
-                $spouse_service_type_gross_income + 
+                $spouse_service_type_monthly_gross_income + 
                 $spouse_employed_monthly_gross_income + 
                 $remittance + 
                 $pension;
@@ -115,21 +122,26 @@ class ClientController extends Controller
     
                 'is_self_employed'=>$request->is_self_employed,
                 'service_type'=>$request->service_type,
-                'service_type_monthly_gross_income'=>$service_type_gross_income,
+                'service_type_monthly_gross_income'=>$service_type_monthly_gross_income,
                 'is_employed'=>$request->is_employed,
-                'employed_position'=>$request->employed_company_name,
+                'employed_position'=>$request->employed_position,
+                'employed_company_name'=>$request->employed_company_name,
                 'employed_monthly_gross_income'=>$employed_monthly_gross_income,
     
                 'spouse_is_self_employed'=>$request->spouse_is_self_employed,
                 'spouse_service_type'=>$request->spouse_service_type,
-                'spouse_service_type_monthly_gross_income'=>$spouse_service_type_gross_income,
+                'spouse_service_type_monthly_gross_income'=>$spouse_service_type_monthly_gross_income,
                 'spouse_is_employed'=>$request->spouse_is_employed,
                 'spouse_employed_position'=>$request->spouse_employed_position,
                 'spouse_employed_company_name'=>$request->spouse_employed_company_name,
                 'spouse_employed_monthly_gross_income'=>$spouse_employed_monthly_gross_income,
     
                 'has_remittance'=>$request->has_remittance,
+                'remittance_amount' => $remittance,
                 'has_pension'=>$request->has_pension,
+                'pension_amount' => $pension,
+
+                
                 'total_household_income'=>$total_household_income
             ]);
             
@@ -139,7 +151,7 @@ class ClientController extends Controller
                 // $filename = $image->getClientOriginalName();   
                 $image_resize = Image::make($image->getRealPath());
                 $image_resize->resize(600, 600);
-                $image_resize->save(public_path($profile_path . $filename));
+                $image_resize->save(public_path($this->profile_path . $filename));
                 ini_set('memory_limit','128M');
             }
             if($request->hasFile('signature_path')){
@@ -148,7 +160,7 @@ class ClientController extends Controller
                 // $filename = $image->getClientOriginalName();   
                 $image_resize = Image::make($image->getRealPath());
                 $image_resize->resize(600, 600);
-                $image_resize->save(public_path($signature_path . $filename));
+                $image_resize->save(public_path($this->signature_path . $filename));
                 ini_set('memory_limit','128M');
             }
             DB::commit();
@@ -170,9 +182,61 @@ class ClientController extends Controller
        
     }
 
-    public function validator(array $data){
+    //validator for creating clien
+    public function validator(array $data, $for_update = false){
+        
+        $msgs = [
+            'office_id.required' => 'The Linked to field is required',
+            'profile_picture_path.required' => 'The profile photo is required',
+            'profile_picture_path.image' => 'The profile photo  must be an image',
+            'profile_picture_path.mimes' => 'The profile photo  must be a type of jpeg, png, jpg',
+            
+            'signature_path.required' => 'The signature photo is required',
+            'signature_path.image' => 'The signature photo must be an image',
+            'signature_path.mimes' => 'The signature photo must be a type of jpeg, png, jpg',
 
-            return Validator::make($data, 
+        ];
+        if ($for_update) {
+           
+            return Validator::make(
+                $data,
+                [
+                    'office_id'=>['required', new OfficeID],
+                    'firstname'=>['required'],
+                    'lastname'=>['required'],
+                    'gender'=>['required', new Gender],
+                    'contact_number'=>'required',
+                    'birthday'=>'required|date',
+                    'birthplace'=>'required',
+                    'education'=>['required', new EducationalAttainment],
+                    'civil_status'=>['required', new CivilStatus],
+                    'street_address'=>'required',
+                    'barangay_address'=>'required',
+                    'city_address'=>'required',
+                    'province_address'=>'required',
+                    'zipcode'=>'required',
+                    'business_address'=>'required',
+                    'number_of_dependents'=>'required|integer|gt:0',
+                    'household_size'=>'required|integer|gt:0',
+                    'years_of_stay_on_house'=>'required|integer|gt:0',
+                    'house_type'=>['required', new HouseType],
+                    'spouse_name' => 'required',
+                    'spouse_contact_number' => 'required',
+                    'spouse_birthday' => 'required|date',
+                    'tin'=>'required',
+                    'sss'=>'required',
+                    'umid'=>'required',
+                    'mother_maiden_name'=>'required',
+                    'mother_maiden_name'=>'required',
+                    'total_household_income'=>'required|integer|gt:0',
+                    'profile_picture_path' =>'sometimes|required|image|mimes:jpeg,png,jpg|max:9000',
+                    'signature_path' =>'sometimes|required|image|mimes:jpeg,png,jpg|max:5000',
+                ],
+                $msgs
+            );            
+        }
+        return Validator::make(
+            $data,
             [
                 'office_id'=>['required', new OfficeID],
                 'firstname'=>['required'],
@@ -203,47 +267,33 @@ class ClientController extends Controller
                 'mother_maiden_name'=>'required',
                 'total_household_income'=>'required|integer|gt:0',
                 'profile_picture_path' =>'required|image|mimes:jpeg,png,jpg|max:9000',
-                'signature_path' =>'required|image|mimes:jpeg,png,jpg|max:2048',
-
+                'signature_path' =>'required|image|mimes:jpeg,png,jpg|max:5000',
             ],
-            [
-                'office_id.required' => 'The Linked to field is required',
-                'profile_picture_path.required' => 'The profile photo is required',
-                'profile_picture_path.image' => 'The profile photo  must be an image',
-                'profile_picture_path.mimes' => 'The profile photo  must be a type of jpeg, png, jpg',
-                
-                'signature_path.required' => 'The signature photo is required',
-                'signature_path.image' => 'The signature photo must be an image',
-                'signature_path.mimes' => 'The signature photo must be a type of jpeg, png, jpg',
+            $msgs
+        );
 
-            ]);
+
+
     }
 
-
+    //return client-list page for viewing
     public function list(){
-        // $lists = Client::where('office_id',null)->get();
-        // if($request->office_id!=null){
-        //     $lists = Client::where('office_id',$request->office_id)->paginate();
-        // }
-        
         return view('pages.client-list');
     }
+
+    //return JSON data when filtering the list via component
     public function getList(Request $request){
         
         $office = Office::find($request->office_id);
-        //Office id is branch
         $office_ids = $office->getAllChildrenIDS();
-       
+        
+
+        //check if selected office has child, > 0 == true
         if(count($office_ids)>0){
-            array_push($office_ids, $office->id);
+            $office_ids = $office->getLowerOfficeIDS();
             if($request->has('search')){
-                $query = $request->search;
-                
-                $clients =  Client::with('office')
-                        ->whereIn('office_id',$office_ids)
-                        ->where('firstname', 'LIKE' , '%' . $query .'%')
-                        ->paginate(30);
-                return response()->json($clients);
+                $client= Client::like($request->office_id, $request->search)->paginate(30);
+                return response()->json($client);
             }
 
             $clients = Client::with('office')
@@ -255,13 +305,8 @@ class ClientController extends Controller
 
         // if query has search
         if($request->has('search')){
-            $query = $request->search;
-            $clients =  Client::with('office')
-                    ->where('office_id',$office->id)
-                    ->where('firstname', 'LIKE' , '%' . $query .'%')
-                    ->where('lastname', 'LIKE' , '%' . $query .'%')
-                    ->paginate(30);
-            return response()->json($clients);
+            $client = Client::like($request->office_id, $request->search)->paginate(30);
+            return response()->json($client,200);
         }
 
         //if query has office_id only
@@ -269,14 +314,6 @@ class ClientController extends Controller
                     ->where('office_id',$office->id)
                     ->paginate(30);
         return response()->json($clients);
-    }
-
-    public function query(Request $request){
-        $q = $request->query;
-        $res = Client::whereLike('firstname',$q)
-            ->whereLike('lastname', $q)
-            ->paginate(30);
-        return response()->json($res);
     }
 
     public function getClient(Request $request){
@@ -289,8 +326,19 @@ class ClientController extends Controller
         
     }
 
+    public function view($client_id){
+        $client = Client::where('client_id',$client_id)->first();
+        if($client===null){
+            abort(503);
+            return response()->route('client.list');
+        }
+        return view('pages.client-profile',compact('client'));
+        
+    }
+
     public function editClient(Request $request){
-        $client = Client::where('client_id',$request->client_id)->first();
+        $household_fields = HouseholdIncome::viewables();
+        $client = Client::with('household_income:'.$household_fields)->where('client_id',$request->client_id)->first();
 
         if($client===null){
             abort(503);
@@ -308,20 +356,113 @@ class ClientController extends Controller
         return response()->json([$client,$client_household_income],);   
     }
 
-    public function update(Request $request, $client_id){
-        $client = $this->validator($request->all())->validate();
+    public function update(Request $request){
         
-        Client::where('client_id', $client_id)->update(
+        $request = $this->antiNullStrings($request);
+         
+        $request->is_self_employed =  filter_var($request->is_self_employed, FILTER_VALIDATE_BOOLEAN);
+        $request->is_employed =  filter_var($request->is_employed, FILTER_VALIDATE_BOOLEAN);
+        $request->spouse_is_self_employed =  filter_var($request->spouse_is_self_employed, FILTER_VALIDATE_BOOLEAN);
+        $request->spouse_is_employed =  filter_var($request->spouse_is_employed, FILTER_VALIDATE_BOOLEAN);
+        $request->has_remittance =  filter_var($request->has_remittance, FILTER_VALIDATE_BOOLEAN);
+        $request->has_pension =  filter_var($request->has_pension, FILTER_VALIDATE_BOOLEAN);
+       
+        $client = $this->validator($request->all(),true)->validate();
+      
+        $client_id = $request->client_id;
+
+        $client = Client::where('client_id', $client_id)->first();
+        $filename = $client->client_id.'.jpeg';
+
+        if(!$request->has('profile_picture_path') && !$request->has('signature_path')){
+            $client->update(
+                [
+                    'office_id' => $request->office_id,
+                    'firstname' => $request->firstname,
+                    'middlename'=>$request->middlename,
+                    'lastname'  =>$request->lastname,
+                    'suffix'=>$request->suffix,
+                    'nickname'=>$request->firstname,
+                    'gender'=> $request->gender,
+                    'birthday' => Carbon::parse($request->birthday),
+                    'birthplace' => $request->birthplace,
+                    'civil_status' => $request->civil_status,
+                    'education' => $request->education,
+                    'fb_account' => $request->fb_account,
+                    'contact_number'=>$request->contact_number,
+                    'street_address'=> $request->street_address,
+                    'barangay_address' => $request->barangay_address,
+                    'city_address' => $request->city_address,
+                    'province_address' => $request->province_address,
+                    'zipcode' => $request->zipcode,
+                    'business_address' =>$request->business_address,
+                    'spouse_name' => $request->spouse_name,
+                    'spouse_contact_number' => $request->spouse_contact_number,
+                    'spouse_birthday' =>  Carbon::parse($request->spouse_birthday),
+                    'number_of_dependents' => $request->number_of_dependents,
+                    'household_size' =>$request->household_size,
+                    'years_of_stay_on_house' => $request->years_of_stay_on_house,
+                    'house_type' => $request->house_type,
+                    'tin' => $request->tin,
+                    'umid' => $request->umid,
+                    'sss' => $request->sss,
+                    'mother_maiden_name' => $request->mother_maiden_name,
+                    'notes' => $request->notes,
+                    // 'created_by' => auth()->user()->id
+                ]);
+        }
+        if($request->has('profile_picture_path')){
+           
+            $client->update(
+                [
+                    'office_id' => $request->office_id,
+                    'firstname' => $request->firstname,
+                    'middlename'=>$request->middlename,
+                    'lastname'  =>$request->lastname,
+                    'suffix'=>$request->suffix,
+                    'profile_picture_path'=> $this->profile_path.$filename,
+                    'nickname'=>$request->firstname,
+                    'gender'=> $request->gender,
+                    'birthday' => Carbon::parse($request->birthday),
+                    'birthplace' => $request->birthplace,
+                    'civil_status' => $request->civil_status,
+                    'education' => $request->education,
+                    'fb_account' => $request->fb_account,
+                    'contact_number'=>$request->contact_number,
+                    'street_address'=> $request->street_address,
+                    'barangay_address' => $request->barangay_address,
+                    'city_address' => $request->city_address,
+                    'province_address' => $request->province_address,
+                    'zipcode' => $request->zipcode,
+                    'business_address' =>$request->business_address,
+                    'spouse_name' => $request->spouse_name,
+                    'spouse_contact_number' => $request->spouse_contact_number,
+                    'spouse_birthday' =>  Carbon::parse($request->spouse_birthday),
+                    'number_of_dependents' => $request->number_of_dependents,
+                    'household_size' =>$request->household_size,
+                    'years_of_stay_on_house' => $request->years_of_stay_on_house,
+                    'house_type' => $request->house_type,
+                    'tin' => $request->tin,
+                    'umid' => $request->umid,
+                    'sss' => $request->sss,
+                    'mother_maiden_name' => $request->mother_maiden_name,
+                    'notes' => $request->notes, 
+                    // 'created_by' => auth()->user()->id
+                ]
+            );
+        }
+
+        if ($request->has('signature_path')) {
+            $client->update(
             [
-                'client_id' => $client_id,
+                'office_id' => $request->office_id,
                 'firstname' => $request->firstname,
                 'middlename'=>$request->middlename,
                 'lastname'  =>$request->lastname,
                 'suffix'=>$request->suffix,
                 'nickname'=>$request->firstname,
                 'gender'=> $request->gender,
-                'profile_picture_path' => 'https://via.placeholder.com/150',
-                'signature_path' => 'https://via.placeholder.com/150',
+                'signature_path'=> $this->signature_path. $filename,
                 'birthday' => Carbon::parse($request->birthday),
                 'birthplace' => $request->birthplace,
                 'civil_status' => $request->civil_status,
@@ -346,12 +487,90 @@ class ClientController extends Controller
                 'sss' => $request->sss,
                 'mother_maiden_name' => $request->mother_maiden_name,
                 'notes' => $request->notes,
-                'office_id' => $request->office_id['id']  
                 // 'created_by' => auth()->user()->id
             ]
         );
+        }
 
+        $service_type_monthly_gross_income = intval($request->service_type_monthly_gross_income);
+        $employed_monthly_gross_income = intval($request->employed_monthly_gross_income);
+        $spouse_service_type_monthly_gross_income = intval($request->spouse_service_type_monthly_gross_income);
+        $spouse_employed_monthly_gross_income = intval($request->spouse_employed_monthly_gross_income);
+            
+        $remittance = intval($request->remittance_amount);
+        $pension = intval($request->pension_amount);
+
+        
+
+        $total_household_income = 
+            $service_type_monthly_gross_income + 
+            $employed_monthly_gross_income + 
+            $spouse_service_type_monthly_gross_income + 
+            $spouse_employed_monthly_gross_income + 
+            $remittance + 
+            $pension;
+
+        $client->household_income->update([
+                'is_self_employed'=>$request->is_self_employed,
+                'service_type'=>$request->service_type,
+                'service_type_monthly_gross_income'=>$service_type_monthly_gross_income,
+                'is_employed'=>$request->is_employed,
+                'employed_position'=>$request->employed_position,
+                'employed_company_name'=>$request->employed_company_name,
+                'employed_monthly_gross_income'=>$employed_monthly_gross_income,
+    
+                'spouse_is_self_employed'=>$request->spouse_is_self_employed,
+                'spouse_service_type'=>$request->spouse_service_type,
+                'spouse_service_type_monthly_gross_income'=>$spouse_service_type_monthly_gross_income,
+                'spouse_is_employed'=>$request->spouse_is_employed,
+                'spouse_employed_position'=>$request->spouse_employed_position,
+                'spouse_employed_company_name'=>$request->spouse_employed_company_name,
+                'spouse_employed_monthly_gross_income'=>$spouse_employed_monthly_gross_income,
+    
+                'has_remittance'=>$request->has_remittance,
+                'remittance_amount' => $remittance,
+                'has_pension'=>$request->has_pension,
+                'pension_amount' => $pension,
+
+                
+                'total_household_income'=>$total_household_income
+
+        ]);
+
+        if($request->hasFile('profile_picture_path')){
+            ini_set('memory_limit','512M');
+            $image = $request->file('profile_picture_path');
+            // $filename = $image->getClientOriginalName();   
+            $image_resize = Image::make($image->getRealPath());
+            // $image_resize->resize(600, 600);
+            $image_resize->save(public_path($this->profile_path . $filename),50);
+            ini_set('memory_limit','128M');
+        }
+        if($request->hasFile('signature_path')){
+            ini_set('memory_limit','512M');
+            $image = $request->file('signature_path');
+            // $filename = $image->getClientOriginalName();   
+            $image_resize = Image::make($image->getRealPath());
+            $image_resize->resize(600, 600);
+            $image_resize->save(public_path($this->signature_path . $filename));
+            ini_set('memory_limit','128M');
+        }
+
+        
         return response()->json($client);
 
     }
+
+    public function antiNullStrings($request){
+        
+        foreach($request->all() as $key => $value){
+            if($value=="null"){
+                $request[$key] = NULL;
+            }
+        }
+
+        return $request;
+    }
 }
+
+

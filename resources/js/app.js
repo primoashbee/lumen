@@ -10,6 +10,7 @@ require('./bootstrap');
 import { VueMaskDirective } from 'v-mask'
 
 window.Vue = require('vue');
+window.flatten = require('flat')
 
 window.Swal = require('sweetalert2');
 window.moment = require('moment');

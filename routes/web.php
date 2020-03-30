@@ -56,7 +56,7 @@ Route::get('/create/branch', function(){
 
 Route::get('/settings', function(){
     return view('pages.settings');
-});
+})->name('administration');
 
 Auth::routes();
 
@@ -73,8 +73,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/usr/branches','UserController@branches');
     Route::get('/clients','ClientController@list')->name('client.list');
     Route::get('/clients/list','ClientController@getList')->name('get.client.list');
-    Route::get('/client/{client_id}','ClientController@getClient')->name('get.client.info');
+    Route::get('/client/{client_id}','ClientController@view')->name('get.client.info');
     Route::get('/edit/client/{client_id}','ClientController@editClient');
+    Route::post('/edit/client','ClientController@update');
+
+
+    Route::get('/id/{id}',function($id){
+        return makeClientID($id);
+    
+    });
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

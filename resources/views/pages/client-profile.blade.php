@@ -6,7 +6,7 @@
 		      <div class="card pb-4">
 		        <div class="card-header my-2">
 		          <div class="d-block text-center client-image">
-		            <img src="{{asset('assets/img/default.png')}}" class="avatar" alt="Profile Photo">
+		            <img src="{{asset($client->profile_picture_path)}}" class="avatar" alt="Profile Photo">
 		          </div>
 				  <h4 class="px-1 text-center">{{$client->name()}}</h4>
 		        </div>

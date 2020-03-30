@@ -1,6 +1,7 @@
 <template>
 <div class="row">
 <div class="col-md-9">
+    <loading :is-full-page="true" :active.sync="isLoading" ></loading>
     <div class="card">
           <div class="card-header">
             <h3 class="h3 ml-3">Profile</h3>
@@ -11,7 +12,7 @@
                 <div class="row px-3">
                 <div class="form-group col-md-6 col-lg-3">
                     <label for="client_id">Linked To</label>
-                    <v2-select @officeSelected="assignOffice" :value="this.fields.office_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
+                    <v2-select @officeSelected="assignOffice" :default_value ="fields.office_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
                     <div class="invalid-feedback" v-if="officeHasError">
                         {{ errors.office_id[0]}}
                     </div>
@@ -54,9 +55,9 @@
                         <label for="gender">Gender</label>
                         <div class="select" v-bind:class="genderHasError ? 'is-invalid' : ''">
                             <select v-model="fields.gender" id="gender" class="form-control" v-bind:class="genderHasError ? 'is-invalid' : ''">
-                                <option selected disabled>Choose an option</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
+                                <option value="">CHOOSE AN OPTION</option>
+                                <option value="MALE">MALE</option>
+                                <option value="FEMALE">FEMALE</option>
                             </select>
                         </div>
                         <div class="invalid-feedback" v-if="genderHasError">
@@ -69,11 +70,11 @@
                         <label for="civil_status">Marital Status</label>
                         <div class="select" v-bind:class="civilStatusHasError ? 'is-invalid' : ''">
                             <select v-model="fields.civil_status" id="civil_status" class="form-control" v-bind:class="civilStatusHasError ? 'is-invalid' : ''">
-                                <option selected disabled>Choose an option</option>
-                                <option value="Single">Single</option>
-                                <option value="Married">Married</option>
-                                <option value="Divorced">Divorced</option>
-                                <option value="Widowed">Widowed</option>
+                                <option value="">CHOOSE AN OPTION</option>
+                                <option value="SINGLE">SINGLE</option>
+                                <option value="MARRIED">MARRIED</option>
+                                <option value="DIVORCED">DIVORCED</option>
+                                <option value="WIDOWED">WIDOWED</option>
                             </select>
                         </div>
                         <div class="invalid-feedback" v-if="civilStatusHasError">
@@ -94,7 +95,7 @@
                     
                     <div class="form-group col-md-6">
                         <label id="contact_number">Phone Number</label>
-                        <input value="" type="text" placeholder="09XXXXXXXXX" v-model="fields.contact_number" id="contact_number" class="form-control" v-bind:class="phoneHasError ? 'is-invalid' : ''" z>
+                        <input value="" type="text" v-mask="masks.phone" placeholder="09XXXXXXXXX" v-model="fields.contact_number" id="contact_number" class="form-control" v-bind:class="phoneHasError ? 'is-invalid' : ''" z>
                     
                         <div class="invalid-feedback" v-if="phoneHasError">
                             {{ errors.contact_number[0]}}
@@ -104,8 +105,11 @@
                 <div class="row px-3">
             
                     <div class="form-group col-md-3 px-3">
-                        <label for="birthday">Date Of Birth</label>
-                        <date-picker id="birthday" v-model="fields.birthday" @datePicked="getDate($event, 'birthday')" ></date-picker>
+                        <label for="birthday">Birthday</label>
+                        <date-picker id="birthday" :default_value="fields.birthday" v-model="fields.birthday" v-bind:class="birthdayHasError ? 'is-invalid' : ''" v-bind:has-error="birthdayHasError ? 'is-invalid' : ''"  @datePicked="getDate($event, 'birthday')" ></date-picker>
+                        <div class="invalid-feedback" v-if="birthdayHasError">
+                            {{ errors.birthday[0]}}
+                        </div>  
                     </div>
             
                     <div class="form-group col-md-4 px-3">
@@ -121,11 +125,11 @@
                         <label for="education">Educational Attainment</label>
                         <div class="select" v-bind:class="educationHasError ? 'is-invalid' : ''">
                             <select v-model="fields.education" id="education" class="form-control" v-bind:class="educationHasError ? 'is-invalid' : ''">
-                                <option selected disabled>Choose an option</option>
-                                <option value="College">College</option>
-                                <option value="Vocational">Vocational</option>
-                                <option value="High School">High School</option>
-                                <option value="Elementary">Elementary</option>
+                                <option value="">CHOOSE AN OPTION</option>
+                                <option value="COLLEGE">COLLEGE</option>
+                                <option value="VOCATIONAL">VOCATIONAL</option>
+                                <option value="HIGH SCHOOL">HIGH SCHOOL</option>
+                                <option value="ELEMENTARY">ELEMENTARY</option>
                             </select>
                         </div>
                         <div class="invalid-feedback" v-if="educationHasError">
@@ -170,14 +174,14 @@
             
                     <div class="form-group col-md-4 px-2">
                         <label for="zipcode">Postal/Zip code</label>
-                        <input value="" type="text" v-model="fields.zipcode" id="zipcode" class="form-control" v-bind:class="zipCodeHasError ? 'is-invalid' : ''" z>
+                        <input value="" type="text" v-mask="masks.zipcode" v-model="fields.zipcode" id="zipcode" class="form-control" v-bind:class="zipCodeHasError ? 'is-invalid' : ''" z>
                         <div class="invalid-feedback" v-if="zipCodeHasError">
                             {{ errors.zipcode[0]}}
                         </div>
                     </div>
                 </div>
                 <h3 class="px-3 my-3 h3">Family Information</h3>	
-                <div class="row px-3">
+                <div class="row px-3"> 
                     <div class="form-group col-md-12">
                         <label for="business_address">Full Business Address</label>
                         <input value="" type="text" v-model="fields.business_address" id="business_address" class="form-control" v-bind:class="businessAddressHasError ? 'is-invalid' : ''" z>
@@ -190,7 +194,7 @@
                 <div class="row px-3">
                     <div class="form-group px-3 col-md-3">
                         <label for="number_of_dependents">No. of dependents</label>
-                        <input value="" type="number" v-model="fields.number_of_dependents" id="number_of_dependents" class="form-control" v-bind:class="dependentsHasError ? 'is-invalid' : ''" z>
+                        <input value="" type="text" v-mask="masks.dependents" v-model="fields.number_of_dependents" id="number_of_dependents" class="form-control" v-bind:class="dependentsHasError ? 'is-invalid' : ''" z>
                         <div class="invalid-feedback" v-if="dependentsHasError">
                             {{ errors.number_of_dependents[0]}}
                         </div>        
@@ -198,14 +202,14 @@
                     </div>
                     <div class="form-group px-3 col-md-3">
                         <label for="household_size">Household Size</label>
-                        <input type="" value="household_size" v-model="fields.household_size" id="household_size" class="form-control" v-bind:class="householdHasError ? 'is-invalid' : ''" z>
+                        <input type="text" v-mask="masks.household_size" v-model="fields.household_size" id="household_size" class="form-control" v-bind:class="householdHasError ? 'is-invalid' : ''" z>
                         <div class="invalid-feedback" v-if="householdHasError">
                             {{ errors.household_size[0]}}
                         </div>
                     </div>
                     <div class="form-group px-3 col-md-3">
                         <label for="years_of_stay_on_house">Years of Residency</label>
-                        <input value="" type="number" v-model="fields.years_of_stay_on_house" id="years_of_stay_on_house" class="form-control" v-bind:class="yearsOfStayHasError ? 'is-invalid' : ''" z>
+                        <input type="text" v-mask="masks.years_of_stay_on_house" v-model="fields.years_of_stay_on_house" id="years_of_stay_on_house" class="form-control" v-bind:class="yearsOfStayHasError ? 'is-invalid' : ''" z>
                         <div class="invalid-feedback" v-if="yearsOfStayHasError">
                             {{ errors.years_of_stay_on_house[0]}}
                         </div>
@@ -214,9 +218,9 @@
                     <div class="form-group px-3 col-md-3 col-md-offset-2">
                         <label for="house_type">House Type</label>
                         <select v-model="fields.house_type" id="house_type" class="form-control" v-bind:class="houseTypeHasError ? 'is-invalid' : ''">
-                            <option value="">Choose an option</option>
-                            <option value="Owned">Owned</option>
-                            <option value="Rented">Rented</option>
+                            <option value="">CHOOSE AN OPTION</option>
+                            <option value="OWNED">OWNED</option>
+                            <option value="RENTED">RENTED</option>
                         </select>
                         <div class="invalid-feedback" v-if="houseTypeHasError">
                             {{ errors.house_type[0]}}
@@ -236,7 +240,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="spouse_contact_number">Spouse Contact Number</label>
-                        <input value="" type="text" v-model="fields.spouse_contact_number" class="form-control" id="spouse_contact_number" v-bind:class="spouseContactHasError ? 'is-invalid' : ''" placeholder="09XXXXXXXXX" z>
+                        <input value="" type="text" v-mask="masks.phone" v-model="fields.spouse_contact_number" class="form-control" id="spouse_contact_number" v-bind:class="spouseContactHasError ? 'is-invalid' : ''" placeholder="09XXXXXXXXX" z>
                         <div class="invalid-feedback" v-if="spouseContactHasError">
                             {{ errors.spouse_contact_number[0]}}
                         </div>
@@ -244,7 +248,7 @@
                     <div class="form-group col-md-4 col-md-offset-8">
                         <label for="spouse_birthday">Spouse Birthday</label>
                     
-                        <date-picker v-bind:class="houseTypeHasError ? 'is-invalid' : ''" v-model="fields.spouse_birthday" name="spouse_birthday" id="spouse_birthday"  @datePicked="getDate($event, 'spouse_birthday')"></date-picker>
+                        <date-picker  :default_value="fields.spouse_birthday" v-bind:class="houseTypeHasError ? 'is-invalid' : ''" v-bind:has-error="birthdayHasError ? 'is-invalid' : ''"  v-model="fields.spouse_birthday" name="spouse_birthday" id="spouse_birthday"  @datePicked="getDate($event, 'spouse_birthday')"></date-picker>
                         <div class="invalid-feedback" v-if="spouseBirthdayHasError">
                             {{ errors.spouse_birthday[0]}}
                         </div>
@@ -256,21 +260,21 @@
                 <div class="row px-3">
                     <div class="form-group col-md-4">
                         <label>TIN</label>
-                        <input value="" type="text" v-model="fields.tin" id="tin" v-bind:class="tinHasError ? 'is-invalid' : ''"  class="form-control">
+                        <input value="" type="text" v-mask="masks.tin" v-model="fields.tin" id="tin" v-bind:class="tinHasError ? 'is-invalid' : ''"  class="form-control">
                         <div class="invalid-feedback" v-if="tinHasError">
                             {{ errors.tin[0]}}
                         </div>
                     </div>
                     <div class="form-group col-md-4">
                         <label>SSS</label>
-                        <input value="" type="text" v-model="fields.sss" id="sss" v-bind:class="sssHasError ? 'is-invalid' : ''" class="form-control">
+                        <input value="" type="text" v-mask="masks.sss" v-model="fields.sss" id="sss" v-bind:class="sssHasError ? 'is-invalid' : ''" class="form-control">
                         <div class="invalid-feedback" v-if="sssHasError">
                             {{ errors.sss[0]}}
                         </div>
                     </div>
                     <div class="form-group col-md-4">
                         <label>UMID</label>
-                        <input value="" type="text" v-model="fields.umid" id="umid" v-bind:class="umidHasError ? 'is-invalid' : ''" class="form-control">
+                        <input value="" type="text" v-mask="masks.umid" v-model="fields.umid" id="umid" v-bind:class="umidHasError ? 'is-invalid' : ''" class="form-control">
                         <div class="invalid-feedback" v-if="umidHasError">
                             {{ errors.umid[0]}}
                         </div>
@@ -303,18 +307,18 @@
                             <label for="sevice_type">Service Type</label>
                             <div class="select">
                                 <select v-model="fields.service_type" id="service_type">
-                                <option selected="selected" disabled="disabled">Choose an option</option> 
-                                <option value="Agriculture"> Agriculture </option>
-                                <option value="Trading/Merchandising"> Trading/Merchandising </option>
-                                <option value="Manufacturing"> Manufacturing </option>
-                                <option value="Service"> Service </option>
-                                <option value="Others"> Others </option>
+                                <option value=""> CHOOSE AN OPTION</option> 
+                                <option value="AGRICULTURE"> AGRICULTURE </option>
+                                <option value="TRADING/MERCHANDISING"> TRADING/MERCHANDISING </option>
+                                <option value="MANUFACTURING"> MANUFACTURING </option>
+                                <option value="SERVICE"> SERVICE </option>
+                                <option value="OTHERS"> OTHERS </option>
                                 </select>
                             </div>
                         </div>
                         <div class="hi form-group p0 my-2" data-attribute="is_self_employed" :class="{active:fields.is_self_employed}">
                             <label for="service_type_gross_income">Monthly Income</label>
-                            <input type="text" id="service_type_gross_income" v-model="fields.service_type_gross_income" class="form-control" value="service_type_gross_income">
+                            <input type="number" step ="0.01" id="service_type_gross_income" v-model="fields.service_type_monthly_gross_income" class="form-control">
                         </div>
                     </div>
             
@@ -340,7 +344,7 @@
                                 </div>
                                 <div class="form-group w-100">
                                     <label for="employed_monthly_gross_income">Monthly Gross income</label>
-                                    <input value="" type="text" v-model="fields.employed_monthly_gross_income" class="form-control" id="employed_monthly_gross_income">
+                                    <input value="" type="number" step ="0.01"  v-model="fields.employed_monthly_gross_income" class="form-control" id="employed_monthly_gross_income">
                                 </div>
                             </div>
                         </div>
@@ -359,17 +363,17 @@
                         <div class="hi form-group col-md-12 p0 my-2" :class="{active:fields.spouse_is_self_employed}" data-attribute="spouse_is_self_employed">
                             <label for="spouse_service_type">Spouse Service Type</label>
                             <select v-model="fields.spouse_service_type" id="spouse_service_type" class="form-control">
-                                <option selected="selected" disabled="disabled">Choose an option</option> 
-                                <option value="Agriculture"> Agriculture </option>
-                                <option value="Trading/Merchandising"> Trading/Merchandising </option>
-                                <option value="Manufacturing"> Manufacturing </option>
-                                <option value="Service"> Service </option>
-                                <option value="Others"> Others </option>
+                                <option value=""> CHOOSE AN OPTION</option> 
+                                <option value="AGRICULTURE"> AGRICULTURE </option>
+                                <option value="TRADING/MERCHANDISING"> TRADING/MERCHANDISING </option>
+                                <option value="MANUFACTURING"> MANUFACTURING </option>
+                                <option value="SERVICE"> SERVICE </option>
+                                <option value="OTHERS"> OTHERS </option>
                             </select>
                         </div>
                         <div class="hi form-group p0 my-2" :class="{active:fields.spouse_is_self_employed}" data-attribute="spouse_is_self_employed" >
                             <label for="spouse_service_type_gross_income">Monthly Income</label> 
-                            <input type="text" id="spouse_service_type_gross_income" v-model="fields.spouse_service_type_gross_income" value="" class="form-control">
+                            <input type="number" step ="0.01" id="spouse_service_type_gross_income" v-model="fields.spouse_service_type_monthly_gross_income" value="" class="form-control">
                         </div>
                     </div>
             
@@ -395,26 +399,26 @@
                                 </div>
                                 <div class="form-group w-100">
                                     <label for="spouse_employed_monthly_gross_income">Spouse Monthly Gross income</label>
-                                    <input value="" type="text" v-model="fields.spouse_employed_monthly_gross_income" class="form-control" id="spouse_employed_monthly_gross_income">
+                                    <input value="" type="number" v-model="fields.spouse_employed_monthly_gross_income" class="form-control" id="spouse_employed_monthly_gross_income">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             
-                <h3 class="px-3 my-4 h3">Other Income</h3> 
+                <h3 class="px-3 my-4 h3">Other Income</h3>	
                 <div class="row px-3">
                     <div class="form-group col-md-3">
                         <div class="form-check p0">
                             <label class="form-check-label" for="has_remittance">
-                                <input class="form-check-input cb-type" id="has_remittance" type="checkbox" v-model="fields.has_remittance" value="">
+                                <input class="form-check-input cb-type" id="has_remittance" type="checkbox" v-model="fields.has_remittance">
                                 <span class="form-check-sign">
                                 <span class="check"></span>
                                 </span>
                                 <label for="has_remittance">Remittance</label>
                             </label>
                         </div>
-                        <div class="hi form-group col-md-12 p0 my-2" :class="this.fields.has_remittance ? 'active' : ''" data-attribute="has_remittance">
+                        <div class="hi form-group col-md-12 p0 my-2" data-attribute="has_remittance" :class="{active:fields.has_remittance}"  >
                             <label for="remittance_amount">Remittance Amount</label>
                             <input value="" type="number" v-model="fields.remittance_amount" class="form-control" id="remittance_amount">
                         </div>
@@ -430,7 +434,7 @@
                                 <label for="has_pension">Pension</label>
                             </label>
                         </div>
-                        <div class="hi form-group col-md-12 p0 my-2" :class="this.fields.has_pension ? 'active' : ''" data-attribute="has_pension">
+                        <div class="hi form-group col-md-12 p0 my-2" data-attribute="has_pension" :class="{active:fields.has_pension}" >
                             <label for="pension_amount">Pension Amoount</label>
                             <input value="" type="number" v-model="fields.pension_amount" class="form-control" id="pension_amount">
                         </div>
@@ -440,7 +444,7 @@
                 <div class="row px-3 my-3">
                     <div class="form-group col-md-4 col-md-offset-8">
                         <label class="">Total household income</label>
-                        <input type="text" class="form-control" v-bind:class="totalHouseholdIncomeHasError ? 'is-invalid' : ''"  :value="total_household_income">
+                        <input type="text" class="form-control" v-bind:class="totalHouseholdIncomeHasError ? 'is-invalid' : ''"  readonly="true" :value="displayed_total_household_income">
                         <div class="invalid-feedback" v-if="totalHouseholdIncomeHasError">
                             {{ errors.total_household_income[0]}}
                         </div>
@@ -452,8 +456,9 @@
                     <div class="form-group col-md-12">
                         <textarea value="notes" rows="3" cols="40" v-model="fields.notes" class="form-control"></textarea>
                     </div>
+                    
                 </div>
-                <button type="submit" class="btn btn-primary mx-3">Submit</button>
+                 <button type="submit" class="btn btn-primary"> Submit </button>
                 </form>
           </div>
     </div>
@@ -466,27 +471,45 @@
          </div>
 
         <div class="card-body">
-             
             <div  class="file-input-profile d-block text-center position-relative mb-4">
-                <img :src="fields.profile_picture_path" class="img-thumbnail" alt="Cinque Terre" > 
+                <img :src="fields.profile_picture_path_preview" class="img-thumbnail" v-bind:class="profilePhotoHasError ? 'is-invalid' : ''"  alt="Cinque Terre" style="height:100% !importante" > 
                 <div class="file-input text-center">
                     <span class="position-relative btn btn-rose btn-round btn-file">
                         <span class="fileinput-new">Image</span>
-                        <input value="" type="file" class="attachment" name="profile_picture_path"  @change="onFileChange($event,'profile_picture_path')">
+                        <input value="" type="file" class="attachment" name="profile_picture_path" @change="onFileSelected($event,'profile_picture_path')">
                     </span>
                 </div>
+                <div class="invalid-feedback" v-if="profilePhotoHasError">
+                    {{ errors.profile_picture_path[0]}}
+                </div>  
             </div>
             <div  class="file-input-signature d-block text-center position-relative">
-                <img :src="fields.signature_path" class="img-thumbnail" alt="Cinque Terre" > 
+                <img :src="fields.signature_path_preview" class="img-thumbnail" v-bind:class="profilePhotoHasError ? 'is-invalid' : ''" alt="Cinque Terre" > 
                 <div class="file-input text-center">
                     <span class="position-relative btn btn-rose btn-round btn-file">
                     <span class="fileinput-new">Signature</span>
-                    <input value="signature_path" type="file" class="attachment" name="signature_path" @change="onFileChange($event,'signature_path')">
+                    <input value="signature_path" type="file" class="attachment" name="signature_path" @change="onFileSelected($event,'signature_path')">
                     </span>
                 </div>
+                <div class="invalid-feedback" v-if="signaturePhotoHasError">
+                    {{ errors.signature_path[0]}}
+                </div>  
             </div>
          </div>
      </div>
+     <div class="card" v-show="hasErrors">
+         
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-danger">
+                       <p style="font-size:1.5em; text-align:center;font-weight:bold"> List of Errors </p>
+                    </li>
+                    <li class="list-group-item list-group-item-danger" v-for="error in errors" :key="error.id">
+                        <p v-for="list in error" :key="list.id">{{ list }}</p>
+                    </li>
+                </ul>
+
+     </div>
+     
  </div> 
 </div>       
 </template>
@@ -495,162 +518,135 @@
 
 import SelectComponentV2 from './SelectComponentV2';
 import Swal from 'sweetalert2';
+import Loading from 'vue-loading-overlay';
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
     components: {
-        SelectComponentV2
+        SelectComponentV2,
+        Loading 
     },
-    props:["clientId"],
-
+    props: ["client"],
     data(){
         return {
+            masks: {
+                tin:'###-###-###-###',
+                sss:'##-#######-#',
+                umid:'####-#######-#',
+                phone: '09##-###-####',
+                zipcode: '####',
+                dependents: '##',
+                household_size:'##',
+                years_of_stay_on_house:'###'
+            },
+            isLoading:false,
             fields: {
-                'office_id':null,
-                'firstname':null,
-                'middlename':null,
-                'lastname':null,
-                'suffix':null,
-                'nickname':null,
-                'gender':null,
-                'civil_status':null,
-                'fb_account':null,
+                'office_id':"",
+                'firstname':"",
+                'middlename':"",
+                'lastname':"",
+                'suffix':"",
+                'nickname':"",
+                'gender':"",
+                'civil_status':"",
+                'fb_account':"",
                 'contact_number':null,
-                'birthday':null,
-                'birthplace':null,
-                'education':null,
-                'street_address':null,
-                'barangay_address':null,
-                'city_address':null,
-                'province_address':null,
-                'zipcode':null,
-                'business_address':null,
-                'number_of_dependents':null,
+                'birthday':"",
+                'birthplace':"",
+                'education':"",
+                'street_address':"",
+                'barangay_address':"",
+                'city_address':"",
+                'province_address':"",
+                'zipcode':"",
+                'business_address':"",
+                'number_of_dependents':"",
                 'household_size':null,
                 'years_of_stay_on_house':null,
-                'house_type':null,
-                'spouse_name':null,
-                'spouse_contact_number':null,
+                'house_type':"",
+                'spouse_name':"",
+                'spouse_contact_number':"",
                 'spouse_birthday':null,
-                'tin':null,
-                'sss':null,
-                'umid':null,
-                'mother_maiden_name':null,
+                'tin':"",
+                'sss':"",
+                'umid':"",
+                'mother_maiden_name':"",
+                'photo_changed' :false,
+                'signature_changed' :false,
+
 
                 'is_self_employed':false,
-                'service_type':null,
-                'service_type_gross_income':0,
+                'service_type':"",
+                'service_type_monthly_gross_income':0,
 
                 'is_employed':false,
-                'employed_position':null,
-                'employed_company_name':null,
+                'employed_position':"",
+                'employed_company_name':"",
                 'employed_monthly_gross_income':0,
 
                 'spouse_is_self_employed':false,
-                'spouse_service_type':null,
-                'spouse_service_type_gross_income':0,
+                'spouse_service_type':"",
+                'spouse_service_type_monthly_gross_income':0,
 
                 'spouse_is_employed':false,
-                'spouse_employed_position':null,
-                'spouse_employed_company_name':null,
+                'spouse_employed_position':"",
+                'spouse_employed_company_name':"",
                 'spouse_employed_monthly_gross_income':0,
 
                 'has_remittance':false,
                 'remittance_amount':0,
 
-                'has_pension':null,
+                'has_pension':false,
                 'pension_amount':0,
 
-                'notes':null,
+                'notes':"",
 
-                'profile_picture_path': location.origin + '/assets/img/anime3.png',
-                'signature_path': location.origin + '/assets/img/signature.png',
-                
+                'profile_picture_path_preview':null,
+                'signature_path_preview': null,
+
+
+                'profile_picture_path': null,
+                'signature_path': null,
             },
             errors: {
 
-            }
+            },
             
-
-
         }
     },
-    mounted(){
-        console.log(this.clientId);
-            axios.get('/api/edit/client/'+this.clientId)
-            .then(res => {
-                
-                this.fields.firstname = res.data[0].firstname,
-                this.fields.middlename = res.data[0].middlename,
-                this.fields.lastname = res.data[0].lastname,
-                this.fields.suffix = res.data[0].suffix,
-                this.fields.nickname = res.data[0].nickname,
-                this.fields.gender = res.data[0].gender,
-                this.fields.civil_status = res.data[0].civil_status,
-                this.fields.fb_account = res.data[0].fb_account,
-                this.fields.contact_number = res.data[0].contact_number,
-                this.fields.birthday = res.data[0].birthday,
-                this.fields.birthplace = res.data[0].birthplace,
-                this.fields.education = res.data[0].education,
-                this.fields.street_address = res.data[0].street_address,
-                this.fields.barangay_address = res.data[0].barangay_address,
-                this.fields.city_address = res.data[0].city_address,
-                this.fields.province_address = res.data[0].province_address,
-                this.fields.zipcode = res.data[0].zipcode,
-                this.fields.business_address = res.data[0].business_address,
-                this.fields.number_of_dependents = res.data[0].number_of_dependents,
-                this.fields.household_size = res.data[0].household_size,
-                this.fields.years_of_stay_on_house = res.data[0].years_of_stay_on_house,
-                this.fields.house_type = res.data[0].house_type,
-                this.fields.spouse_name = res.data[0].spouse_name,
-                this.fields.spouse_birthday = res.data[0].spouse_birthday,
-                this.fields.spouse_contact_number = res.data[0].spouse_contact_number,
-                this.fields.tin = res.data[0].tin,
-                this.fields.sss = res.data[0].sss,
-                this.fields.umid = res.data[0].umid,
-                this.fields.mother_maiden_name = res.data[0].mother_maiden_name,
-                this.fields.profile_picture_path = res.data[0].profile_picture_path,
-                this.fields.signature_path = res.data[0].signature_path,
-                this.fields.notes = res.data[0].notes,
-
-
-                // this.fields.is_self_employed = res.data[1].is_self_employed,
-                // this.fields.service_type = res.data[1].service_type,
-                // this.fields.service_type_gross_income = res.data[1].service_type_gross_income,
-                // this.fields.is_employed = res.data[1].is_employed,
-                // this.fields.employed_position = res.data[1].employed_position,
-                // this.fields.employed_company_name = res.data[1].employed_company_name,
-                // this.fields.employed_monthly_gross_income = res.data[1].employed_monthly_gross_income,
-
-                // this.fields.spouse_is_self_employed = res.data[1].spouse_is_self_employed,
-                // this.fields.spouse_service_type = res.data[1].spouse_service_type,
-                // this.fields.spouse_service_type_gross_income = res.data[1].spouse_service_type_gross_income,
-
-                // this.fields.spouse_is_employed = res.data[1].spouse_is_employed,                
-                // this.fields.spouse_employed_position = res.data[1].spouse_employed_position,
-                // this.fields.spouse_employed_company_name = res.data[1].spouse_employed_company_name,
-                // this.fields.spouse_employed_monthly_gross_income = res.data[1].spouse_employed_monthly_gross_income,        
-                // this.fields.has_pension = res.data[1].has_pension,
-                // this.fields.pension_amount = res.data[1].pension_amount,
-
-                // this.fields.has_remittance = res.data[1].has_remittance,                
-                // this.fields.remittance_amount = res.data[1].remittance_amount,
-
-                this.fields.office_id = res.data[0].office_id
-            })
-    },
     computed:{
+        
+        clientInfo(){
+            return JSON.parse(this.client)
+        },
         total_household_income(){
-            var total = parseInt(this.fields.service_type_gross_income) + parseInt(this.fields.employed_monthly_gross_income) +  parseInt(this.fields.spouse_service_type_gross_income) +parseInt(this.fields.spouse_employed_monthly_gross_income) + parseInt(this.fields.remittance_amount) + parseInt(this.fields.pension_amount) 
+            var total = 
+             parseFloat(this.fields.service_type_monthly_gross_income) +
+             parseFloat(this.fields.employed_monthly_gross_income) +
+             parseFloat(this.fields.spouse_service_type_monthly_gross_income) +
+             parseFloat(this.fields.spouse_employed_monthly_gross_income) +
+             parseFloat(this.fields.remittance_amount) + 
+             parseFloat(this.fields.pension_amount) 
             if(isNaN(total)){
                 return 'Use positive integers for amounts only';
             }
-            return total;
+            return (total)
+        },
+        displayed_total_household_income(){
+            return '₱ '+this.number_format(this.total_household_income)
         },
         hasErrors(){
             return Object.keys(this.errors).length > 0;
         },
         officeHasError(){
             return this.errors.hasOwnProperty('office_id')
+        },
+        signaturePhotoHasError(){
+            return this.errors.hasOwnProperty('signature_path')
+        },
+        profilePhotoHasError(){
+            return this.errors.hasOwnProperty('profile_picture_path')
         },
         firstNameHasError(){
             return this.errors.hasOwnProperty('firstname')
@@ -678,6 +674,10 @@ export default {
         },
         phoneHasError(){
             return this.errors.hasOwnProperty('contact_number')
+        },
+        birthdayHasError(){
+            return this.errors.hasOwnProperty('birthday')
+
         },
         birthplaceHasError(){
             return this.errors.hasOwnProperty('birthplace')
@@ -738,24 +738,111 @@ export default {
         },
         totalHouseholdIncomeHasError(){
             return this.errors.hasOwnProperty('total_household_income')
+        },
+        duplicateClient(){
+            return this.errors.hasOwnProperty('client')
+        },
+        // isEmployedDisabled(){
+        //     return this.fields.is_self_employed
+        // },
+        // isSelfEmployedDisabled(){
+        //     return this.fields.is_employed
+        // },
+        // isSpouseSelfEmployedDisabled(){
+        //     return this.fields.spouse_is_employed
+        // },
+        // isSpouseEmployedDisabled(){
+        //     return this.fields.spouse_is_self_employed
+        // }
+
+    },
+    watch : {
+        'fields.is_self_employed' : function (newVal,oldVal){
+           if(!newVal){               
+               this.fields.service_type = ""
+               this.fields.service_type_monthly_gross_income = 0
+               return;
+           }
+        },
+        'fields.is_employed' : function (newVal,oldVal){
+           if(!newVal){
+               this.fields.employed_position = ""
+               this.fields.employed_company_name =  ""
+               this.fields.employed_monthly_gross_income = 0
+               return;
+           }
+        },
+        'fields.spouse_is_self_employed' : function (newVal,oldVal){
+           if(!newVal){
+               this.fields.spouse_service_type = ""
+               this.fields.spouse_service_type_monthly_gross_income = 0
+               return;
+           }
+        },
+        'fields.spouse_is_employed' : function (newVal,oldVal){
+           if(!newVal){
+               this.fields.spouse_employed_position = ""
+               this.fields.spouse_employed_company_name = ""
+               this.fields.spouse_employed_monthly_gross_income = 0
+               return;
+           }
+        },
+        'fields.has_remittance' : function (newVal,oldVal){
+           if(!newVal){
+               this.fields.remittance_amount = 0;
+               return;
+           }
+        },
+        'fields.has_pension' : function (newVal,oldVal){
+           if(!newVal){
+               this.fields.pension_amount = 0;
+               return;
+           }
         }
     },
+    created(){
+        this.populateData();
+    },
     methods: {
-        onFileChange(e,id) {
-           
-            var files = e.target.files || e.dataTransfer.files;
-            if (!files.length)
-                return;
-            this.createImage(files[0],id);
-        },
-        createImage(file,id) {
-            var image = new Image();
-            var reader = new FileReader();
 
-            reader.onload = (e) => {
-                this.fields[id] = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        number_format(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
+        populateData(){
+            var vm = this
+            $.each(this.clientInfo,function(k,v){
+                if(k =="household_income"){
+                    $.each(v,function(hK,hV){
+                        var key = hK.replace("household_income","")
+                        vm.fields[key] = hV
+                    })
+                }else{
+                    if(k=="profile_picture_path"){
+                        vm.fields.profile_picture_path_preview = location.origin+ '/'+ v
+                    }
+                    if(k=="signature_path"){
+                        vm.fields.signature_path_preview = location.origin+ '/'+ v
+                    }else{
+                        vm.fields[k] = v
+                    }
+
+                }
+
+            })
+            
+        },
+        upload(){
+            let form = new FormData();
+            // $.each(this.fields,function(k,v){
+                
+            // });
+            
+            // form.append('image', this.fields.profile_picture_path,this.fields.profile_picture_path);
+            // console.log(form.get);
+            // axios.post('/upload', form)
+            //     .then(res=>{
+            //         console.log(res);   
+            //     })
         },
         removeImage: function (e) {
             this.image = '';
@@ -764,31 +851,90 @@ export default {
             alert(this.fromChild)
         },
         assignOffice(value){
-            this.fields.office_id = value
+            this.fields.office_id = value['id']
         },
         getDate(value, field){
            this.fields[field] = value
         },
+        clientExists(){
+            return Object.keys(this.errors.client).length > 0
+        },
+
+        onFileSelected(e,id) {
+              const file = e.target.files[0]
+              if(id == "profile_picture_path"){
+                  this.fields.photo_changed = true
+                  this.fields.profile_picture_path_preview = URL.createObjectURL(file)
+              }
+              if(id == "signature_path"){
+                  this.fields.signature_changed = true
+                  this.fields.signature_path_preview = URL.createObjectURL(file)
+              }
+              
+              this.fields[id] = file;
+
+        },
         submit(){
             this.errors = {}
+            var vm = this
             this.fields['total_household_income'] = this.total_household_income
-            axios.post('/api/edit/client/'+this.clientId, this.fields)
+            let formData = new FormData();
+            
+            $.each(vm.fields, function(k,v){    
+                if(k!="profile_picture_path" && k!="signature_path") {
+                    formData.append(k,v)
+                }
+
+                if(k == "profile_picture_path"){
+                    if(vm.fields.photo_changed){
+                        formData.append(k,v)
+                    }else{
+                    
+                    }
+                }
+                if(k=="signature_path"){
+                    if(vm.fields.signature_changed){
+                        formData.append(k,v)
+                    }
+                }
+
+            });
+           
+            this.isLoading = true
+            axios.post('/edit/client', formData)
                 .then(res=>{
-                    console.log(res);
+                    this.isLoading = false
+                    setTimeout(()=>{
                     Swal.fire({
                         icon: 'success',
                         title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
                         text: res.data.msg,
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
+                        allowEnterKey: true // default value
                     })
                     .then(res=>{
-                       location.reload();
+                        location.reload();
                     })
+                    },10)
+ 
+
                 })
                 .catch(error=>{
+                    this.isLoading = false
                     this.errors = error.response.data.errors || {}
+                    if(this.duplicateClient){
+                        Swal.fire({
+                            icon: 'error',
+                            title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">OOPPPSSSSS!</span>',
+                            text: this.errors.client.msg,
+                            footer: '<a href="#">Client ['+this.errors.client.client_id+'] already existing at: ' +this.errors.client.exists_at +'</a>'
+                            
+                            
+                        })
+                    }
                 })
         },
-    }
+    },
+
 }
 </script>

@@ -140,18 +140,19 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
     function makeClientID($office_id){
-
+        
         $office = Office::find($office_id);
-
+        
         if($office->level=="branch"){
             $code = $office->code;
-            $count = Client::where('office_id',$office_id)->count();
+            $office_ids = $office->getLowerOfficeIDS();
+            $count = Client::whereIn('office_id',$office_ids)->count();
             return $code . '-PC' . pad($count + 1, 5);
         }
-
+        
         $office = $office->getTopOffice('branch');
-        $office_ids = $office->getAllChildrenIDS();
         $code = $office->code;
+        $office_ids = $office->getLowerOfficeIDS();
         $count = Client::whereIn('office_id',$office_ids)->count();
         return $code . '-PC' . pad($count + 1, 5);
 

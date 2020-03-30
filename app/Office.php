@@ -76,7 +76,15 @@ class Office extends Model
             }
         return $ids;
     }
-
+    //parameters insert_self if we want to add the parent id to the return lower office ids
+    public function getLowerOfficeIDS($insert_self = true){
+        $id = $this->id;
+        $child_ids = $this->getAllChildrenIDS();
+        if ($insert_self) {
+            return array_merge($child_ids, [$id]);
+        }
+        return $child_ids;
+    }
     public function getParent(){
         return $this->parent;
     }

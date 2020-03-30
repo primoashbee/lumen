@@ -29,12 +29,23 @@ export default {
   components: {
     Multiselect
   },
-  props: ['name'],
+  props: ['name','default_value'],
   created(){
+      
     
+      // console.log('created')
       axios.get('/usr/branches')
         .then(res=>{
           this.options=res.data
+            if(this.default_value!==undefined){
+              
+              this.options.filter( obj => {
+                var item = obj.data.filter(office => {
+                   office.id == this.default_value ? this.value = office : ''
+                })
+              })
+              
+          }
         })
       
   },
