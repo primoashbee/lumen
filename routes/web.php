@@ -78,9 +78,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
 
-    Route::get('/create/office/{level}',function($level){
-        echo $level;
-    });
 
 
     Route::get('/event',function(){
