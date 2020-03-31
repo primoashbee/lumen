@@ -10,7 +10,7 @@ require('./bootstrap');
 import { VueMaskDirective } from 'v-mask'
 
 window.Vue = require('vue');
-window.flatten = require('flat')
+// window.flatten = require('flat')
 
 window.Swal = require('sweetalert2');
 window.moment = require('moment');
@@ -38,6 +38,7 @@ Vue.component('update-client-form', require('./components/ClientUpdateFormCompon
 Vue.component('client-list', require('./components/ClientListComponent.vue').default);
 Vue.component('paginator', require('./components/PaginatorComponent.vue').default);
 Vue.component('upload-file', require('./components/UploadSampleComponent.vue').default);
+Vue.component('create-office', require('./components/CreateOfficeComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

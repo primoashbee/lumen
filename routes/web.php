@@ -5,6 +5,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Symfony\Component\HttpFoundation\Request;
+use App\Office;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,8 +50,9 @@ Route::get('/create/penalty', function(){
     return view('pages.create-penalty');
 });
 
-Route::get('/create/branch', function(){
-    return view('pages.create-branch');
+Route::get('/create/office/{level}', function($level){
+    $level = Office::getParentOfLevel($level);
+    return view('pages.create-branch',compact('level'));
 });
 
 
@@ -76,6 +78,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/client/{client_id}','ClientController@view')->name('get.client.info');
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
+    Route::post('/create/office/{level}', 'OfficeController@createOffice');
 
 
     Route::get('/id/{id}',function($id){

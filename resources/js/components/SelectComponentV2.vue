@@ -34,7 +34,6 @@ export default {
       if(this.list_level==null){
           this.fetchAllLevels();
       }else{
-          
           this.fetchListByLevel(this.list_level)
       }
       

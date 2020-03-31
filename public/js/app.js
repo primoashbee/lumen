@@ -3945,6 +3945,102 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CreateOfficeComponent.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CreateOfficeComponent.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _SelectComponentV2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SelectComponentV2 */ "./resources/js/components/SelectComponentV2.vue");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    SelectComponentV2: _SelectComponentV2__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  props: ['list_level'],
+  data: function data() {
+    return {
+      fields: {
+        'office_id': "",
+        'code': "",
+        'name': "",
+        "level": this.list_level
+      },
+      errors: {}
+    };
+  },
+  computed: {
+    hasErrors: function hasErrors() {
+      return Object.keys(this.errors).length > 0;
+    },
+    officeHasError: function officeHasError() {
+      return this.errors.hasOwnProperty('office_id');
+    }
+  },
+  methods: {
+    assignOffice: function assignOffice(value) {
+      this.fields.office_id = value['id'];
+    },
+    submit: function submit() {
+      var _this = this;
+
+      axios.post('/create/office', this.fields).then(function (res) {
+        _this.isLoading = false;
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          icon: 'success',
+          title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
+          text: res.data.msg,
+          confirmButtonText: 'OK'
+        }).then(function (res) {});
+      })["catch"](function (error) {
+        _this.errors = error.response.data.errors || {};
+      });
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DatePickerComponent.vue?vue&type=script&lang=js&":
 /*!******************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DatePickerComponent.vue?vue&type=script&lang=js& ***!
@@ -11072,7 +11168,7 @@ exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base
 
 
 // module
-exports.push([module.i, "fieldset[disabled] .multiselect {\n\tpointer-events: none\n}\n.multiselect__spinner {\n\tposition: absolute;\n\tright: 1px;\n\ttop: 1px;\n\twidth: 48px;\n\theight: 35px;\n\tbackground: #fff;\n\tdisplay: block\n}\n.multiselect__spinner:after,\n.multiselect__spinner:before {\n\tposition: absolute;\n\tcontent: \"\";\n\ttop: 50%;\n\tleft: 50%;\n\tmargin: -8px 0 0 -8px;\n\twidth: 16px;\n\theight: 16px;\n\tborder-radius: 100%;\n\tborder: 2px solid transparent;\n\tborder-top-color: #41b883;\n\tbox-shadow: 0 0 0 1px transparent\n}\n.multiselect__spinner:before {\n\tanimation: spinning 2.4s cubic-bezier(.41, .26, .2, .62);\n\tanimation-iteration-count: infinite\n}\n.multiselect__spinner:after {\n\tanimation: spinning 2.4s cubic-bezier(.51, .09, .21, .8);\n\tanimation-iteration-count: infinite\n}\n.multiselect__loading-enter-active,\n.multiselect__loading-leave-active {\n\ttransition: opacity .4s ease-in-out;\n\topacity: 1\n}\n.multiselect__loading-enter,\n.multiselect__loading-leave-active {\n\topacity: 0\n}\n.multiselect,\n.multiselect__input,\n.multiselect__single {\n\tfont-family: inherit;\n\tfont-size: 16px;\n\t-ms-touch-action: manipulation;\n\ttouch-action: manipulation\n}\n.multiselect {\n\tbox-sizing: content-box;\n\tdisplay: block;\n\tposition: relative;\n\twidth: 100%;\n\tmin-height: 40px;\n\ttext-align: left;\n\tcolor: #35495e\n}\n.multiselect * {\n\tbox-sizing: border-box\n}\n.multiselect:focus {\n\toutline: none\n}\n.multiselect--disabled {\n\tbackground: #ededed;\n\tpointer-events: none;\n\topacity: .6\n}\n.multiselect--active {\n\tz-index: 50\n}\n.multiselect--active:not(.multiselect--above) .multiselect__current,\n.multiselect--active:not(.multiselect--above) .multiselect__input,\n.multiselect--active:not(.multiselect--above) .multiselect__tags {\n\tborder-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0\n}\n.multiselect--active .multiselect__select {\n\ttransform: rotate(180deg)\n}\n.multiselect--above.multiselect--active .multiselect__current,\n.multiselect--above.multiselect--active .multiselect__input,\n.multiselect--above.multiselect--active .multiselect__tags {\n\tborder-top-left-radius: 0;\n\tborder-top-right-radius: 0\n}\n.multiselect__input,\n.multiselect__single {\n\tposition: relative;\n\tdisplay: inline-block;\n\tmin-height: 20px;\n\tline-height: 20px;\n\tborder: none;\n\tborder-radius: 5px;\n\tbackground: #fff;\n\tpadding: 0 0 0 5px;\n\twidth: 100%;\n\ttransition: border .1s ease;\n\tbox-sizing: border-box;\n\tmargin-bottom: 8px;\n\tvertical-align: top\n}\n.multiselect__input:-ms-input-placeholder {\n\tcolor: #35495e\n}\n.multiselect__input::placeholder {\n\tcolor: #35495e\n}\n.multiselect__tag~.multiselect__input,\n.multiselect__tag~.multiselect__single {\n\twidth: auto\n}\n.multiselect__input:hover,\n.multiselect__single:hover {\n\tborder-color: #cfcfcf\n}\n.multiselect__input:focus,\n.multiselect__single:focus {\n\tborder-color: #a8a8a8;\n\toutline: none\n}\n.multiselect__single {\n\tpadding-left: 5px;\n\tmargin-bottom: 8px\n}\n.multiselect__tags-wrap {\n\tdisplay: inline\n}\n.multiselect__tags {\n\tmin-height: 40px;\n\tdisplay: block;\n\tpadding: 8px 40px 0 8px;\n\tborder-radius: 5px;\n\tborder: 1px solid #e8e8e8;\n\tbackground: #fff;\n\tfont-size: 14px\n}\n.multiselect__tag {\n\tposition: relative;\n\tdisplay: inline-block;\n\tpadding: 4px 26px 4px 10px;\n\tborder-radius: 5px;\n\tmargin-right: 10px;\n\tcolor: #fff;\n\tline-height: 1;\n\tbackground: #41b883;\n\tmargin-bottom: 5px;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\tmax-width: 100%;\n\ttext-overflow: ellipsis\n}\n.multiselect__tag-icon {\n\tcursor: pointer;\n\tmargin-left: 7px;\n\tposition: absolute;\n\tright: 0;\n\ttop: 0;\n\tbottom: 0;\n\tfont-weight: 700;\n\tfont-style: normal;\n\twidth: 22px;\n\ttext-align: center;\n\tline-height: 22px;\n\ttransition: all .2s ease;\n\tborder-radius: 5px\n}\n.multiselect__tag-icon:after {\n\tcontent: \"\\D7\";\n\tcolor: #266d4d;\n\tfont-size: 14px\n}\n.multiselect__tag-icon:focus,\n.multiselect__tag-icon:hover {\n\tbackground: #369a6e\n}\n.multiselect__tag-icon:focus:after,\n.multiselect__tag-icon:hover:after {\n\tcolor: #fff\n}\n.multiselect__current {\n\tmin-height: 40px;\n\toverflow: hidden;\n\tpadding: 8px 30px 0 12px;\n\twhite-space: nowrap;\n\tborder-radius: 5px;\n\tborder: 1px solid #e8e8e8\n}\n.multiselect__current,\n.multiselect__select {\n\tline-height: 16px;\n\tbox-sizing: border-box;\n\tdisplay: block;\n\tmargin: 0;\n\ttext-decoration: none;\n\tcursor: pointer\n}\n.multiselect__select {\n\tposition: absolute;\n\twidth: 40px;\n\theight: 38px;\n\tright: 1px;\n\ttop: 1px;\n\tpadding: 4px 8px;\n\ttext-align: center;\n\ttransition: transform .2s ease\n}\n.multiselect__select:before {\n\tposition: relative;\n\tright: 0;\n\ttop: 65%;\n\tcolor: #999;\n\tmargin-top: 4px;\n\tborder-color: #999 transparent transparent;\n\tborder-style: solid;\n\tborder-width: 5px 5px 0;\n\tcontent: \"\"\n}\n.multiselect__placeholder {\n\tcolor: #adadad;\n\tdisplay: inline-block;\n\tmargin-bottom: 10px;\n\tpadding-top: 2px\n}\n.multiselect--active .multiselect__placeholder {\n\tdisplay: none\n}\n.multiselect__content-wrapper {\n\tposition: absolute;\n\tdisplay: block;\n\tbackground: #fff;\n\twidth: 100%;\n\tmax-height: 240px;\n\toverflow: auto;\n\tborder: 1px solid #e8e8e8;\n\tborder-top: none;\n\tborder-bottom-left-radius: 5px;\n\tborder-bottom-right-radius: 5px;\n\tz-index: 50;\n\t-webkit-overflow-scrolling: touch\n}\n.multiselect__content {\n\tlist-style: none;\n\tdisplay: inline-block;\n\tpadding: 0;\n\tmargin: 0;\n\tmin-width: 100%;\n\tvertical-align: top\n}\n.multiselect--above .multiselect__content-wrapper {\n\tbottom: 100%;\n\tborder-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-top-left-radius: 5px;\n\tborder-top-right-radius: 5px;\n\tborder-bottom: none;\n\tborder-top: 1px solid #e8e8e8\n}\n.multiselect__content::webkit-scrollbar {\n\tdisplay: none\n}\n.multiselect__element {\n\tdisplay: block\n}\n.multiselect__option {\n\tdisplay: block;\n\tpadding: 12px;\n\tmin-height: 40px;\n\tline-height: 16px;\n\ttext-decoration: none;\n\ttext-transform: none;\n\tvertical-align: middle;\n\tposition: relative;\n\tcursor: pointer;\n\twhite-space: nowrap\n}\n.multiselect__option:after {\n\ttop: 0;\n\tright: 0;\n\tposition: absolute;\n\tline-height: 40px;\n\tpadding-right: 12px;\n\tpadding-left: 20px;\n\tfont-size: 13px\n}\n.multiselect__option--highlight {\n\tbackground: #41b883;\n\toutline: none;\n\tcolor: #fff\n}\n.multiselect__option--highlight:after {\n\tcontent: attr(data-select);\n\tbackground: #41b883;\n\tcolor: #fff\n}\n.multiselect__option--selected {\n\tbackground: #f3f3f3;\n\tcolor: #35495e;\n\tfont-weight: 700\n}\n.multiselect__option--selected:after {\n\tcontent: attr(data-selected);\n\tcolor: silver\n}\n.multiselect__option--selected.multiselect__option--highlight {\n\tbackground: #ff6a6a;\n\tcolor: #fff\n}\n.multiselect__option--selected.multiselect__option--highlight:after {\n\tbackground: #ff6a6a;\n\tcontent: attr(data-deselect);\n\tcolor: #fff\n}\n.multiselect--disabled .multiselect__current,\n.multiselect--disabled .multiselect__select {\n\tbackground: #ededed;\n\tcolor: #a6a6a6\n}\n.multiselect__option--disabled {\n\tbackground: #ededed!important;\n\tcolor: #a6a6a6!important;\n\tcursor: text;\n\tpointer-events: none\n}\n.multiselect__option--group {\n\tbackground: #ededed;\n\tcolor: #35495e\n}\n.multiselect__option--group.multiselect__option--highlight {\n\tbackground: #35495e;\n\tcolor: #fff\n}\n.multiselect__option--group.multiselect__option--highlight:after {\n\tbackground: #35495e\n}\n.multiselect__option--disabled.multiselect__option--highlight {\n\tbackground: #dedede\n}\n.multiselect__option--group-selected.multiselect__option--highlight {\n\tbackground: #ff6a6a;\n\tcolor: #fff\n}\n.multiselect__option--group-selected.multiselect__option--highlight:after {\n\tbackground: #ff6a6a;\n\tcontent: attr(data-deselect);\n\tcolor: #fff\n}\n.multiselect-enter-active,\n.multiselect-leave-active {\n\ttransition: all .15s ease\n}\n.multiselect-enter,\n.multiselect-leave-active {\n\topacity: 0\n}\n.multiselect__strong {\n\tmargin-bottom: 8px;\n\tline-height: 20px;\n\tdisplay: inline-block;\n\tvertical-align: top\n}\n[dir=rtl] .multiselect {\n\ttext-align: right\n}\n[dir=rtl] .multiselect__select {\n\tright: auto;\n\tleft: 1px\n}\n[dir=rtl] .multiselect__tags {\n\tpadding: 8px 8px 0 40px\n}\n[dir=rtl] .multiselect__content {\n\ttext-align: right\n}\n[dir=rtl] .multiselect__option:after {\n\tright: auto;\n\tleft: 0\n}\n[dir=rtl] .multiselect__clear {\n\tright: auto;\n\tleft: 12px\n}\n[dir=rtl] .multiselect__spinner {\n\tright: auto;\n\tleft: 1px\n}\n@keyframes spinning {\n0% {\n\t\ttransform: rotate(0)\n}\nto {\n\t\ttransform: rotate(2turn)\n}\n}", ""]);
+exports.push([module.i, "fieldset[disabled] .multiselect{pointer-events:none}.multiselect__spinner{position:absolute;right:1px;top:1px;width:48px;height:35px;background:#fff;display:block}.multiselect__spinner:after,.multiselect__spinner:before{position:absolute;content:\"\";top:50%;left:50%;margin:-8px 0 0 -8px;width:16px;height:16px;border-radius:100%;border:2px solid transparent;border-top-color:#41b883;box-shadow:0 0 0 1px transparent}.multiselect__spinner:before{animation:spinning 2.4s cubic-bezier(.41,.26,.2,.62);animation-iteration-count:infinite}.multiselect__spinner:after{animation:spinning 2.4s cubic-bezier(.51,.09,.21,.8);animation-iteration-count:infinite}.multiselect__loading-enter-active,.multiselect__loading-leave-active{transition:opacity .4s ease-in-out;opacity:1}.multiselect__loading-enter,.multiselect__loading-leave-active{opacity:0}.multiselect,.multiselect__input,.multiselect__single{font-family:inherit;font-size:16px;-ms-touch-action:manipulation;touch-action:manipulation}.multiselect{box-sizing:content-box;display:block;position:relative;width:100%;min-height:40px;text-align:left;color:#35495e}.multiselect *{box-sizing:border-box}.multiselect:focus{outline:none}.multiselect--disabled{background:#ededed;pointer-events:none;opacity:.6}.multiselect--active{z-index:50}.multiselect--active:not(.multiselect--above) .multiselect__current,.multiselect--active:not(.multiselect--above) .multiselect__input,.multiselect--active:not(.multiselect--above) .multiselect__tags{border-bottom-left-radius:0;border-bottom-right-radius:0}.multiselect--active .multiselect__select{transform:rotate(180deg)}.multiselect--above.multiselect--active .multiselect__current,.multiselect--above.multiselect--active .multiselect__input,.multiselect--above.multiselect--active .multiselect__tags{border-top-left-radius:0;border-top-right-radius:0}.multiselect__input,.multiselect__single{position:relative;display:inline-block;min-height:20px;line-height:20px;border:none;border-radius:5px;background:#fff;padding:0 0 0 5px;width:100%;transition:border .1s ease;box-sizing:border-box;margin-bottom:8px;vertical-align:top}.multiselect__input:-ms-input-placeholder{color:#35495e}.multiselect__input::placeholder{color:#35495e}.multiselect__tag~.multiselect__input,.multiselect__tag~.multiselect__single{width:auto}.multiselect__input:hover,.multiselect__single:hover{border-color:#cfcfcf}.multiselect__input:focus,.multiselect__single:focus{border-color:#a8a8a8;outline:none}.multiselect__single{padding-left:5px;margin-bottom:8px}.multiselect__tags-wrap{display:inline}.multiselect__tags{min-height:40px;display:block;padding:8px 40px 0 8px;border-radius:5px;border:1px solid #e8e8e8;background:#fff;font-size:14px}.multiselect__tag{position:relative;display:inline-block;padding:4px 26px 4px 10px;border-radius:5px;margin-right:10px;color:#fff;line-height:1;background:#41b883;margin-bottom:5px;white-space:nowrap;overflow:hidden;max-width:100%;text-overflow:ellipsis}.multiselect__tag-icon{cursor:pointer;margin-left:7px;position:absolute;right:0;top:0;bottom:0;font-weight:700;font-style:normal;width:22px;text-align:center;line-height:22px;transition:all .2s ease;border-radius:5px}.multiselect__tag-icon:after{content:\"\\D7\";color:#266d4d;font-size:14px}.multiselect__tag-icon:focus,.multiselect__tag-icon:hover{background:#369a6e}.multiselect__tag-icon:focus:after,.multiselect__tag-icon:hover:after{color:#fff}.multiselect__current{min-height:40px;overflow:hidden;padding:8px 30px 0 12px;white-space:nowrap;border-radius:5px;border:1px solid #e8e8e8}.multiselect__current,.multiselect__select{line-height:16px;box-sizing:border-box;display:block;margin:0;text-decoration:none;cursor:pointer}.multiselect__select{position:absolute;width:40px;height:38px;right:1px;top:1px;padding:4px 8px;text-align:center;transition:transform .2s ease}.multiselect__select:before{position:relative;right:0;top:65%;color:#999;margin-top:4px;border-color:#999 transparent transparent;border-style:solid;border-width:5px 5px 0;content:\"\"}.multiselect__placeholder{color:#adadad;display:inline-block;margin-bottom:10px;padding-top:2px}.multiselect--active .multiselect__placeholder{display:none}.multiselect__content-wrapper{position:absolute;display:block;background:#fff;width:100%;max-height:240px;overflow:auto;border:1px solid #e8e8e8;border-top:none;border-bottom-left-radius:5px;border-bottom-right-radius:5px;z-index:50;-webkit-overflow-scrolling:touch}.multiselect__content{list-style:none;display:inline-block;padding:0;margin:0;min-width:100%;vertical-align:top}.multiselect--above .multiselect__content-wrapper{bottom:100%;border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:5px;border-top-right-radius:5px;border-bottom:none;border-top:1px solid #e8e8e8}.multiselect__content::webkit-scrollbar{display:none}.multiselect__element{display:block}.multiselect__option{display:block;padding:12px;min-height:40px;line-height:16px;text-decoration:none;text-transform:none;vertical-align:middle;position:relative;cursor:pointer;white-space:nowrap}.multiselect__option:after{top:0;right:0;position:absolute;line-height:40px;padding-right:12px;padding-left:20px;font-size:13px}.multiselect__option--highlight{background:#41b883;outline:none;color:#fff}.multiselect__option--highlight:after{content:attr(data-select);background:#41b883;color:#fff}.multiselect__option--selected{background:#f3f3f3;color:#35495e;font-weight:700}.multiselect__option--selected:after{content:attr(data-selected);color:silver}.multiselect__option--selected.multiselect__option--highlight{background:#ff6a6a;color:#fff}.multiselect__option--selected.multiselect__option--highlight:after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect--disabled .multiselect__current,.multiselect--disabled .multiselect__select{background:#ededed;color:#a6a6a6}.multiselect__option--disabled{background:#ededed!important;color:#a6a6a6!important;cursor:text;pointer-events:none}.multiselect__option--group{background:#ededed;color:#35495e}.multiselect__option--group.multiselect__option--highlight{background:#35495e;color:#fff}.multiselect__option--group.multiselect__option--highlight:after{background:#35495e}.multiselect__option--disabled.multiselect__option--highlight{background:#dedede}.multiselect__option--group-selected.multiselect__option--highlight{background:#ff6a6a;color:#fff}.multiselect__option--group-selected.multiselect__option--highlight:after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect-enter-active,.multiselect-leave-active{transition:all .15s ease}.multiselect-enter,.multiselect-leave-active{opacity:0}.multiselect__strong{margin-bottom:8px;line-height:20px;display:inline-block;vertical-align:top}[dir=rtl] .multiselect{text-align:right}[dir=rtl] .multiselect__select{right:auto;left:1px}[dir=rtl] .multiselect__tags{padding:8px 8px 0 40px}[dir=rtl] .multiselect__content{text-align:right}[dir=rtl] .multiselect__option:after{right:auto;left:0}[dir=rtl] .multiselect__clear{right:auto;left:12px}[dir=rtl] .multiselect__spinner{right:auto;left:1px}@keyframes spinning{0%{transform:rotate(0)}to{transform:rotate(2turn)}}", ""]);
 
 // exports
 
@@ -11161,188 +11257,6 @@ function toComment(sourceMap) {
 	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
 
 	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/flat/index.js":
-/*!************************************!*\
-  !*** ./node_modules/flat/index.js ***!
-  \************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isBuffer = __webpack_require__(/*! is-buffer */ "./node_modules/flat/node_modules/is-buffer/index.js")
-
-module.exports = flatten
-flatten.flatten = flatten
-flatten.unflatten = unflatten
-
-function keyIdentity (key) {
-  return key
-}
-
-function flatten (target, opts) {
-  opts = opts || {}
-
-  const delimiter = opts.delimiter || '.'
-  const maxDepth = opts.maxDepth
-  const transformKey = opts.transformKey || keyIdentity
-  const output = {}
-
-  function step (object, prev, currentDepth) {
-    currentDepth = currentDepth || 1
-    Object.keys(object).forEach(function (key) {
-      const value = object[key]
-      const isarray = opts.safe && Array.isArray(value)
-      const type = Object.prototype.toString.call(value)
-      const isbuffer = isBuffer(value)
-      const isobject = (
-        type === '[object Object]' ||
-        type === '[object Array]'
-      )
-
-      const newKey = prev
-        ? prev + delimiter + transformKey(key)
-        : transformKey(key)
-
-      if (!isarray && !isbuffer && isobject && Object.keys(value).length &&
-        (!opts.maxDepth || currentDepth < maxDepth)) {
-        return step(value, newKey, currentDepth + 1)
-      }
-
-      output[newKey] = value
-    })
-  }
-
-  step(target)
-
-  return output
-}
-
-function unflatten (target, opts) {
-  opts = opts || {}
-
-  const delimiter = opts.delimiter || '.'
-  const overwrite = opts.overwrite || false
-  const transformKey = opts.transformKey || keyIdentity
-  const result = {}
-
-  const isbuffer = isBuffer(target)
-  if (isbuffer || Object.prototype.toString.call(target) !== '[object Object]') {
-    return target
-  }
-
-  // safely ensure that the key is
-  // an integer.
-  function getkey (key) {
-    const parsedKey = Number(key)
-
-    return (
-      isNaN(parsedKey) ||
-      key.indexOf('.') !== -1 ||
-      opts.object
-    ) ? key
-      : parsedKey
-  }
-
-  function addKeys (keyPrefix, recipient, target) {
-    return Object.keys(target).reduce(function (result, key) {
-      result[keyPrefix + delimiter + key] = target[key]
-
-      return result
-    }, recipient)
-  }
-
-  function isEmpty (val) {
-    const type = Object.prototype.toString.call(val)
-    const isArray = type === '[object Array]'
-    const isObject = type === '[object Object]'
-
-    if (!val) {
-      return true
-    } else if (isArray) {
-      return !val.length
-    } else if (isObject) {
-      return !Object.keys(val).length
-    }
-  }
-
-  target = Object.keys(target).reduce((result, key) => {
-    const type = Object.prototype.toString.call(target[key])
-    const isObject = (type === '[object Object]' || type === '[object Array]')
-    if (!isObject || isEmpty(target[key])) {
-      result[key] = target[key]
-      return result
-    } else {
-      return addKeys(
-        key,
-        result,
-        flatten(target[key], opts)
-      )
-    }
-  }, {})
-
-  Object.keys(target).forEach(function (key) {
-    const split = key.split(delimiter).map(transformKey)
-    let key1 = getkey(split.shift())
-    let key2 = getkey(split[0])
-    let recipient = result
-
-    while (key2 !== undefined) {
-      const type = Object.prototype.toString.call(recipient[key1])
-      const isobject = (
-        type === '[object Object]' ||
-        type === '[object Array]'
-      )
-
-      // do not write over falsey, non-undefined values if overwrite is false
-      if (!overwrite && !isobject && typeof recipient[key1] !== 'undefined') {
-        return
-      }
-
-      if ((overwrite && !isobject) || (!overwrite && recipient[key1] == null)) {
-        recipient[key1] = (
-          typeof key2 === 'number' &&
-          !opts.object ? [] : {}
-        )
-      }
-
-      recipient = recipient[key1]
-      if (split.length > 0) {
-        key1 = getkey(split.shift())
-        key2 = getkey(split[0])
-      }
-    }
-
-    // unflatten again for 'messy objects'
-    recipient[key1] = unflatten(target[key], opts)
-  })
-
-  return result
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/flat/node_modules/is-buffer/index.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/flat/node_modules/is-buffer/index.js ***!
-  \***********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-/*!
- * Determine if an object is a Buffer
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
- */
-
-module.exports = function isBuffer (obj) {
-  return obj != null && obj.constructor != null &&
-    typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
 }
 
 
@@ -71066,6 +70980,143 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CreateOfficeComponent.vue?vue&type=template&id=3057052a&":
+/*!************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CreateOfficeComponent.vue?vue&type=template&id=3057052a& ***!
+  \************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "group-wrapper" }, [
+    _c("div", { staticClass: "card pb-4" }, [
+      _c("h4", { staticClass: "h4 ml-3 mt-4" }, [_vm._v("Create Branch")]),
+      _vm._v(" "),
+      _c(
+        "form",
+        {
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              return _vm.submit($event)
+            }
+          }
+        },
+        [
+          _c(
+            "div",
+            { staticClass: "form-group col-md-6 mt-4" },
+            [
+              _c("label", [_vm._v("Assign To:")]),
+              _vm._v(" "),
+              _c("v2-select", {
+                class: _vm.officeHasError ? "is-invalid" : "",
+                attrs: { list_level: this.list_level },
+                on: { officeSelected: _vm.assignOffice }
+              }),
+              _vm._v(" "),
+              _vm.officeHasError
+                ? _c("div", { staticClass: "invalid-feedback" }, [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(_vm.errors.office_id[0]) +
+                        "\n                    "
+                    )
+                  ])
+                : _vm._e()
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group col-md-6" }, [
+            _c("label", [_vm._v("Code:")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.fields.code,
+                  expression: "fields.code"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "number" },
+              domProps: { value: _vm.fields.code },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.fields, "code", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group col-md-6" }, [
+            _c("label", { attrs: { for: "cluster_code" } }, [_vm._v("Name")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.fields.name,
+                  expression: "fields.name"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text" },
+              domProps: { value: _vm.fields.name },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.fields, "name", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "button",
+            { staticClass: "ml-3 btn btn-primary", attrs: { type: "submit" } },
+            [_vm._v("Submit")]
+          )
+        ]
+      )
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group col-md-6" }, [
+      _c("label", [_vm._v("Notes")]),
+      _vm._v(" "),
+      _c("textarea", { staticClass: "form-control" })
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DatePickerComponent.vue?vue&type=template&id=5f03dfe6&":
 /*!**********************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DatePickerComponent.vue?vue&type=template&id=5f03dfe6& ***!
@@ -86265,8 +86316,8 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 
-window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
-window.flatten = __webpack_require__(/*! flat */ "./node_modules/flat/index.js");
+window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js"); // window.flatten = require('flat')
+
 window.Swal = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 window.moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"); // import VuePaginate from 'vue-paginate'
 // Vue.use(VuePaginate)
@@ -86291,6 +86342,7 @@ Vue.component('update-client-form', __webpack_require__(/*! ./components/ClientU
 Vue.component('client-list', __webpack_require__(/*! ./components/ClientListComponent.vue */ "./resources/js/components/ClientListComponent.vue")["default"]);
 Vue.component('paginator', __webpack_require__(/*! ./components/PaginatorComponent.vue */ "./resources/js/components/PaginatorComponent.vue")["default"]);
 Vue.component('upload-file', __webpack_require__(/*! ./components/UploadSampleComponent.vue */ "./resources/js/components/UploadSampleComponent.vue")["default"]);
+Vue.component('create-office', __webpack_require__(/*! ./components/CreateOfficeComponent.vue */ "./resources/js/components/CreateOfficeComponent.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -86552,6 +86604,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ClientUpdateFormComponent_vue_vue_type_template_id_3804abac___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ClientUpdateFormComponent_vue_vue_type_template_id_3804abac___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/CreateOfficeComponent.vue":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/CreateOfficeComponent.vue ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _CreateOfficeComponent_vue_vue_type_template_id_3057052a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CreateOfficeComponent.vue?vue&type=template&id=3057052a& */ "./resources/js/components/CreateOfficeComponent.vue?vue&type=template&id=3057052a&");
+/* harmony import */ var _CreateOfficeComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CreateOfficeComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/CreateOfficeComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _CreateOfficeComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CreateOfficeComponent_vue_vue_type_template_id_3057052a___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CreateOfficeComponent_vue_vue_type_template_id_3057052a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/CreateOfficeComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/CreateOfficeComponent.vue?vue&type=script&lang=js&":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/CreateOfficeComponent.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateOfficeComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./CreateOfficeComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CreateOfficeComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateOfficeComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/CreateOfficeComponent.vue?vue&type=template&id=3057052a&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/CreateOfficeComponent.vue?vue&type=template&id=3057052a& ***!
+  \******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateOfficeComponent_vue_vue_type_template_id_3057052a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./CreateOfficeComponent.vue?vue&type=template&id=3057052a& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CreateOfficeComponent.vue?vue&type=template&id=3057052a&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateOfficeComponent_vue_vue_type_template_id_3057052a___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateOfficeComponent_vue_vue_type_template_id_3057052a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -87025,8 +87146,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/ashbeemorgado/devs/lumen/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/ashbeemorgado/devs/lumen/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/nelsontan/Projects/Lumen/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/nelsontan/Projects/Lumen/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
