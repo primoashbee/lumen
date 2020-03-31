@@ -34,7 +34,7 @@ export default {
       if(this.list_level==null){
           this.fetchAllLevels();
       }else{
-          
+
           this.fetchListByLevel(this.list_level)
       }
       
@@ -99,5 +99,6 @@ export default {
       background: #27293d!important;
       color: white;
     }
+
 </style>
 

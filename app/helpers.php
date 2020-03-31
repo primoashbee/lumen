@@ -13,6 +13,28 @@ use App\Imports\OfficeImport;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
   
+    function structure(){
+        $struc = [
+            "level"=>'main_office',
+            "parent_level"=>null,
+            "child"=> [
+                "parent_level"=>"main_office",
+                "level"=>"region",
+                "child"=> [
+                    "parent_level"=>"region",
+                    "level"=>"area",
+                    "child"=> [
+                        "parent_level"=>"area",
+                        "level"=>"branch"
+                    ]
+                ]
+            ]
+        ];
+       
+        
+        return collect($struc);
+        
+    }
     function createAdminAccount(){
         $user = User::create([
             'firstname' => 'Ashbee',

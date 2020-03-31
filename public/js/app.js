@@ -11053,7 +11053,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 exports.i(__webpack_require__(/*! -!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!vue-multiselect/dist/vue-multiselect.min.css */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css"), "");
 
 // module
-exports.push([module.i, "\n.multiselect__tags{\n  background: #27293d;\n}\n.multiselect__input{\n  background: #27293d!important;\n  border-color:#2b3553\n}\n.multiselect__single{\n  background: #27293d!important;\n  color: white;\n}\n", ""]);
+exports.push([module.i, "\n.multiselect__tags{\n  background: #27293d;\n}\n.multiselect__input{\n  background: #27293d!important;\n  border-color:#2b3553\n}\n.multiselect__single{\n  background: #27293d!important;\n  color: white;\n}\n\n", ""]);
 
 // exports
 
@@ -64992,7 +64992,6 @@ var render = function() {
                       _vm._v(" "),
                       _c("v2-select", {
                         class: _vm.officeHasError ? "is-invalid" : "",
-                        attrs: { list_level: "cluster" },
                         on: { officeSelected: _vm.assignOffice }
                       }),
                       _vm._v(" "),

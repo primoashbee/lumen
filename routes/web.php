@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use App\Events\TestEvent;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
@@ -77,9 +78,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
 
+    Route::get('/create/office/{level}',function($level){
+        echo $level;
+    });
 
-    Route::get('/id/{id}',function($id){
-        return makeClientID($id);
+
+    Route::get('/event',function(){
+        event(new TestEvent('tae ka girl?'));
     
     });
 });
