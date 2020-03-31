@@ -8,6 +8,7 @@
     group-values="data" 
     group-label="level" 
     :group-select="false" 
+    :allow-empty="false"
     placeholder="Select Level" 
     track-by="name" 
     label="name"
@@ -28,13 +29,13 @@ export default {
   components: {
     Multiselect
   },
-  props: ['name'],
+  props: ['name','default_value','list_level'],
   created(){
-    
-      axios.get('/usr/branches')
-        .then(res=>{
-          this.options=res.data
-        })
+      if(this.list_level==null){
+          this.fetchAllLevels();
+      }else{
+          this.fetchListByLevel(this.list_level)
+      }
       
   },
   data () {
@@ -50,7 +51,35 @@ export default {
         
         this.$emit('officeSelected', this.value);
       }
-      
+    },
+    fetchAllLevels(){
+      axios.get('/usr/branches')
+        .then(res=>{
+          this.options=res.data
+            if(this.default_value!==undefined){
+              
+              this.options.filter( obj => {
+                var item = obj.data.filter(office => {
+                   office.id == this.default_value ? this.value = office : ''
+                })
+              })
+              
+          }
+        })
+    },
+    fetchListByLevel(level){
+        axios.get('/usr/branches?level='+level)
+        .then(res=>{
+          this.options=res.data
+            if(this.default_value!==undefined){
+              this.options.filter( obj => {
+                var item = obj.data.filter(office => {
+                   office.id == this.default_value ? this.value = office : ''
+                })
+              })
+              
+          }
+        })
     }
   }
 }

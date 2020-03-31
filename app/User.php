@@ -49,63 +49,94 @@ class User extends Authenticatable
 
     public function scopes(){
        
-        $offices = $this->office;
+            $offices = $this->office;
     
-        $scopes = [];
-        foreach($offices as $office){    
-            array_push($scopes,$office);
-            $scopes = array_merge($scopes, $office->getChild());
-        }
-
-        return $scopes;
+            $scopes = [];
+            foreach ($offices as $office) {
+                array_push($scopes, $office);
+                $scopes = array_merge($scopes, $office->getChild());
+            }
+            return $scopes;
+        
+        
     }
 
-    public function scopesBranch(){
-
+    public function scopesBranch($level = null){
+        $office_level = $level;
+     
         $collection = collect($this->scopes());
-        $branches = [];
-        $clusters = [];
-        $officers = [];
+        if ($office_level==null) {
+            $branches = [];
+            $clusters = [];
+            $officers = [];
+    
+            
+            $branches = $collection->filter(function($item){
+                return $item->level=="branch";
+            })->values();
+            
+            $branches = $branches->map(function($item){
+                $branch['id'] = $item->id;
+                $branch['name'] = $item->name;
+                return $branch;
+            });
+            
+            $clusters = $collection->filter(function($item){
+                return $item->level=="cluster";
+            })->values();
+    
+            $clusters = $clusters->map(function($item){
+                $cluster['id'] = $item->id;
+                $cluster['name'] = $item->name;
+                return $cluster;
+            });
+            
+            $officers = $collection->filter(function($item){
+                return $item->level=="officer";
+            })->values();
+            
+    
+            $officers = $officers->map(function($item){
+                $officer['id'] = $item->id;
+                $officer['name'] = $item->name;
+                return $officer;
+            });
+            
+            $filtered = [
+                ['level' => 'Branches', 'data' => collect($branches)->sortBy('name')->unique()->values()], 
+                ['level' => 'Clusters', 'data' => collect($clusters)->sortBy('name')->unique()->values()], 
+                ['level' => 'Officers', 'data' => collect($officers)->sortBy('name')->unique()->values()]
+            ];
+            return $filtered;
+        }
 
-        
-        $branches = $collection->filter(function($item){
-            return $item->level=="branch";
+
+
+
+        $list = $collection->filter(function($item) use($office_level){
+            return $item->level == $office_level;
         })->values();
-        
-        $branches = $branches->map(function($item){
+
+        $lists = $list->map(function($item){
             $branch['id'] = $item->id;
             $branch['name'] = $item->name;
             return $branch;
         });
-        
-        $clusters = $collection->filter(function($item){
-            return $item->level=="cluster";
-        })->values();
 
-        $clusters = $clusters->map(function($item){
-            $cluster['id'] = $item->id;
-            $cluster['name'] = $item->name;
-            return $cluster;
-        });
-        
-        $officers = $collection->filter(function($item){
-            return $item->level=="officer";
-        })->values();
-        
-
-        $officers = $officers->map(function($item){
-            $officer['id'] = $item->id;
-            $officer['name'] = $item->name;
-            return $officer;
-        });
-        
+         
         $filtered = [
-            ['level' => 'Branches', 'data' => collect($branches)->sortBy('name')->unique()->values()], 
-            ['level' => 'Clusters', 'data' => collect($clusters)->sortBy('name')->unique()->values()], 
-            ['level' => 'Officers', 'data' => collect($officers)->sortBy('name')->unique()->values()]
+            ['level' => ucwords($office_level), 'data' => collect($lists)->sortBy('name')->unique()->values()], 
         ];
-
         return $filtered;
+
+
+
+        
+
+
+       
+
+     
 
     }
     public function scopesID(){

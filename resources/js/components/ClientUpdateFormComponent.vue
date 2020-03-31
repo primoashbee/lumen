@@ -12,7 +12,7 @@
                 <div class="row px-3">
                 <div class="form-group col-md-6 col-lg-3">
                     <label for="client_id">Linked To</label>
-                    <v2-select @officeSelected="assignOffice" list_level="cluster" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
+                    <v2-select @officeSelected="assignOffice" :default_value ="fields.office_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
                     <div class="invalid-feedback" v-if="officeHasError">
                         {{ errors.office_id[0]}}
                     </div>
@@ -106,7 +106,7 @@
             
                     <div class="form-group col-md-3 px-3">
                         <label for="birthday">Birthday</label>
-                        <date-picker id="birthday"  v-model="fields.birthday" v-bind:class="birthdayHasError ? 'is-invalid' : ''" v-bind:has-error="birthdayHasError ? 'is-invalid' : ''"  @datePicked="getDate($event, 'birthday')" ></date-picker>
+                        <date-picker id="birthday" :default_value="fields.birthday" v-model="fields.birthday" v-bind:class="birthdayHasError ? 'is-invalid' : ''" v-bind:has-error="birthdayHasError ? 'is-invalid' : ''"  @datePicked="getDate($event, 'birthday')" ></date-picker>
                         <div class="invalid-feedback" v-if="birthdayHasError">
                             {{ errors.birthday[0]}}
                         </div>  
@@ -248,7 +248,7 @@
                     <div class="form-group col-md-4 col-md-offset-8">
                         <label for="spouse_birthday">Spouse Birthday</label>
                     
-                        <date-picker v-bind:class="houseTypeHasError ? 'is-invalid' : ''" v-bind:has-error="birthdayHasError ? 'is-invalid' : ''"  v-model="fields.spouse_birthday" name="spouse_birthday" id="spouse_birthday"  @datePicked="getDate($event, 'spouse_birthday')"></date-picker>
+                        <date-picker  :default_value="fields.spouse_birthday" v-bind:class="houseTypeHasError ? 'is-invalid' : ''" v-bind:has-error="birthdayHasError ? 'is-invalid' : ''"  v-model="fields.spouse_birthday" name="spouse_birthday" id="spouse_birthday"  @datePicked="getDate($event, 'spouse_birthday')"></date-picker>
                         <div class="invalid-feedback" v-if="spouseBirthdayHasError">
                             {{ errors.spouse_birthday[0]}}
                         </div>
@@ -317,8 +317,8 @@
                             </div>
                         </div>
                         <div class="hi form-group p0 my-2" data-attribute="is_self_employed" :class="{active:fields.is_self_employed}">
-                            <label for="service_type_monthly_gross_income">Monthly Income</label>
-                            <input type="number" step ="0.01" id="service_type_monthly_gross_income" v-model="fields.service_type_monthly_gross_income" class="form-control" value="service_type_monthly_gross_income">
+                            <label for="service_type_gross_income">Monthly Income</label>
+                            <input type="number" step ="0.01" id="service_type_gross_income" v-model="fields.service_type_monthly_gross_income" class="form-control">
                         </div>
                     </div>
             
@@ -372,8 +372,8 @@
                             </select>
                         </div>
                         <div class="hi form-group p0 my-2" :class="{active:fields.spouse_is_self_employed}" data-attribute="spouse_is_self_employed" >
-                            <label for="spouse_service_type_monthly_gross_income">Monthly Income</label> 
-                            <input type="number" step ="0.01" id="spouse_service_type_monthly_gross_income" v-model="fields.spouse_service_type_monthly_gross_income" value="" class="form-control">
+                            <label for="spouse_service_type_gross_income">Monthly Income</label> 
+                            <input type="number" step ="0.01" id="spouse_service_type_gross_income" v-model="fields.spouse_service_type_monthly_gross_income" value="" class="form-control">
                         </div>
                     </div>
             
@@ -444,7 +444,7 @@
                 <div class="row px-3 my-3">
                     <div class="form-group col-md-4 col-md-offset-8">
                         <label class="">Total household income</label>
-                        <input type="text" class="form-control" v-bind:class="totalHouseholdIncomeHasError ? 'is-invalid' : ''"  readonly="true" :value="total_household_income">
+                        <input type="text" class="form-control" v-bind:class="totalHouseholdIncomeHasError ? 'is-invalid' : ''"  readonly="true" :value="displayed_total_household_income">
                         <div class="invalid-feedback" v-if="totalHouseholdIncomeHasError">
                             {{ errors.total_household_income[0]}}
                         </div>
@@ -527,6 +527,7 @@ export default {
         SelectComponentV2,
         Loading 
     },
+    props: ["client"],
     data(){
         return {
             masks: {
@@ -571,6 +572,9 @@ export default {
                 'sss':"",
                 'umid':"",
                 'mother_maiden_name':"",
+                'photo_changed' :false,
+                'signature_changed' :false,
+
 
                 'is_self_employed':false,
                 'service_type':"",
@@ -598,8 +602,8 @@ export default {
 
                 'notes':"",
 
-                'profile_picture_path_preview':location.origin + '/assets/img/anime3.png',
-                'signature_path_preview': location.origin + '/assets/img/signature.png',
+                'profile_picture_path_preview':null,
+                'signature_path_preview': null,
 
 
                 'profile_picture_path': null,
@@ -612,12 +616,25 @@ export default {
         }
     },
     computed:{
+        
+        clientInfo(){
+            return JSON.parse(this.client)
+        },
         total_household_income(){
-            var total = parseFloat(this.fields.service_type_monthly_gross_income) + parseFloat(this.fields.employed_monthly_gross_income) +  parseFloat(this.fields.spouse_service_type_monthly_gross_income) +parseFloat(this.fields.spouse_employed_monthly_gross_income) + parseFloat(this.fields.remittance_amount) + parseFloat(this.fields.pension_amount) 
+            var total = 
+             parseFloat(this.fields.service_type_monthly_gross_income) +
+             parseFloat(this.fields.employed_monthly_gross_income) +
+             parseFloat(this.fields.spouse_service_type_monthly_gross_income) +
+             parseFloat(this.fields.spouse_employed_monthly_gross_income) +
+             parseFloat(this.fields.remittance_amount) + 
+             parseFloat(this.fields.pension_amount) 
             if(isNaN(total)){
                 return 'Use positive integers for amounts only';
             }
-            return total;
+            return (total)
+        },
+        displayed_total_household_income(){
+            return '₱ '+this.number_format(this.total_household_income)
         },
         hasErrors(){
             return Object.keys(this.errors).length > 0;
@@ -739,97 +756,9 @@ export default {
         // }
 
     },
-
-    created(){
-        
-    },
-    methods: {
-        upload(){
-            let form = new FormData();
-            // $.each(this.fields,function(k,v){
-                
-            // });
-            
-            // form.append('image', this.fields.profile_picture_path,this.fields.profile_picture_path);
-            // console.log(form.get);
-            // axios.post('/upload', form)
-            //     .then(res=>{
-            //         console.log(res);   
-            //     })
-        },
-        removeImage: function (e) {
-            this.image = '';
-        },
-        onChildClick(value){
-            alert(this.fromChild)
-        },
-        assignOffice(value){
-            this.fields.office_id = value['id']
-        },
-        getDate(value, field){
-           this.fields[field] = value
-        },
-        clientExists(){
-            return Object.keys(this.errors.client).length > 0
-        },
-
-        onFileSelected(e,id) {
-              const file = e.target.files[0]
-              if(id == "profile_picture_path"){
-                  this.fields.profile_picture_path_preview = URL.createObjectURL(file)
-              }
-              if(id == "signature_path"){
-                  this.fields.signature_path_preview = URL.createObjectURL(file)
-              }
-              
-              this.fields[id] = file;
-
-        },
-        submit(){
-            this.errors = {}
-            this.fields['total_household_income'] = this.total_household_income
-            let formData = new FormData();
-            $.each(this.fields, function(k,v){
-                formData.append(k,v)
-            });
-            if(this.profile_picture_path ==location.origin + '/assets/img/anime3.png'){
-                formData.append('profile_picture_path',this.fields.profile_picture_path)
-            }
-            if(this.signature_path==location.origin + '/assets/img/signature.png'){
-                formData.append('signature_path',this.fields.signature_path)
-            }
-            this.isLoading = true
-            axios.post('/create/client', formData)
-                .then(res=>{
-                    this.isLoading = false
-                    Swal.fire({
-                        icon: 'success',
-                        title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
-                        text: res.data.msg,
-                        confirmButtonText: 'OK'
-                    })
-                    .then(res=>{
-                        // location.reload();
-                    })
-                })
-                .catch(error=>{
-                    this.isLoading = false
-                    this.errors = error.response.data.errors || {}
-                    if(this.duplicateClient){
-                        Swal.fire({
-                            icon: 'error',
-                            title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">OOPPPSSSSS!</span>',
-                            text: this.errors.client.msg,
-                            footer: '<a href="#">Client ['+this.errors.client.client_id+'] already existing at: ' +this.errors.client.exists_at +'</a>'
-                        })
-                    }
-                })
-        },
-    },
     watch : {
         'fields.is_self_employed' : function (newVal,oldVal){
-           if(!newVal){
-               console.log('unclicked');
+           if(!newVal){               
                this.fields.service_type = ""
                this.fields.service_type_monthly_gross_income = 0
                return;
@@ -870,6 +799,142 @@ export default {
                return;
            }
         }
-    }
+    },
+    created(){
+        this.populateData();
+    },
+    methods: {
+
+        number_format(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
+        populateData(){
+            var vm = this
+            $.each(this.clientInfo,function(k,v){
+                if(k =="household_income"){
+                    $.each(v,function(hK,hV){
+                        var key = hK.replace("household_income","")
+                        vm.fields[key] = hV
+                    })
+                }else{
+                    if(k=="profile_picture_path"){
+                        vm.fields.profile_picture_path_preview = location.origin+ '/'+ v
+                    }
+                    if(k=="signature_path"){
+                        vm.fields.signature_path_preview = location.origin+ '/'+ v
+                    }else{
+                        vm.fields[k] = v
+                    }
+
+                }
+
+            })
+            
+        },
+        upload(){
+            let form = new FormData();
+            // $.each(this.fields,function(k,v){
+                
+            // });
+            
+            // form.append('image', this.fields.profile_picture_path,this.fields.profile_picture_path);
+            // console.log(form.get);
+            // axios.post('/upload', form)
+            //     .then(res=>{
+            //         console.log(res);   
+            //     })
+        },
+        removeImage: function (e) {
+            this.image = '';
+        },
+        onChildClick(value){
+            alert(this.fromChild)
+        },
+        assignOffice(value){
+            this.fields.office_id = value['id']
+        },
+        getDate(value, field){
+           this.fields[field] = value
+        },
+        clientExists(){
+            return Object.keys(this.errors.client).length > 0
+        },
+
+        onFileSelected(e,id) {
+              const file = e.target.files[0]
+              if(id == "profile_picture_path"){
+                  this.fields.photo_changed = true
+                  this.fields.profile_picture_path_preview = URL.createObjectURL(file)
+              }
+              if(id == "signature_path"){
+                  this.fields.signature_changed = true
+                  this.fields.signature_path_preview = URL.createObjectURL(file)
+              }
+              
+              this.fields[id] = file;
+
+        },
+        submit(){
+            this.errors = {}
+            var vm = this
+            this.fields['total_household_income'] = this.total_household_income
+            let formData = new FormData();
+            
+            $.each(vm.fields, function(k,v){    
+                if(k!="profile_picture_path" && k!="signature_path") {
+                    formData.append(k,v)
+                }
+
+                if(k == "profile_picture_path"){
+                    if(vm.fields.photo_changed){
+                        formData.append(k,v)
+                    }else{
+                    
+                    }
+                }
+                if(k=="signature_path"){
+                    if(vm.fields.signature_changed){
+                        formData.append(k,v)
+                    }
+                }
+
+            });
+           
+            this.isLoading = true
+            axios.post('/edit/client', formData)
+                .then(res=>{
+                    this.isLoading = false
+                    setTimeout(()=>{
+                    Swal.fire({
+                        icon: 'success',
+                        title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
+                        text: res.data.msg,
+                        confirmButtonText: 'OK',
+                        allowEnterKey: true // default value
+                    })
+                    .then(res=>{
+                        location.reload();
+                    })
+                    },10)
+ 
+
+                })
+                .catch(error=>{
+                    this.isLoading = false
+                    this.errors = error.response.data.errors || {}
+                    if(this.duplicateClient){
+                        Swal.fire({
+                            icon: 'error',
+                            title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">OOPPPSSSSS!</span>',
+                            text: this.errors.client.msg,
+                            footer: '<a href="#">Client ['+this.errors.client.client_id+'] already existing at: ' +this.errors.client.exists_at +'</a>'
+                            
+                            
+                        })
+                    }
+                })
+        },
+    },
+
 }
 </script>
