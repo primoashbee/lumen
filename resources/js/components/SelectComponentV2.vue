@@ -29,24 +29,14 @@ export default {
   components: {
     Multiselect
   },
-  props: ['name','default_value'],
+  props: ['name','default_value','list_level'],
   created(){
-      
-    
-      // console.log('created')
-      axios.get('/usr/branches')
-        .then(res=>{
-          this.options=res.data
-            if(this.default_value!==undefined){
-              
-              this.options.filter( obj => {
-                var item = obj.data.filter(office => {
-                   office.id == this.default_value ? this.value = office : ''
-                })
-              })
-              
-          }
-        })
+      if(this.list_level==null){
+          this.fetchAllLevels();
+      }else{
+          
+          this.fetchListByLevel(this.list_level)
+      }
       
   },
   data () {
@@ -62,6 +52,35 @@ export default {
         
         this.$emit('officeSelected', this.value);
       }
+    },
+    fetchAllLevels(){
+      axios.get('/usr/branches')
+        .then(res=>{
+          this.options=res.data
+            if(this.default_value!==undefined){
+              
+              this.options.filter( obj => {
+                var item = obj.data.filter(office => {
+                   office.id == this.default_value ? this.value = office : ''
+                })
+              })
+              
+          }
+        })
+    },
+    fetchListByLevel(level){
+        axios.get('/usr/branches?level='+level)
+        .then(res=>{
+          this.options=res.data
+            if(this.default_value!==undefined){
+              this.options.filter( obj => {
+                var item = obj.data.filter(office => {
+                   office.id == this.default_value ? this.value = office : ''
+                })
+              })
+              
+          }
+        })
     }
   }
 }

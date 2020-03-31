@@ -4220,22 +4220,13 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_0___default.a
   },
-  props: ['name', 'default_value'],
+  props: ['name', 'default_value', 'list_level'],
   created: function created() {
-    var _this = this;
-
-    // console.log('created')
-    axios.get('/usr/branches').then(function (res) {
-      _this.options = res.data;
-
-      if (_this.default_value !== undefined) {
-        _this.options.filter(function (obj) {
-          var item = obj.data.filter(function (office) {
-            office.id == _this.default_value ? _this.value = office : '';
-          });
-        });
-      }
-    });
+    if (this.list_level == null) {
+      this.fetchAllLevels();
+    } else {
+      this.fetchListByLevel(this.list_level);
+    }
   },
   data: function data() {
     return {
@@ -4249,6 +4240,36 @@ __webpack_require__.r(__webpack_exports__);
       if (this.value != null) {
         this.$emit('officeSelected', this.value);
       }
+    },
+    fetchAllLevels: function fetchAllLevels() {
+      var _this = this;
+
+      axios.get('/usr/branches').then(function (res) {
+        _this.options = res.data;
+
+        if (_this.default_value !== undefined) {
+          _this.options.filter(function (obj) {
+            var item = obj.data.filter(function (office) {
+              office.id == _this.default_value ? _this.value = office : '';
+            });
+          });
+        }
+      });
+    },
+    fetchListByLevel: function fetchListByLevel(level) {
+      var _this2 = this;
+
+      axios.get('/usr/branches?level=' + level).then(function (res) {
+        _this2.options = res.data;
+
+        if (_this2.default_value !== undefined) {
+          _this2.options.filter(function (obj) {
+            var item = obj.data.filter(function (office) {
+              office.id == _this2.default_value ? _this2.value = office : '';
+            });
+          });
+        }
+      });
     }
   }
 });
@@ -64971,6 +64992,7 @@ var render = function() {
                       _vm._v(" "),
                       _c("v2-select", {
                         class: _vm.officeHasError ? "is-invalid" : "",
+                        attrs: { list_level: "cluster" },
                         on: { officeSelected: _vm.assignOffice }
                       }),
                       _vm._v(" "),
