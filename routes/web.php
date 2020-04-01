@@ -78,11 +78,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
 
-
-
-    Route::get('/event',function(){
-        event(new TestEvent('tae ka girl?'));
-    
+    Route::get('/z/{level}',function(Request $request){
+        return auth()->user()->scopesBranch(Office::getParentOfLevel($request->level));
     });
 });
 
