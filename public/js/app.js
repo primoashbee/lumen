@@ -2912,6 +2912,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3991,23 +3997,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     SelectComponentV2: _SelectComponentV2__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['list_level'],
+  props: ['list_level', 'level'],
   data: function data() {
     return {
       fields: {
         'office_id': "",
         'code': "",
         'name': "",
-        "level": this.list_level
+        "level": "",
+        "readonly": false
       },
       errors: {}
     };
+  },
+  created: function created() {
+    if (this.level == "cluster") {
+      this.fields.readonly = true;
+    }
+
+    this.fields.level = this.level;
   },
   computed: {
     hasErrors: function hasErrors() {
@@ -4015,6 +4035,12 @@ __webpack_require__.r(__webpack_exports__);
     },
     officeHasError: function officeHasError() {
       return this.errors.hasOwnProperty('office_id');
+    },
+    nameHasError: function nameHasError() {
+      return this.errors.hasOwnProperty('name');
+    },
+    codeHasError: function codeHasError() {
+      return this.errors.hasOwnProperty('code');
     }
   },
   methods: {
@@ -4024,6 +4050,10 @@ __webpack_require__.r(__webpack_exports__);
     submit: function submit() {
       var _this = this;
 
+      if (this.level == "cluster") {
+        this.fields.name = this.fields.code;
+      }
+
       axios.post('/create/office', this.fields).then(function (res) {
         _this.isLoading = false;
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
@@ -4031,7 +4061,9 @@ __webpack_require__.r(__webpack_exports__);
           title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
           text: res.data.msg,
           confirmButtonText: 'OK'
-        }).then(function (res) {});
+        }).then(function (res) {
+          location.reload();
+        });
       })["catch"](function (error) {
         _this.errors = error.response.data.errors || {};
       });
@@ -64906,7 +64938,7 @@ var render = function() {
                       _vm._v(" "),
                       _c("v2-select", {
                         class: _vm.officeHasError ? "is-invalid" : "",
-                        attrs: { list_level: "cluster" },
+                        attrs: { list_level: "region" },
                         on: { officeSelected: _vm.assignOffice }
                       }),
                       _vm._v(" "),
@@ -67853,113 +67885,116 @@ var render = function() {
     [
       _c(
         "div",
-        { staticClass: "col-12" },
+        { staticClass: "row" },
         [
           _c(
-            "label",
-            {
-              staticClass: "lead",
-              staticStyle: { color: "white" },
-              attrs: { for: "" }
-            },
-            [_vm._v("Filter:")]
+            "div",
+            { staticClass: "col-lg-6" },
+            [
+              _c(
+                "label",
+                {
+                  staticClass: "lead mr-2",
+                  staticStyle: { color: "white" },
+                  attrs: { for: "" }
+                },
+                [_vm._v("Filter:")]
+              ),
+              _vm._v(" "),
+              _c("v2-select", {
+                staticClass: "d-inline-block",
+                staticStyle: { width: "500px" },
+                on: { officeSelected: _vm.assignOffice },
+                model: {
+                  value: _vm.office_id,
+                  callback: function($$v) {
+                    _vm.office_id = $$v
+                  },
+                  expression: "office_id"
+                }
+              })
+            ],
+            1
           ),
           _vm._v(" "),
-          _c("v2-select", {
-            staticClass: "d-inline-block",
-            staticStyle: { width: "500px" },
-            on: { officeSelected: _vm.assignOffice },
-            model: {
-              value: _vm.office_id,
-              callback: function($$v) {
-                _vm.office_id = $$v
+          _c("div", { staticClass: "col-lg-6 float-right d-flex" }, [
+            _c(
+              "label",
+              {
+                staticClass: "lead mr-2",
+                staticStyle: { color: "white" },
+                attrs: { for: "" }
               },
-              expression: "office_id"
-            }
-          }),
+              [_vm._v("Search:")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.query,
+                  expression: "query"
+                },
+                {
+                  name: "debounce",
+                  rawName: "v-debounce:300ms",
+                  value: _vm.inputSearch,
+                  expression: "inputSearch",
+                  arg: "300ms"
+                }
+              ],
+              staticClass: "form-control border-light pb-2",
+              attrs: { type: "text", id: "search_client" },
+              domProps: { value: _vm.query },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.query = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
+            _vm.hasRecords ? _c("div") : _vm._e()
+          ]),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary",
-              attrs: { type: "button" },
-              on: { click: _vm.filter }
-            },
-            [_vm._v("Add New")]
-          )
+          _c("div", { staticClass: "w-100 px-3 mt-6" }, [
+            _c("table", { staticClass: "table" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.lists.data, function(client) {
+                  return _c("tr", { key: client.id }, [
+                    _c("td", [
+                      _c(
+                        "a",
+                        { attrs: { href: _vm.clientLink(client.client_id) } },
+                        [_vm._v(_vm._s(client.client_id))]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(_vm._s(client.firstname + " " + client.lastname))
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(client.office.name))])
+                  ])
+                }),
+                0
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("paginator", {
+            attrs: { dataset: _vm.lists },
+            on: { updated: _vm.fetch }
+          })
         ],
         1
       ),
-      _vm._v(" "),
-      _c("label", { attrs: { for: "" } }, [_vm._v("Search")]),
-      _vm._v(" "),
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.query,
-            expression: "query"
-          },
-          {
-            name: "debounce",
-            rawName: "v-debounce:300ms",
-            value: _vm.inputSearch,
-            expression: "inputSearch",
-            arg: "300ms"
-          }
-        ],
-        staticClass: "form-control",
-        attrs: { type: "text" },
-        domProps: { value: _vm.query },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.query = $event.target.value
-          }
-        }
-      }),
-      _vm._v(" "),
-      _vm.hasRecords
-        ? _c(
-            "div",
-            [
-              _c("paginator", {
-                attrs: { dataset: _vm.lists },
-                on: { updated: _vm.fetch }
-              }),
-              _vm._v(" "),
-              _c("table", { staticClass: "table" }, [
-                _vm._m(0),
-                _vm._v(" "),
-                _c(
-                  "tbody",
-                  _vm._l(_vm.lists.data, function(client) {
-                    return _c("tr", { key: client.id }, [
-                      _c("td", [
-                        _c(
-                          "a",
-                          { attrs: { href: _vm.clientLink(client.client_id) } },
-                          [_vm._v(_vm._s(client.client_id))]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(_vm._s(client.firstname + " " + client.lastname))
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(client.office.name))])
-                    ])
-                  }),
-                  0
-                )
-              ])
-            ],
-            1
-          )
-        : _vm._e(),
       _vm._v(" "),
       _c("loading", {
         attrs: { "is-full-page": true, active: _vm.isLoading },
@@ -70997,7 +71032,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "group-wrapper" }, [
     _c("div", { staticClass: "card pb-4" }, [
-      _c("h4", { staticClass: "h4 ml-3 mt-4" }, [_vm._v("Create Branch")]),
+      _c("h4", { staticClass: "h4 ml-3 mt-4" }, [_vm._v("Create Office")]),
       _vm._v(" "),
       _c(
         "form",
@@ -71018,16 +71053,16 @@ var render = function() {
               _vm._v(" "),
               _c("v2-select", {
                 class: _vm.officeHasError ? "is-invalid" : "",
-                attrs: { list_level: this.list_level },
+                attrs: { list_level: _vm.list_level },
                 on: { officeSelected: _vm.assignOffice }
               }),
               _vm._v(" "),
               _vm.officeHasError
                 ? _c("div", { staticClass: "invalid-feedback" }, [
                     _vm._v(
-                      "\n                        " +
+                      "\n\t                        " +
                         _vm._s(_vm.errors.office_id[0]) +
-                        "\n                    "
+                        "\n\t                    "
                     )
                   ])
                 : _vm._e()
@@ -71048,7 +71083,8 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "number" },
+              class: _vm.codeHasError ? "is-invalid" : "",
+              attrs: { type: "text", id: "code" },
               domProps: { value: _vm.fields.code },
               on: {
                 input: function($event) {
@@ -71058,11 +71094,21 @@ var render = function() {
                   _vm.$set(_vm.fields, "code", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _vm.codeHasError
+              ? _c("div", { staticClass: "invalid-feedback" }, [
+                  _vm._v(
+                    "\n\t                        " +
+                      _vm._s(_vm.errors.code[0]) +
+                      "\n\t                    "
+                  )
+                ])
+              : _vm._e()
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "form-group col-md-6" }, [
-            _c("label", { attrs: { for: "cluster_code" } }, [_vm._v("Name")]),
+            _c("label", { attrs: { for: "cluster_code" } }, [_vm._v("Name:")]),
             _vm._v(" "),
             _c("input", {
               directives: [
@@ -71074,7 +71120,12 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "text" },
+              class: _vm.nameHasError ? "is-invalid" : "",
+              attrs: {
+                type: "text",
+                id: "name",
+                readonly: _vm.fields.readonly
+              },
               domProps: { value: _vm.fields.name },
               on: {
                 input: function($event) {
@@ -71084,7 +71135,17 @@ var render = function() {
                   _vm.$set(_vm.fields, "name", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _vm.nameHasError
+              ? _c("div", { staticClass: "invalid-feedback" }, [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.errors.name[0]) +
+                      "\n                        "
+                  )
+                ])
+              : _vm._e()
           ]),
           _vm._v(" "),
           _vm._m(0),

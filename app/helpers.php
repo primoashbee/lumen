@@ -22,14 +22,34 @@ use Maatwebsite\Excel\Facades\Excel;
             'birthday' => Carbon::parse('1994-11-26'),
             'email' => 'ashbee.morgado@icloud.com',
             'notes'=>'ajalksdjfdlksafjaldf',
-            'password' => Hash::make('sv9h4pld')
+            'password' => Hash::make('tannelsona')
         ]);
         
             OfficeUser::create([
                 'user_id'=>$user->id,
                 'office_id'=>2
-            ]);    
+            ]);  
+
+            $user = User::create([
+                'firstname' => 'Nelson',
+                'lastname' => 'Abilgos',
+                'middlename' => 'Tan',
+                'gender' => 'Male',
+                'birthday' => Carbon::parse('1995-11-28'),
+                'email' => 'nelsontan1128@gmail.com',
+                'notes'=>'ajalksdjfdlksafjaldf',
+                'password' => Hash::make('tannelsona')
+            ]);
+        
+            OfficeUser::create([
+                'user_id'=>$user->id,
+                'office_id'=>2
+            ]);   
     }
+
+
+
+
     function generateStucture   (){
         $structure = Excel::toCollection(new OfficeImport, "public/OFFICE STRUCTURE.xlsx");
         $data = array();

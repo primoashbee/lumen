@@ -129,15 +129,6 @@ class User extends Authenticatable
         ];
         return $filtered;
 
-
-
-        
-
-
-       
-
-     
-
     }
     public function scopesID(){
        

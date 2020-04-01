@@ -17,6 +17,10 @@ use App\Office;
 |
 */
 
+Route::get('/x/{level}',function(Request $request){
+        return auth()->user()->scopesBranch(Office::getParentOfLevel($request->level));
+    });
+
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
@@ -51,8 +55,8 @@ Route::get('/create/penalty', function(){
 });
 
 Route::get('/create/office/{level}', function($level){
-    $level = Office::getParentOfLevel($level);
-    return view('pages.create-branch',compact('level'));
+    $list_level = Office::getParentOfLevel($level);
+    return view('pages.create-branch',compact(['level','list_level']));
 });
 
 
@@ -78,7 +82,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/client/{client_id}','ClientController@view')->name('get.client.info');
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
-    Route::post('/create/office/{level}', 'OfficeController@createOffice');
+    Route::post('/create/office/', 'OfficeController@createOffice');
 
 
     Route::get('/id/{id}',function($id){

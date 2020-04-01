@@ -345,7 +345,7 @@ class ClientController extends Controller
             return response()->route('client.list');
         }
 
-        return view('pages.update-client',compact('client'));
+        return view('pages.@-client',compact('client'));
     }
 
     public function clientInfo($client_id){
