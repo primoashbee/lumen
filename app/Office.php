@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Office extends Model
 {
     // protected $with = ['parent'];
+    protected $fillable = ['name','code','parent_id','level'];
+    protected $schema;
 
     protected $schema;
     public static function schema(){
@@ -164,5 +166,49 @@ class Office extends Model
     
     public function generateClientID(){
         
+    }
+
+
+    public static function schema(){
+    $schema = array(array(
+                    "level"=>"main_office",
+                    "parent"=>null
+                ),
+                array(
+                    "level"=>"region",
+                    "parent"=>"main_office"
+                ),
+                array(
+                    "level"=>"area",
+                    "parent"=>"region",
+                ),
+                array(
+                    "level"=>"branch",
+                    "parent"=>"area",
+                ),
+                array(
+                    "level"=>"unit",
+                    "parent"=>"branch",
+                ),
+                array(
+                    "level"=>"cluster",
+                    "parent"=>"unit",
+                ),
+                array(
+                    "level"=>"account_officer",
+                    "parent"=>"branch",
+                )
+            );
+            
+        return collect($schema);
+    }
+
+    public static function getParentOfLevel($level){
+        $me = new static;
+        $schema = $me->schema();
+        $curr_level =  $schema->filter(function($item) use ($level){
+            return $item['level'] == $level;
+        })->values();
+        return $curr_level->first()['parent'];
     }
 }

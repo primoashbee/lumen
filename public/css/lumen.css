@@ -5061,12 +5061,12 @@ ul.pagination li:nth-child(9){
     margin: auto 0;
     cursor: pointer;
 }
-ul.pagination li:nth-child(3):hover,
-ul.pagination li:nth-child(4):hover,
-ul.pagination li:nth-child(5):hover,
-ul.pagination li:nth-child(6):hover,
-ul.pagination li:nth-child(7):hover{
+ul.pagination li:hover{
     background-color: #fdad7d;
+}
+ul.pagination li:last-child:hover,ul.pagination li:first-child:hover{
+    border-top-left-radius: .25rem;
+    border-bottom-left-radius: .25rem;
 }
 ul.pagination li:nth-child(3):hover a,
 ul.pagination li:nth-child(4):hover a,
@@ -5082,9 +5082,14 @@ ul.pagination li:nth-child(5),
 ul.pagination li:nth-child(6),
 ul.pagination li:nth-child(7){
     margin-right: 10px;
-    padding: 3px 10px;
-    border: 1px solid #fdad7d;
     cursor: pointer;
+    outline: none;
+}
+ul.pagination li a.page-link{
+    color: #fff!important;
+    border-color: #fdad7d;
+    background: transparent;
+    outline: none;
 }
 ul.pagination li button{
     background-color: transparent;
@@ -5422,7 +5427,7 @@ a.dropdown-toggle.l-text+.dropdown-menu {
 .navbar div.dropdown-menu ul li:first-child,.logo{
 	border-bottom: 1px solid #e9ecef;
 }
-#sidebar-toggle:focus{
+#sidebar-toggle:focus,ul.pagination li a.page-link:focus{
     box-shadow: none;
 }
 #sidebar-toggle{

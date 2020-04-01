@@ -1,32 +1,38 @@
 <template>
     <div>
-        <div class="col-12">
-            <label for="" style="color:white" class="lead">Filter:</label>
-            <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:500px" v-model="office_id"></v2-select>
-            <button type="button" class="btn btn-primary" @click="filter">Add New</button>
+        <div class="row">
+            <div class="col-lg-6">
+                <label for="" style="color:white" class="lead mr-2">Filter:</label>
+                <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:500px" v-model="office_id"></v2-select>
+                <!-- <button type="button" class="btn btn-primary" @click="filter">Add New</button> -->
+            </div>
+            <div class="col-lg-6 float-right d-flex">
+                <label for="" style="color:white" class="lead mr-2">Search:</label>
+                <input type="text" id="search_client" class="form-control border-light pb-2" v-model="query" v-debounce:300ms="inputSearch"/>
+                <div v-if="hasRecords">
+            </div>  
         </div>
        
-        <label for="">Search</label>
-        <input type="text" class="form-control" v-model="query" v-debounce:300ms="inputSearch"/>
-        <div v-if="hasRecords">
-        <paginator :dataset="lists" @updated="fetch"></paginator>
-        <table class="table" >
-            <thead>
-                <tr>
-                    <td><p class="title">Client ID</p></td>
-                    <td><p class="title">Name</p></td>
-                    <td><p class="title">Linked To</p></td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="client in lists.data" :key="client.id">
-                    <td><a :href="clientLink(client.client_id)">{{client.client_id}}</a></td>
-                    <td>{{client.firstname + ' ' + client.lastname}}</td>
-                    <td>{{client.office.name}}</td>
-                </tr>
-            </tbody>
-        </table>
-        
+          
+        <div class="w-100 px-3 mt-6">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td><p class="title">Client ID</p></td>
+                        <td><p class="title">Name</p></td>
+                        <td><p class="title">Linked To</p></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="client in lists.data" :key="client.id">
+                        <td><a :href="clientLink(client.client_id)">{{client.client_id}}</a></td>
+                        <td>{{client.firstname + ' ' + client.lastname}}</td>
+                        <td>{{client.office.name}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            <paginator :dataset="lists" @updated="fetch"></paginator>
         </div>
         <loading :is-full-page="true" :active.sync="isLoading" ></loading>
     </div>
