@@ -9,13 +9,13 @@
             <div class="col-lg-6 float-right d-flex">
                 <label for="" style="color:white" class="lead mr-2">Search:</label>
                 <input type="text" id="search_client" class="form-control border-light pb-2" v-model="query" v-debounce:300ms="inputSearch"/>
-                <div v-if="hasRecords">
+                <div>
             </div>  
         </div>
        
           
-        <div class="w-100 px-3 mt-6">
-            <table class="table">
+        <div class="w-100 px-3 mt-6" >
+            <table class="table" >
                 <thead>
                     <tr>
                         <td><p class="title">Client ID</p></td>
@@ -23,7 +23,7 @@
                         <td><p class="title">Linked To</p></td>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="hasRecords">
                     <tr v-for="client in lists.data" :key="client.id">
                         <td><a :href="clientLink(client.client_id)">{{client.client_id}}</a></td>
                         <td>{{client.firstname + ' ' + client.lastname}}</td>
@@ -31,9 +31,13 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+            <p class="lead float-left text-right" style="color:white">Showing Records {{lists.from}} - {{lists.to}} of {{totalRecords}} </p>
+            <p class="lead float-right text-right" style="color:white">Total Records: {{totalRecords}} </p>
+            <div class="clearfix"></div>
             <paginator :dataset="lists" @updated="fetch"></paginator>
         </div>
+        </div>
+
         <loading :is-full-page="true" :active.sync="isLoading" ></loading>
     </div>
 </template>
@@ -56,12 +60,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
     data(){
         return {
-            office_id: null,
+            office_id: "",
             lists: [],
             hasRecords: false,
             isLoading:false,
-            query:null,
-            toClient: '/client/'
+            query:"",
+            toClient: '/client/',
         }
     },
     components: {
@@ -72,7 +76,7 @@ export default {
             return this.toClient + client_id
         },
         inputSearch(){
-            this.fetchBySearch()
+            this.fetch()
         },
         filter(){
             if(this.office_id == null){
@@ -83,8 +87,6 @@ export default {
                 )
             }
             this.fetch()
-            
-
         },
         assignOffice(value){
             this.office_id = value['id']
@@ -92,10 +94,10 @@ export default {
         },
         checkIfHasRecords(){
             this.hasRecords = false
-            if (this.totalRecords > 0){
+            if (this.viewableRecords > 0){
                 this.hasRecords = true
             }
-               
+            
         },
         noOfficeSelected(){
             if(this.office_id == null){
@@ -103,57 +105,53 @@ export default {
             }
             return false
         },
-        fetchBySearch(){
-            if(this.noOfficeSelected()){
-                return;
-            }
-            this.isLoading = true
-            
-            
-            axios.get(this.searchQuery ,{
-                'query' : this.query
-            })
-            .then(res => {
-                this.lists = res.data
-                this.checkIfHasRecords()
-                this.isLoading =false
-            })
-            .catch(err=>{
-
-            })
-            
-        },
         fetch(page){
             this.isLoading =true
-            axios.get(this.url(page), {
-                    'office_id' :this.office_id
-            })
-            .then(res => {
-                this.lists = res.data
-                this.checkIfHasRecords()
-                this.isLoading =false
-            })
+            if(page==undefined){
+                axios.get(this.queryString)
+                .then(res => {
+                    this.lists = res.data
+                    this.checkIfHasRecords()
+                    this.isLoading =false
+                })
+            }else{
+                axios.get(this.queryString+'&page='+page)
+                .then(res => {
+                    this.lists = res.data
+                    this.checkIfHasRecords()
+                    this.isLoading =false
+                })
+            }
 
         },
         url(page=1){
             return `/clients/list?office_id=`+this.office_id+`&page=`+page
-        }
-    },
-    watch: {
-        // page(){
-        //     this.fetch();
-        // }
+        },
+        
     },
     computed : {
-
-        totalRecords(){
-            return Object.keys(this.lists.data).length
-        },
-        searchQuery(){
-            if(this.query==""){
-                return `/clients/list?office_id=`+this.office_id
+        queryString(){
+            var str ="?"
+            var params_count=0
+            if(this.office_id!=""){
+                params_count++
+                str+="office_id="+this.office_id
             }
-            return `/clients/list?office_id=`+this.office_id+`&search=`+this.query
+            if(this.query!=""){
+                params_count++
+                if(params_count > 1){
+                    str+="&search="+this.query
+                }else{
+                    str+="search="+this.query
+                }
+            }
+            return '/clients/list'+str
+        },
+        totalRecords(){
+            return numeral(this.lists.total).format('0,0')
+        },
+        viewableRecords(){
+            return Object.keys(this.lists.data).length
         }
 
     }

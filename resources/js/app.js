@@ -8,6 +8,7 @@ require('./bootstrap');
 
 
 import { VueMaskDirective } from 'v-mask'
+window.numeral = require('numeral');
 
 window.Vue = require('vue');
 // window.flatten = require('flat')

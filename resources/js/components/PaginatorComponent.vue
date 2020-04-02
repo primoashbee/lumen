@@ -14,11 +14,11 @@
                 <span class="sr-only">Previous</span>
             </a>
             </li>
-            <li class="page-item" v-for="page in pages" :key="page.id">
-                <a class="page-link" style="color:black"  href="#" @click.prevent="changePage(page)">{{page}}</a>
+            <li class="page-item" v-bind:class="pageItem ==page?'page-active':''" v-for="pageItem in pages" :key="pageItem.id">
+                <a class="page-link" style="color:black"  href="#" @click.prevent="changePage(pageItem)">{{pageItem}}</a>
             </li>
             <li class="page-item" v-show ="nextUrl">
-            <a class="page-link" href="#" style="color:black"   aria-label="Next" @click.prevent="page++">
+            <a class="page-link" href="#" style="color:black" aria-label="Next" @click.prevent="page++">
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">Next</span>
             </a>
@@ -42,9 +42,10 @@ export default {
             page: 1,
             prevUrl : false,
             nextUrl: false,
-            page_count: 0,
+            total_pages: 0,
             last_page: false,
-            first_page: false
+            first_page: false,
+            
         }
     },
     methods: {
@@ -60,6 +61,7 @@ export default {
        firstPage(){
            this.page= this.first_page
        }
+      
     },
     watch: {
         dataset: {
@@ -68,7 +70,7 @@ export default {
                 this.page =this.dataset.current_page
                 this.prevUrl =this.dataset.prev_page_url
                 this.nextUrl =this.dataset.next_page_url
-                this.page_count = this.dataset.last_page
+                this.total_pages = this.dataset.last_page
                 this.first_page = this.dataset.first_page
                 this.last_page = this.dataset.last_page
             }
@@ -78,24 +80,46 @@ export default {
         }
     },    
     computed :{
-          shouldPaginate(){
-              return !! this.prevUrl || !! this.nextUrl
-          },
-          pages(){
+            visiblePageCount(){
+                if(this.total_pages < 5){
+                    return this.total_pages
+                }
+                return 5;
+            },
+            shouldPaginate(){
+                return !! this.prevUrl || !! this.nextUrl
+            },
+            pages(){
             var pages = [];
-            var ctr  = 1;
-            for(var x=1; x<=this.page_count-1;x++){
+            var ctr  = 0;
+            if(this.aboveMaxPageLimit){
+                
+                for(var x = this.total_pages; x > this.total_pages-this.visiblePageCount ; x--){
+                    pages.push(x)
+                }
+                return pages.reverse();
+            }
+            for(var x=this.page; x<=this.total_pages-1;x++){
                 pages.push(x)
                 ctr++
-                if(ctr == 5){
+                if(ctr == this.visiblePageCount){
                     return pages;
                 }
             }
-           
-            // return this.page_count;
-          }
+
+            // return this.total_pages;
+            },
+            aboveMaxPageLimit(){
+                return this.page + this.visiblePageCount > this.last_page
+            }
     },
     
     
 }
 </script>
+
+<style scoped>
+.page-active{
+    background-color: #fdad7d !important;
+}
+</style>

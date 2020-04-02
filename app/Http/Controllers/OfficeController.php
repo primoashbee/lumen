@@ -55,5 +55,10 @@ class OfficeController extends Controller
     	}
 
     	return $code;
-    }
+	}
+	public function createLevel($level){
+			$list_level = Office::getParentOfLevel($level);
+			return $list_level=="" ? abort(404): view('pages.create-office',compact(['level','list_level']));
+			
+	}
 }

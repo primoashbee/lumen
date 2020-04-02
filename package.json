@@ -29,6 +29,7 @@
         "flat": "^5.0.0",
         "js-datepicker": "^5.4.0",
         "moment": "^2.24.0",
+        "numeral": "^2.0.6",
         "sweetalert2": "^9.10.0",
         "v-mask": "^2.0.2",
         "vue-debounce": "^2.5.1",

@@ -1,7 +1,7 @@
 <template>
 	<div class="group-wrapper">
 			<div class="card pb-4">
-				<h4 class="h4 ml-3 mt-4">Create Office</h4>
+				<h4 class="h4 ml-3 mt-4">Create {{level}}</h4>
 				<form @submit.prevent="submit">
 					<div class="form-group col-md-6 mt-4">
 			  			<label>Assign To:</label>

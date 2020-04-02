@@ -5,6 +5,7 @@ namespace App;
 use App\Office;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Client extends Model
 {
@@ -100,28 +101,35 @@ class Client extends Model
         return $me->searchables;
     }
 
-    public static function like($office_id, $query=false){
+    public static function like($office_id, $query){
         $me = new static;
         $searchables = $me->searchables;
        
         $office = Office::find($office_id);
         $office_ids = $office->getAllChildrenIDS();
-        
+       
         if(count($office_ids)>0){
-            if($query!=false){
-                $clients = Client::with('office');
-                foreach($searchables as $item){
-                    $clients->orWhere($item, 'LIKE', '%' .$query.'%');
-                }
+            $office_ids = $office->getLowerOfficeIDS();
+            if($query!=null){
+                $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables, $query){
+                    foreach($searchables as $item){  
+                        $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
+                    }
+                });
                 return $clients;
             }
+            $clients = Client::with('office')->whereIn('office_id',$office_ids);
+            return $clients;
         }
 
-        if($query!=false){
-            $clients = Client::with('office');
+        if($query!=null){
+            $office_ids = $office->getLowerOfficeIDS();
+                
+            $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables,$query){
                 foreach($searchables as $item){
-                    $clients->orWhere($item, 'LIKE', '%' .$query.'%');
+                    $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
                 }
+            });
             return $clients;
         }
     }
