@@ -44,7 +44,7 @@ use Maatwebsite\Excel\Facades\Excel;
             'birthday' => Carbon::parse('1994-11-26'),
             'email' => 'ashbee.morgado@icloud.com',
             'notes'=>'ajalksdjfdlksafjaldf',
-            'password' => Hash::make('tannelsona')
+            'password' => Hash::make('sv9h4pld')
         ]);
         
             OfficeUser::create([
