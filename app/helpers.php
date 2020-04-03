@@ -49,7 +49,7 @@ use Maatwebsite\Excel\Facades\Excel;
         
             OfficeUser::create([
                 'user_id'=>$user->id,
-                'office_id'=>2
+                'office_id'=>1
             ]);  
 
             $user = User::create([
@@ -65,7 +65,7 @@ use Maatwebsite\Excel\Facades\Excel;
         
             OfficeUser::create([
                 'user_id'=>$user->id,
-                'office_id'=>2
+                'office_id'=>1
             ]);   
     }
 
