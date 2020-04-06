@@ -61,4 +61,36 @@ class OfficeController extends Controller
 			return $list_level=="" ? abort(404): view('pages.create-office',compact(['level','list_level']));
 			
 	}
+
+    public function viewOffice($office){
+        $officeList = Office::with('parent')->where('level', $office)->get();
+        return view('pages.office-list', compact(['officeList','office']));
+    }
+
+    public function editOffice($id){
+        $office = Office::find($id);
+        if($office===null){
+            abort(404);
+        }
+
+        $list_level = Office::getParentOfLevel($office->level);
+        return view('pages.update-office',compact(['office','list_level']));
+    }
+
+    public function updateOffice(Request $request){
+        
+        $this->validator($request->all())->validate();
+        $office = Office::find($request->id);
+        
+        $office->update(
+            [
+               'name' => $request->name,
+                'code' => $request->code,
+                'parent_id' => $request->office_id,
+                'level' => $request->level
+            ]
+        );
+
+        return response()->json(['msg'=>'Office succesfully updated'],200);
+    }
 }

@@ -32,37 +32,37 @@
 						
 					</li>
 					<li class="settings-item structure">
-						<a class="nav-link" id="home-tab" href="">
+						<a class="nav-link" id="home-tab" href="/office/region">
 							<i class="fas fa-3x fa-building"></i>
 							<p class="title text-center mt-2">Region</p>
 						</a>
 					</li>
 					<li class="settings-item structure">
-						<a class="nav-link" id="home-tab" href="">
+						<a class="nav-link" id="home-tab" href="/office/area">
 							<i class="fas fa-3x fa-warehouse"></i>
 							<p class="title text-center mt-2">Area</p>
 						</a>
 					</li>
 					<li class="settings-item structure">
-						<a class="nav-link" id="home-tab" href="">
+						<a class="nav-link" id="home-tab" href="/office/branch">
 							<i class="fas fa-3x fa-home"></i>
 							<p class="title text-center mt-2">Branch</p>
 						</a>
 					</li>
 					<li class="settings-item structure">
-						<a class="nav-link" id="home-tab" href="">
+						<a class="nav-link" id="home-tab" href="/office/unit">
 							<i class="fas fa-3x fa-layer-group"></i>
 							<p class="title text-center mt-2">Unit</p>
 						</a>
 					</li>
 					<li class="settings-item structure">
-						<a class="nav-link" id="home-tab" href="">
+						<a class="nav-link" id="home-tab" href="/office/cluster">
 							<i class="fas fa-3x fa-user-friends"></i>
 							<p class="title text-center mt-2">Cluster</p>
 						</a>
 					</li>
 					<li class="settings-item structure">
-						<a class="nav-link" id="home-tab" href="">
+						<a class="nav-link" id="home-tab" href="/office/account_officer">
 							<i class="fas fa-3x fa-user"></i>
 							<p class="title text-center mt-2">Account Officer</p>
 						</a>

@@ -83,7 +83,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/client/{client_id}','ClientController@view')->name('get.client.info');
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
+    
     Route::post('/create/office/', 'OfficeController@createOffice');
+    Route::get('/office/{office}', 'OfficeController@viewOffice');
+
+    Route::get('/edit/office/{code}', 'OfficeController@editOffice');
+    Route::post('/edit/office/', 'OfficeController@updateOffice');
+
 
     Route::get('/z',function(Request $request){
         $ids = Office::find(19)->getLowerOfficeIDS();
