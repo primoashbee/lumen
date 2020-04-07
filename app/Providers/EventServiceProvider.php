@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\ClientCreated;
 use App\Events\TestEvent;
+use App\Listeners\ClientCreated as ListenOnClientCreate;
 use App\Listeners\TestListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -20,8 +22,8 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        TestEvent::class => [
-            TestListener::class,
+        ClientCreated::class =>[
+            ListenOnClientCreate::class,
         ]
     ];
 

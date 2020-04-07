@@ -4,12 +4,13 @@ use App\User;
 use App\Client;
 use App\Office;
 use App\Cluster;
+use App\Deposit;
 use Carbon\Carbon;
 use App\OfficeUser;
+
 use Illuminate\Support\Str;
 
 use App\Imports\OfficeImport;
-
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
   
@@ -67,6 +68,29 @@ use Maatwebsite\Excel\Facades\Excel;
                 'user_id'=>$user->id,
                 'office_id'=>1
             ]);   
+    }
+
+    function createDeposits(){
+        Deposit::create([
+            'name'=>'RESTRICTED CBU',
+            'product_id'=>'RCBU',
+            'description'=>'aba ewan ko sa inyo',
+            'account_per_client'=>1,
+            'auto_create_on_new_client'=>true,
+            'interest_rate'=>2,
+            'deposit_portfolio' => 0,
+            'deposit_interest_expense' => 0,
+        ]);
+        Deposit::create([
+            'name'=>'VOLUNTARY CBU',
+            'product_id'=>'VCBU',
+            'description'=>'aba ewan ko sa inyo',
+            'account_per_client'=>1,
+            'auto_create_on_new_client'=>true,
+            'interest_rate'=>2,
+            'deposit_portfolio' => 0,
+            'deposit_interest_expense' => 0,
+        ]);
     }
 
 

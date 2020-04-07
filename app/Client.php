@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Office;
+use App\Events\ClientCreated;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -64,6 +65,17 @@ class Client extends Model
         'sss'
     ];
 
+    public static function boot(){
+        parent::boot();
+        static::created(function($item) {
+	         event(new ClientCreated($item));
+	    });
+    }
+
+    public function deposits(){
+        return $this->hasMany(DepositAccount::class,'client_id','client_id');
+        // return $this->belongsToMany(Deposit::class, 'client_deposit', 'client_id', 'deposit_id', 'clients.client_id');
+    }
     public function household_income(){
         return $this->hasOne(HouseholdIncome::class, 'client_id','client_id');
     }
