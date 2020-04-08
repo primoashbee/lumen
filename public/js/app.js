@@ -4011,6 +4011,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -4686,6 +4696,10 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.populateOffice();
+
+    if (this.fields.level == "cluster") {
+      this.fields.readonly = true;
+    }
   },
   computed: {
     hasErrors: function hasErrors() {
@@ -4706,10 +4720,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     assignOffice: function assignOffice(value) {
+      if (this.level == "cluster") {
+        this.fields.code = value['name'] + "-";
+      }
+
       this.fields.office_id = value['id'];
     },
     submit: function submit() {
       var _this = this;
+
+      if (this.fields.level == "cluster") {
+        this.fields.name = this.fields.code;
+      }
 
       axios.post('/edit/office', this.fields).then(function (res) {
         _this.isLoading = false;
@@ -72365,9 +72387,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "group-wrapper" }, [
     _c("div", { staticClass: "card pb-4" }, [
-      _c("h4", { staticClass: "h4 ml-3 mt-4" }, [
-        _vm._v("Create " + _vm._s(_vm.level))
-      ]),
+      _c("h4", { staticClass: "h4 ml-3 mt-4" }, [_vm._v("Create Office")]),
       _vm._v(" "),
       _c(
         "form",

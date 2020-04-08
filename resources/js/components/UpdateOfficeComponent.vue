@@ -60,7 +60,11 @@
    	 		}
    	 	},
    	 	created(){
-   	 		this.populateOffice()
+
+   	 		this.populateOffice()	
+   	 		if(this.fields.level == "cluster"){
+   	 			this.fields.readonly = true
+   	 		}
    	 	},
    	 	computed:{
    	 		hasErrors(){
@@ -81,9 +85,16 @@
    	 	},
    	 	methods:{
    	 		assignOffice(value){
+	            if (this.level == "cluster") {
+   	 				this.fields.code = value['name'] + "-"
+   	 			}
 	            this.fields.office_id = value['id']
 	        },
+
 	        submit(){
+	        	if(this.fields.level == "cluster"){
+	   	 			this.fields.name = this.fields.code
+	   	 		}
 	        	 axios.post('/edit/office', this.fields)
                 .then(res=>{
                     this.isLoading = false
@@ -102,11 +113,14 @@
                 })
 	        },
 	        populateOffice(){
+
 	        	var vm = this
 	        	var office = this.officeInfo
 	        	$.each(office,function(k,v){
                         vm.fields[k] = v
 	            })
+	           
+
 	            this.fields.office_id = office.parent_id
 	        }
    	 	}
