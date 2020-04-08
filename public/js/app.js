@@ -2912,6 +2912,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2925,11 +2935,11 @@ Vue.use(vue_debounce__WEBPACK_IMPORTED_MODULE_3___default.a, {
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      office_id: null,
+      office_id: "",
       lists: [],
       hasRecords: false,
       isLoading: false,
-      query: null,
+      query: "",
       toClient: '/client/'
     };
   },
@@ -2941,7 +2951,7 @@ Vue.use(vue_debounce__WEBPACK_IMPORTED_MODULE_3___default.a, {
       return this.toClient + client_id;
     },
     inputSearch: function inputSearch() {
-      this.fetchBySearch();
+      this.fetch();
     },
     filter: function filter() {
       if (this.office_id == null) {
@@ -2957,7 +2967,7 @@ Vue.use(vue_debounce__WEBPACK_IMPORTED_MODULE_3___default.a, {
     checkIfHasRecords: function checkIfHasRecords() {
       this.hasRecords = false;
 
-      if (this.totalRecords > 0) {
+      if (this.viewableRecords > 0) {
         this.hasRecords = true;
       }
     },
@@ -2968,57 +2978,61 @@ Vue.use(vue_debounce__WEBPACK_IMPORTED_MODULE_3___default.a, {
 
       return false;
     },
-    fetchBySearch: function fetchBySearch() {
+    fetch: function fetch(page) {
       var _this = this;
 
-      if (this.noOfficeSelected()) {
-        return;
+      this.isLoading = true;
+
+      if (page == undefined) {
+        axios.get(this.queryString).then(function (res) {
+          _this.lists = res.data;
+
+          _this.checkIfHasRecords();
+
+          _this.isLoading = false;
+        });
+      } else {
+        axios.get(this.queryString + '&page=' + page).then(function (res) {
+          _this.lists = res.data;
+
+          _this.checkIfHasRecords();
+
+          _this.isLoading = false;
+        });
       }
-
-      this.isLoading = true;
-      axios.get(this.searchQuery, {
-        'query': this.query
-      }).then(function (res) {
-        _this.lists = res.data;
-
-        _this.checkIfHasRecords();
-
-        _this.isLoading = false;
-      })["catch"](function (err) {});
-    },
-    fetch: function fetch(page) {
-      var _this2 = this;
-
-      this.isLoading = true;
-      axios.get(this.url(page), {
-        'office_id': this.office_id
-      }).then(function (res) {
-        _this2.lists = res.data;
-
-        _this2.checkIfHasRecords();
-
-        _this2.isLoading = false;
-      });
     },
     url: function url() {
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       return "/clients/list?office_id=" + this.office_id + "&page=" + page;
     }
   },
-  watch: {// page(){
-    //     this.fetch();
-    // }
-  },
   computed: {
-    totalRecords: function totalRecords() {
-      return Object.keys(this.lists.data).length;
-    },
-    searchQuery: function searchQuery() {
-      if (this.query == "") {
-        return "/clients/list?office_id=" + this.office_id;
+    queryString: function queryString() {
+      var str = "?";
+      var params_count = 0;
+
+      if (this.office_id != "") {
+        params_count++;
+        str += "office_id=" + this.office_id;
       }
 
-      return "/clients/list?office_id=" + this.office_id + "&search=" + this.query;
+      if (this.query != "") {
+        params_count++;
+
+        if (params_count > 1) {
+          str += "&search=" + this.query;
+        } else {
+          str += "search=" + this.query;
+        }
+      }
+
+      return '/clients/list' + str;
+    },
+    totalRecords: function totalRecords() {
+      return numeral(this.lists.total).format('0,0');
+    },
+    viewableRecords: function viewableRecords() {
+      return Object.keys(this.lists.data).length;
     }
   }
 });
@@ -3991,23 +4005,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     SelectComponentV2: _SelectComponentV2__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['list_level'],
+  props: ['list_level', 'level'],
   data: function data() {
     return {
       fields: {
         'office_id': "",
         'code': "",
         'name': "",
-        "level": this.list_level
+        "level": "",
+        "readonly": false
       },
       errors: {}
     };
+  },
+  created: function created() {
+    if (this.level == "cluster") {
+      this.fields.readonly = true;
+    }
+
+    this.fields.level = this.level;
   },
   computed: {
     hasErrors: function hasErrors() {
@@ -4015,6 +4043,12 @@ __webpack_require__.r(__webpack_exports__);
     },
     officeHasError: function officeHasError() {
       return this.errors.hasOwnProperty('office_id');
+    },
+    nameHasError: function nameHasError() {
+      return this.errors.hasOwnProperty('name');
+    },
+    codeHasError: function codeHasError() {
+      return this.errors.hasOwnProperty('code');
     }
   },
   methods: {
@@ -4024,6 +4058,10 @@ __webpack_require__.r(__webpack_exports__);
     submit: function submit() {
       var _this = this;
 
+      if (this.level == "cluster") {
+        this.fields.name = this.fields.code;
+      }
+
       axios.post('/create/office', this.fields).then(function (res) {
         _this.isLoading = false;
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
@@ -4031,7 +4069,9 @@ __webpack_require__.r(__webpack_exports__);
           title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
           text: res.data.msg,
           confirmButtonText: 'OK'
-        }).then(function (res) {});
+        }).then(function (res) {
+          location.reload();
+        });
       })["catch"](function (error) {
         _this.errors = error.response.data.errors || {};
       });
@@ -4218,7 +4258,7 @@ __webpack_require__.r(__webpack_exports__);
       page: 1,
       prevUrl: false,
       nextUrl: false,
-      page_count: 0,
+      total_pages: 0,
       last_page: false,
       first_page: false
     };
@@ -4244,7 +4284,7 @@ __webpack_require__.r(__webpack_exports__);
         this.page = this.dataset.current_page;
         this.prevUrl = this.dataset.prev_page_url;
         this.nextUrl = this.dataset.next_page_url;
-        this.page_count = this.dataset.last_page;
+        this.total_pages = this.dataset.last_page;
         this.first_page = this.dataset.first_page;
         this.last_page = this.dataset.last_page;
       }
@@ -4254,22 +4294,40 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
+    visiblePageCount: function visiblePageCount() {
+      if (this.total_pages < 5) {
+        return this.total_pages;
+      }
+
+      return 5;
+    },
     shouldPaginate: function shouldPaginate() {
       return !!this.prevUrl || !!this.nextUrl;
     },
     pages: function pages() {
       var pages = [];
-      var ctr = 1;
+      var ctr = 0;
 
-      for (var x = 1; x <= this.page_count - 1; x++) {
+      if (this.aboveMaxPageLimit) {
+        for (var x = this.total_pages; x > this.total_pages - this.visiblePageCount; x--) {
+          pages.push(x);
+        }
+
+        return pages.reverse();
+      }
+
+      for (var x = this.page; x <= this.total_pages - 1; x++) {
         pages.push(x);
         ctr++;
 
-        if (ctr == 5) {
+        if (ctr == this.visiblePageCount) {
           return pages;
         }
-      } // return this.page_count;
+      } // return this.total_pages;
 
+    },
+    aboveMaxPageLimit: function aboveMaxPageLimit() {
+      return this.page + this.visiblePageCount > this.last_page;
     }
   }
 });
@@ -11137,6 +11195,25 @@ exports.push([module.i, "\n.form-control:disabled, .form-control[readonly]{\n   
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.page-active[data-v-19f31f97]{\n    background-color: #fdad7d !important;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectComponentV2.vue?vue&type=style&index=0&lang=css&":
 /*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectComponentV2.vue?vue&type=style&index=0&lang=css& ***!
@@ -11149,7 +11226,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 exports.i(__webpack_require__(/*! -!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!vue-multiselect/dist/vue-multiselect.min.css */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-multiselect/dist/vue-multiselect.min.css"), "");
 
 // module
-exports.push([module.i, "\n.multiselect__tags{\n  background: #27293d;\n}\n.multiselect__input{\n  background: #27293d!important;\n  border-color:#2b3553\n}\n.multiselect__single{\n  background: #27293d!important;\n  color: white;\n}\n", ""]);
+exports.push([module.i, "\n.multiselect__tags{\n  background: #27293d;\n}\n.multiselect__input{\n  background: #27293d!important;\n  border-color:#2b3553\n}\n.multiselect__single{\n  background: #27293d!important;\n  color: white;\n}\n\n", ""]);
 
 // exports
 
@@ -11168,7 +11245,7 @@ exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base
 
 
 // module
-exports.push([module.i, "fieldset[disabled] .multiselect{pointer-events:none}.multiselect__spinner{position:absolute;right:1px;top:1px;width:48px;height:35px;background:#fff;display:block}.multiselect__spinner:after,.multiselect__spinner:before{position:absolute;content:\"\";top:50%;left:50%;margin:-8px 0 0 -8px;width:16px;height:16px;border-radius:100%;border:2px solid transparent;border-top-color:#41b883;box-shadow:0 0 0 1px transparent}.multiselect__spinner:before{animation:spinning 2.4s cubic-bezier(.41,.26,.2,.62);animation-iteration-count:infinite}.multiselect__spinner:after{animation:spinning 2.4s cubic-bezier(.51,.09,.21,.8);animation-iteration-count:infinite}.multiselect__loading-enter-active,.multiselect__loading-leave-active{transition:opacity .4s ease-in-out;opacity:1}.multiselect__loading-enter,.multiselect__loading-leave-active{opacity:0}.multiselect,.multiselect__input,.multiselect__single{font-family:inherit;font-size:16px;-ms-touch-action:manipulation;touch-action:manipulation}.multiselect{box-sizing:content-box;display:block;position:relative;width:100%;min-height:40px;text-align:left;color:#35495e}.multiselect *{box-sizing:border-box}.multiselect:focus{outline:none}.multiselect--disabled{background:#ededed;pointer-events:none;opacity:.6}.multiselect--active{z-index:50}.multiselect--active:not(.multiselect--above) .multiselect__current,.multiselect--active:not(.multiselect--above) .multiselect__input,.multiselect--active:not(.multiselect--above) .multiselect__tags{border-bottom-left-radius:0;border-bottom-right-radius:0}.multiselect--active .multiselect__select{transform:rotate(180deg)}.multiselect--above.multiselect--active .multiselect__current,.multiselect--above.multiselect--active .multiselect__input,.multiselect--above.multiselect--active .multiselect__tags{border-top-left-radius:0;border-top-right-radius:0}.multiselect__input,.multiselect__single{position:relative;display:inline-block;min-height:20px;line-height:20px;border:none;border-radius:5px;background:#fff;padding:0 0 0 5px;width:100%;transition:border .1s ease;box-sizing:border-box;margin-bottom:8px;vertical-align:top}.multiselect__input:-ms-input-placeholder{color:#35495e}.multiselect__input::placeholder{color:#35495e}.multiselect__tag~.multiselect__input,.multiselect__tag~.multiselect__single{width:auto}.multiselect__input:hover,.multiselect__single:hover{border-color:#cfcfcf}.multiselect__input:focus,.multiselect__single:focus{border-color:#a8a8a8;outline:none}.multiselect__single{padding-left:5px;margin-bottom:8px}.multiselect__tags-wrap{display:inline}.multiselect__tags{min-height:40px;display:block;padding:8px 40px 0 8px;border-radius:5px;border:1px solid #e8e8e8;background:#fff;font-size:14px}.multiselect__tag{position:relative;display:inline-block;padding:4px 26px 4px 10px;border-radius:5px;margin-right:10px;color:#fff;line-height:1;background:#41b883;margin-bottom:5px;white-space:nowrap;overflow:hidden;max-width:100%;text-overflow:ellipsis}.multiselect__tag-icon{cursor:pointer;margin-left:7px;position:absolute;right:0;top:0;bottom:0;font-weight:700;font-style:normal;width:22px;text-align:center;line-height:22px;transition:all .2s ease;border-radius:5px}.multiselect__tag-icon:after{content:\"\\D7\";color:#266d4d;font-size:14px}.multiselect__tag-icon:focus,.multiselect__tag-icon:hover{background:#369a6e}.multiselect__tag-icon:focus:after,.multiselect__tag-icon:hover:after{color:#fff}.multiselect__current{min-height:40px;overflow:hidden;padding:8px 30px 0 12px;white-space:nowrap;border-radius:5px;border:1px solid #e8e8e8}.multiselect__current,.multiselect__select{line-height:16px;box-sizing:border-box;display:block;margin:0;text-decoration:none;cursor:pointer}.multiselect__select{position:absolute;width:40px;height:38px;right:1px;top:1px;padding:4px 8px;text-align:center;transition:transform .2s ease}.multiselect__select:before{position:relative;right:0;top:65%;color:#999;margin-top:4px;border-color:#999 transparent transparent;border-style:solid;border-width:5px 5px 0;content:\"\"}.multiselect__placeholder{color:#adadad;display:inline-block;margin-bottom:10px;padding-top:2px}.multiselect--active .multiselect__placeholder{display:none}.multiselect__content-wrapper{position:absolute;display:block;background:#fff;width:100%;max-height:240px;overflow:auto;border:1px solid #e8e8e8;border-top:none;border-bottom-left-radius:5px;border-bottom-right-radius:5px;z-index:50;-webkit-overflow-scrolling:touch}.multiselect__content{list-style:none;display:inline-block;padding:0;margin:0;min-width:100%;vertical-align:top}.multiselect--above .multiselect__content-wrapper{bottom:100%;border-bottom-left-radius:0;border-bottom-right-radius:0;border-top-left-radius:5px;border-top-right-radius:5px;border-bottom:none;border-top:1px solid #e8e8e8}.multiselect__content::webkit-scrollbar{display:none}.multiselect__element{display:block}.multiselect__option{display:block;padding:12px;min-height:40px;line-height:16px;text-decoration:none;text-transform:none;vertical-align:middle;position:relative;cursor:pointer;white-space:nowrap}.multiselect__option:after{top:0;right:0;position:absolute;line-height:40px;padding-right:12px;padding-left:20px;font-size:13px}.multiselect__option--highlight{background:#41b883;outline:none;color:#fff}.multiselect__option--highlight:after{content:attr(data-select);background:#41b883;color:#fff}.multiselect__option--selected{background:#f3f3f3;color:#35495e;font-weight:700}.multiselect__option--selected:after{content:attr(data-selected);color:silver}.multiselect__option--selected.multiselect__option--highlight{background:#ff6a6a;color:#fff}.multiselect__option--selected.multiselect__option--highlight:after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect--disabled .multiselect__current,.multiselect--disabled .multiselect__select{background:#ededed;color:#a6a6a6}.multiselect__option--disabled{background:#ededed!important;color:#a6a6a6!important;cursor:text;pointer-events:none}.multiselect__option--group{background:#ededed;color:#35495e}.multiselect__option--group.multiselect__option--highlight{background:#35495e;color:#fff}.multiselect__option--group.multiselect__option--highlight:after{background:#35495e}.multiselect__option--disabled.multiselect__option--highlight{background:#dedede}.multiselect__option--group-selected.multiselect__option--highlight{background:#ff6a6a;color:#fff}.multiselect__option--group-selected.multiselect__option--highlight:after{background:#ff6a6a;content:attr(data-deselect);color:#fff}.multiselect-enter-active,.multiselect-leave-active{transition:all .15s ease}.multiselect-enter,.multiselect-leave-active{opacity:0}.multiselect__strong{margin-bottom:8px;line-height:20px;display:inline-block;vertical-align:top}[dir=rtl] .multiselect{text-align:right}[dir=rtl] .multiselect__select{right:auto;left:1px}[dir=rtl] .multiselect__tags{padding:8px 8px 0 40px}[dir=rtl] .multiselect__content{text-align:right}[dir=rtl] .multiselect__option:after{right:auto;left:0}[dir=rtl] .multiselect__clear{right:auto;left:12px}[dir=rtl] .multiselect__spinner{right:auto;left:1px}@keyframes spinning{0%{transform:rotate(0)}to{transform:rotate(2turn)}}", ""]);
+exports.push([module.i, "fieldset[disabled] .multiselect {\n\tpointer-events: none\n}\n.multiselect__spinner {\n\tposition: absolute;\n\tright: 1px;\n\ttop: 1px;\n\twidth: 48px;\n\theight: 35px;\n\tbackground: #fff;\n\tdisplay: block\n}\n.multiselect__spinner:after,\n.multiselect__spinner:before {\n\tposition: absolute;\n\tcontent: \"\";\n\ttop: 50%;\n\tleft: 50%;\n\tmargin: -8px 0 0 -8px;\n\twidth: 16px;\n\theight: 16px;\n\tborder-radius: 100%;\n\tborder: 2px solid transparent;\n\tborder-top-color: #41b883;\n\tbox-shadow: 0 0 0 1px transparent\n}\n.multiselect__spinner:before {\n\tanimation: spinning 2.4s cubic-bezier(.41, .26, .2, .62);\n\tanimation-iteration-count: infinite\n}\n.multiselect__spinner:after {\n\tanimation: spinning 2.4s cubic-bezier(.51, .09, .21, .8);\n\tanimation-iteration-count: infinite\n}\n.multiselect__loading-enter-active,\n.multiselect__loading-leave-active {\n\ttransition: opacity .4s ease-in-out;\n\topacity: 1\n}\n.multiselect__loading-enter,\n.multiselect__loading-leave-active {\n\topacity: 0\n}\n.multiselect,\n.multiselect__input,\n.multiselect__single {\n\tfont-family: inherit;\n\tfont-size: 16px;\n\t-ms-touch-action: manipulation;\n\ttouch-action: manipulation\n}\n.multiselect {\n\tbox-sizing: content-box;\n\tdisplay: block;\n\tposition: relative;\n\twidth: 100%;\n\tmin-height: 40px;\n\ttext-align: left;\n\tcolor: #35495e\n}\n.multiselect * {\n\tbox-sizing: border-box\n}\n.multiselect:focus {\n\toutline: none\n}\n.multiselect--disabled {\n\tbackground: #ededed;\n\tpointer-events: none;\n\topacity: .6\n}\n.multiselect--active {\n\tz-index: 50\n}\n.multiselect--active:not(.multiselect--above) .multiselect__current,\n.multiselect--active:not(.multiselect--above) .multiselect__input,\n.multiselect--active:not(.multiselect--above) .multiselect__tags {\n\tborder-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0\n}\n.multiselect--active .multiselect__select {\n\ttransform: rotate(180deg)\n}\n.multiselect--above.multiselect--active .multiselect__current,\n.multiselect--above.multiselect--active .multiselect__input,\n.multiselect--above.multiselect--active .multiselect__tags {\n\tborder-top-left-radius: 0;\n\tborder-top-right-radius: 0\n}\n.multiselect__input,\n.multiselect__single {\n\tposition: relative;\n\tdisplay: inline-block;\n\tmin-height: 20px;\n\tline-height: 20px;\n\tborder: none;\n\tborder-radius: 5px;\n\tbackground: #fff;\n\tpadding: 0 0 0 5px;\n\twidth: 100%;\n\ttransition: border .1s ease;\n\tbox-sizing: border-box;\n\tmargin-bottom: 8px;\n\tvertical-align: top\n}\n.multiselect__input:-ms-input-placeholder {\n\tcolor: #35495e\n}\n.multiselect__input::placeholder {\n\tcolor: #35495e\n}\n.multiselect__tag~.multiselect__input,\n.multiselect__tag~.multiselect__single {\n\twidth: auto\n}\n.multiselect__input:hover,\n.multiselect__single:hover {\n\tborder-color: #cfcfcf\n}\n.multiselect__input:focus,\n.multiselect__single:focus {\n\tborder-color: #a8a8a8;\n\toutline: none\n}\n.multiselect__single {\n\tpadding-left: 5px;\n\tmargin-bottom: 8px\n}\n.multiselect__tags-wrap {\n\tdisplay: inline\n}\n.multiselect__tags {\n\tmin-height: 40px;\n\tdisplay: block;\n\tpadding: 8px 40px 0 8px;\n\tborder-radius: 5px;\n\tborder: 1px solid #e8e8e8;\n\tbackground: #fff;\n\tfont-size: 14px\n}\n.multiselect__tag {\n\tposition: relative;\n\tdisplay: inline-block;\n\tpadding: 4px 26px 4px 10px;\n\tborder-radius: 5px;\n\tmargin-right: 10px;\n\tcolor: #fff;\n\tline-height: 1;\n\tbackground: #41b883;\n\tmargin-bottom: 5px;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\tmax-width: 100%;\n\ttext-overflow: ellipsis\n}\n.multiselect__tag-icon {\n\tcursor: pointer;\n\tmargin-left: 7px;\n\tposition: absolute;\n\tright: 0;\n\ttop: 0;\n\tbottom: 0;\n\tfont-weight: 700;\n\tfont-style: normal;\n\twidth: 22px;\n\ttext-align: center;\n\tline-height: 22px;\n\ttransition: all .2s ease;\n\tborder-radius: 5px\n}\n.multiselect__tag-icon:after {\n\tcontent: \"\\D7\";\n\tcolor: #266d4d;\n\tfont-size: 14px\n}\n.multiselect__tag-icon:focus,\n.multiselect__tag-icon:hover {\n\tbackground: #369a6e\n}\n.multiselect__tag-icon:focus:after,\n.multiselect__tag-icon:hover:after {\n\tcolor: #fff\n}\n.multiselect__current {\n\tmin-height: 40px;\n\toverflow: hidden;\n\tpadding: 8px 30px 0 12px;\n\twhite-space: nowrap;\n\tborder-radius: 5px;\n\tborder: 1px solid #e8e8e8\n}\n.multiselect__current,\n.multiselect__select {\n\tline-height: 16px;\n\tbox-sizing: border-box;\n\tdisplay: block;\n\tmargin: 0;\n\ttext-decoration: none;\n\tcursor: pointer\n}\n.multiselect__select {\n\tposition: absolute;\n\twidth: 40px;\n\theight: 38px;\n\tright: 1px;\n\ttop: 1px;\n\tpadding: 4px 8px;\n\ttext-align: center;\n\ttransition: transform .2s ease\n}\n.multiselect__select:before {\n\tposition: relative;\n\tright: 0;\n\ttop: 65%;\n\tcolor: #999;\n\tmargin-top: 4px;\n\tborder-color: #999 transparent transparent;\n\tborder-style: solid;\n\tborder-width: 5px 5px 0;\n\tcontent: \"\"\n}\n.multiselect__placeholder {\n\tcolor: #adadad;\n\tdisplay: inline-block;\n\tmargin-bottom: 10px;\n\tpadding-top: 2px\n}\n.multiselect--active .multiselect__placeholder {\n\tdisplay: none\n}\n.multiselect__content-wrapper {\n\tposition: absolute;\n\tdisplay: block;\n\tbackground: #fff;\n\twidth: 100%;\n\tmax-height: 240px;\n\toverflow: auto;\n\tborder: 1px solid #e8e8e8;\n\tborder-top: none;\n\tborder-bottom-left-radius: 5px;\n\tborder-bottom-right-radius: 5px;\n\tz-index: 50;\n\t-webkit-overflow-scrolling: touch\n}\n.multiselect__content {\n\tlist-style: none;\n\tdisplay: inline-block;\n\tpadding: 0;\n\tmargin: 0;\n\tmin-width: 100%;\n\tvertical-align: top\n}\n.multiselect--above .multiselect__content-wrapper {\n\tbottom: 100%;\n\tborder-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-top-left-radius: 5px;\n\tborder-top-right-radius: 5px;\n\tborder-bottom: none;\n\tborder-top: 1px solid #e8e8e8\n}\n.multiselect__content::webkit-scrollbar {\n\tdisplay: none\n}\n.multiselect__element {\n\tdisplay: block\n}\n.multiselect__option {\n\tdisplay: block;\n\tpadding: 12px;\n\tmin-height: 40px;\n\tline-height: 16px;\n\ttext-decoration: none;\n\ttext-transform: none;\n\tvertical-align: middle;\n\tposition: relative;\n\tcursor: pointer;\n\twhite-space: nowrap\n}\n.multiselect__option:after {\n\ttop: 0;\n\tright: 0;\n\tposition: absolute;\n\tline-height: 40px;\n\tpadding-right: 12px;\n\tpadding-left: 20px;\n\tfont-size: 13px\n}\n.multiselect__option--highlight {\n\tbackground: #41b883;\n\toutline: none;\n\tcolor: #fff\n}\n.multiselect__option--highlight:after {\n\tcontent: attr(data-select);\n\tbackground: #41b883;\n\tcolor: #fff\n}\n.multiselect__option--selected {\n\tbackground: #f3f3f3;\n\tcolor: #35495e;\n\tfont-weight: 700\n}\n.multiselect__option--selected:after {\n\tcontent: attr(data-selected);\n\tcolor: silver\n}\n.multiselect__option--selected.multiselect__option--highlight {\n\tbackground: #ff6a6a;\n\tcolor: #fff\n}\n.multiselect__option--selected.multiselect__option--highlight:after {\n\tbackground: #ff6a6a;\n\tcontent: attr(data-deselect);\n\tcolor: #fff\n}\n.multiselect--disabled .multiselect__current,\n.multiselect--disabled .multiselect__select {\n\tbackground: #ededed;\n\tcolor: #a6a6a6\n}\n.multiselect__option--disabled {\n\tbackground: #ededed!important;\n\tcolor: #a6a6a6!important;\n\tcursor: text;\n\tpointer-events: none\n}\n.multiselect__option--group {\n\tbackground: #ededed;\n\tcolor: #35495e\n}\n.multiselect__option--group.multiselect__option--highlight {\n\tbackground: #35495e;\n\tcolor: #fff\n}\n.multiselect__option--group.multiselect__option--highlight:after {\n\tbackground: #35495e\n}\n.multiselect__option--disabled.multiselect__option--highlight {\n\tbackground: #dedede\n}\n.multiselect__option--group-selected.multiselect__option--highlight {\n\tbackground: #ff6a6a;\n\tcolor: #fff\n}\n.multiselect__option--group-selected.multiselect__option--highlight:after {\n\tbackground: #ff6a6a;\n\tcontent: attr(data-deselect);\n\tcolor: #fff\n}\n.multiselect-enter-active,\n.multiselect-leave-active {\n\ttransition: all .15s ease\n}\n.multiselect-enter,\n.multiselect-leave-active {\n\topacity: 0\n}\n.multiselect__strong {\n\tmargin-bottom: 8px;\n\tline-height: 20px;\n\tdisplay: inline-block;\n\tvertical-align: top\n}\n[dir=rtl] .multiselect {\n\ttext-align: right\n}\n[dir=rtl] .multiselect__select {\n\tright: auto;\n\tleft: 1px\n}\n[dir=rtl] .multiselect__tags {\n\tpadding: 8px 8px 0 40px\n}\n[dir=rtl] .multiselect__content {\n\ttext-align: right\n}\n[dir=rtl] .multiselect__option:after {\n\tright: auto;\n\tleft: 0\n}\n[dir=rtl] .multiselect__clear {\n\tright: auto;\n\tleft: 12px\n}\n[dir=rtl] .multiselect__spinner {\n\tright: auto;\n\tleft: 1px\n}\n@keyframes spinning {\n0% {\n\t\ttransform: rotate(0)\n}\nto {\n\t\ttransform: rotate(2turn)\n}\n}", ""]);
 
 // exports
 
@@ -56593,6 +56670,1030 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
 
 /***/ }),
 
+/***/ "./node_modules/numeral/numeral.js":
+/*!*****************************************!*\
+  !*** ./node_modules/numeral/numeral.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! @preserve
+ * numeral.js
+ * version : 2.0.6
+ * author : Adam Draper
+ * license : MIT
+ * http://adamwdraper.github.com/Numeral-js/
+ */
+
+(function (global, factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {}
+}(this, function () {
+    /************************************
+        Variables
+    ************************************/
+
+    var numeral,
+        _,
+        VERSION = '2.0.6',
+        formats = {},
+        locales = {},
+        defaults = {
+            currentLocale: 'en',
+            zeroFormat: null,
+            nullFormat: null,
+            defaultFormat: '0,0',
+            scalePercentBy100: true
+        },
+        options = {
+            currentLocale: defaults.currentLocale,
+            zeroFormat: defaults.zeroFormat,
+            nullFormat: defaults.nullFormat,
+            defaultFormat: defaults.defaultFormat,
+            scalePercentBy100: defaults.scalePercentBy100
+        };
+
+
+    /************************************
+        Constructors
+    ************************************/
+
+    // Numeral prototype object
+    function Numeral(input, number) {
+        this._input = input;
+
+        this._value = number;
+    }
+
+    numeral = function(input) {
+        var value,
+            kind,
+            unformatFunction,
+            regexp;
+
+        if (numeral.isNumeral(input)) {
+            value = input.value();
+        } else if (input === 0 || typeof input === 'undefined') {
+            value = 0;
+        } else if (input === null || _.isNaN(input)) {
+            value = null;
+        } else if (typeof input === 'string') {
+            if (options.zeroFormat && input === options.zeroFormat) {
+                value = 0;
+            } else if (options.nullFormat && input === options.nullFormat || !input.replace(/[^0-9]+/g, '').length) {
+                value = null;
+            } else {
+                for (kind in formats) {
+                    regexp = typeof formats[kind].regexps.unformat === 'function' ? formats[kind].regexps.unformat() : formats[kind].regexps.unformat;
+
+                    if (regexp && input.match(regexp)) {
+                        unformatFunction = formats[kind].unformat;
+
+                        break;
+                    }
+                }
+
+                unformatFunction = unformatFunction || numeral._.stringToNumber;
+
+                value = unformatFunction(input);
+            }
+        } else {
+            value = Number(input)|| null;
+        }
+
+        return new Numeral(input, value);
+    };
+
+    // version number
+    numeral.version = VERSION;
+
+    // compare numeral object
+    numeral.isNumeral = function(obj) {
+        return obj instanceof Numeral;
+    };
+
+    // helper functions
+    numeral._ = _ = {
+        // formats numbers separators, decimals places, signs, abbreviations
+        numberToFormat: function(value, format, roundingFunction) {
+            var locale = locales[numeral.options.currentLocale],
+                negP = false,
+                optDec = false,
+                leadingCount = 0,
+                abbr = '',
+                trillion = 1000000000000,
+                billion = 1000000000,
+                million = 1000000,
+                thousand = 1000,
+                decimal = '',
+                neg = false,
+                abbrForce, // force abbreviation
+                abs,
+                min,
+                max,
+                power,
+                int,
+                precision,
+                signed,
+                thousands,
+                output;
+
+            // make sure we never format a null value
+            value = value || 0;
+
+            abs = Math.abs(value);
+
+            // see if we should use parentheses for negative number or if we should prefix with a sign
+            // if both are present we default to parentheses
+            if (numeral._.includes(format, '(')) {
+                negP = true;
+                format = format.replace(/[\(|\)]/g, '');
+            } else if (numeral._.includes(format, '+') || numeral._.includes(format, '-')) {
+                signed = numeral._.includes(format, '+') ? format.indexOf('+') : value < 0 ? format.indexOf('-') : -1;
+                format = format.replace(/[\+|\-]/g, '');
+            }
+
+            // see if abbreviation is wanted
+            if (numeral._.includes(format, 'a')) {
+                abbrForce = format.match(/a(k|m|b|t)?/);
+
+                abbrForce = abbrForce ? abbrForce[1] : false;
+
+                // check for space before abbreviation
+                if (numeral._.includes(format, ' a')) {
+                    abbr = ' ';
+                }
+
+                format = format.replace(new RegExp(abbr + 'a[kmbt]?'), '');
+
+                if (abs >= trillion && !abbrForce || abbrForce === 't') {
+                    // trillion
+                    abbr += locale.abbreviations.trillion;
+                    value = value / trillion;
+                } else if (abs < trillion && abs >= billion && !abbrForce || abbrForce === 'b') {
+                    // billion
+                    abbr += locale.abbreviations.billion;
+                    value = value / billion;
+                } else if (abs < billion && abs >= million && !abbrForce || abbrForce === 'm') {
+                    // million
+                    abbr += locale.abbreviations.million;
+                    value = value / million;
+                } else if (abs < million && abs >= thousand && !abbrForce || abbrForce === 'k') {
+                    // thousand
+                    abbr += locale.abbreviations.thousand;
+                    value = value / thousand;
+                }
+            }
+
+            // check for optional decimals
+            if (numeral._.includes(format, '[.]')) {
+                optDec = true;
+                format = format.replace('[.]', '.');
+            }
+
+            // break number and format
+            int = value.toString().split('.')[0];
+            precision = format.split('.')[1];
+            thousands = format.indexOf(',');
+            leadingCount = (format.split('.')[0].split(',')[0].match(/0/g) || []).length;
+
+            if (precision) {
+                if (numeral._.includes(precision, '[')) {
+                    precision = precision.replace(']', '');
+                    precision = precision.split('[');
+                    decimal = numeral._.toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
+                } else {
+                    decimal = numeral._.toFixed(value, precision.length, roundingFunction);
+                }
+
+                int = decimal.split('.')[0];
+
+                if (numeral._.includes(decimal, '.')) {
+                    decimal = locale.delimiters.decimal + decimal.split('.')[1];
+                } else {
+                    decimal = '';
+                }
+
+                if (optDec && Number(decimal.slice(1)) === 0) {
+                    decimal = '';
+                }
+            } else {
+                int = numeral._.toFixed(value, 0, roundingFunction);
+            }
+
+            // check abbreviation again after rounding
+            if (abbr && !abbrForce && Number(int) >= 1000 && abbr !== locale.abbreviations.trillion) {
+                int = String(Number(int) / 1000);
+
+                switch (abbr) {
+                    case locale.abbreviations.thousand:
+                        abbr = locale.abbreviations.million;
+                        break;
+                    case locale.abbreviations.million:
+                        abbr = locale.abbreviations.billion;
+                        break;
+                    case locale.abbreviations.billion:
+                        abbr = locale.abbreviations.trillion;
+                        break;
+                }
+            }
+
+
+            // format number
+            if (numeral._.includes(int, '-')) {
+                int = int.slice(1);
+                neg = true;
+            }
+
+            if (int.length < leadingCount) {
+                for (var i = leadingCount - int.length; i > 0; i--) {
+                    int = '0' + int;
+                }
+            }
+
+            if (thousands > -1) {
+                int = int.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + locale.delimiters.thousands);
+            }
+
+            if (format.indexOf('.') === 0) {
+                int = '';
+            }
+
+            output = int + decimal + (abbr ? abbr : '');
+
+            if (negP) {
+                output = (negP && neg ? '(' : '') + output + (negP && neg ? ')' : '');
+            } else {
+                if (signed >= 0) {
+                    output = signed === 0 ? (neg ? '-' : '+') + output : output + (neg ? '-' : '+');
+                } else if (neg) {
+                    output = '-' + output;
+                }
+            }
+
+            return output;
+        },
+        // unformats numbers separators, decimals places, signs, abbreviations
+        stringToNumber: function(string) {
+            var locale = locales[options.currentLocale],
+                stringOriginal = string,
+                abbreviations = {
+                    thousand: 3,
+                    million: 6,
+                    billion: 9,
+                    trillion: 12
+                },
+                abbreviation,
+                value,
+                i,
+                regexp;
+
+            if (options.zeroFormat && string === options.zeroFormat) {
+                value = 0;
+            } else if (options.nullFormat && string === options.nullFormat || !string.replace(/[^0-9]+/g, '').length) {
+                value = null;
+            } else {
+                value = 1;
+
+                if (locale.delimiters.decimal !== '.') {
+                    string = string.replace(/\./g, '').replace(locale.delimiters.decimal, '.');
+                }
+
+                for (abbreviation in abbreviations) {
+                    regexp = new RegExp('[^a-zA-Z]' + locale.abbreviations[abbreviation] + '(?:\\)|(\\' + locale.currency.symbol + ')?(?:\\))?)?$');
+
+                    if (stringOriginal.match(regexp)) {
+                        value *= Math.pow(10, abbreviations[abbreviation]);
+                        break;
+                    }
+                }
+
+                // check for negative number
+                value *= (string.split('-').length + Math.min(string.split('(').length - 1, string.split(')').length - 1)) % 2 ? 1 : -1;
+
+                // remove non numbers
+                string = string.replace(/[^0-9\.]+/g, '');
+
+                value *= Number(string);
+            }
+
+            return value;
+        },
+        isNaN: function(value) {
+            return typeof value === 'number' && isNaN(value);
+        },
+        includes: function(string, search) {
+            return string.indexOf(search) !== -1;
+        },
+        insert: function(string, subString, start) {
+            return string.slice(0, start) + subString + string.slice(start);
+        },
+        reduce: function(array, callback /*, initialValue*/) {
+            if (this === null) {
+                throw new TypeError('Array.prototype.reduce called on null or undefined');
+            }
+
+            if (typeof callback !== 'function') {
+                throw new TypeError(callback + ' is not a function');
+            }
+
+            var t = Object(array),
+                len = t.length >>> 0,
+                k = 0,
+                value;
+
+            if (arguments.length === 3) {
+                value = arguments[2];
+            } else {
+                while (k < len && !(k in t)) {
+                    k++;
+                }
+
+                if (k >= len) {
+                    throw new TypeError('Reduce of empty array with no initial value');
+                }
+
+                value = t[k++];
+            }
+            for (; k < len; k++) {
+                if (k in t) {
+                    value = callback(value, t[k], k, t);
+                }
+            }
+            return value;
+        },
+        /**
+         * Computes the multiplier necessary to make x >= 1,
+         * effectively eliminating miscalculations caused by
+         * finite precision.
+         */
+        multiplier: function (x) {
+            var parts = x.toString().split('.');
+
+            return parts.length < 2 ? 1 : Math.pow(10, parts[1].length);
+        },
+        /**
+         * Given a variable number of arguments, returns the maximum
+         * multiplier that must be used to normalize an operation involving
+         * all of them.
+         */
+        correctionFactor: function () {
+            var args = Array.prototype.slice.call(arguments);
+
+            return args.reduce(function(accum, next) {
+                var mn = _.multiplier(next);
+                return accum > mn ? accum : mn;
+            }, 1);
+        },
+        /**
+         * Implementation of toFixed() that treats floats more like decimals
+         *
+         * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
+         * problems for accounting- and finance-related software.
+         */
+        toFixed: function(value, maxDecimals, roundingFunction, optionals) {
+            var splitValue = value.toString().split('.'),
+                minDecimals = maxDecimals - (optionals || 0),
+                boundedPrecision,
+                optionalsRegExp,
+                power,
+                output;
+
+            // Use the smallest precision value possible to avoid errors from floating point representation
+            if (splitValue.length === 2) {
+              boundedPrecision = Math.min(Math.max(splitValue[1].length, minDecimals), maxDecimals);
+            } else {
+              boundedPrecision = minDecimals;
+            }
+
+            power = Math.pow(10, boundedPrecision);
+
+            // Multiply up by precision, round accurately, then divide and use native toFixed():
+            output = (roundingFunction(value + 'e+' + boundedPrecision) / power).toFixed(boundedPrecision);
+
+            if (optionals > maxDecimals - boundedPrecision) {
+                optionalsRegExp = new RegExp('\\.?0{1,' + (optionals - (maxDecimals - boundedPrecision)) + '}$');
+                output = output.replace(optionalsRegExp, '');
+            }
+
+            return output;
+        }
+    };
+
+    // avaliable options
+    numeral.options = options;
+
+    // avaliable formats
+    numeral.formats = formats;
+
+    // avaliable formats
+    numeral.locales = locales;
+
+    // This function sets the current locale.  If
+    // no arguments are passed in, it will simply return the current global
+    // locale key.
+    numeral.locale = function(key) {
+        if (key) {
+            options.currentLocale = key.toLowerCase();
+        }
+
+        return options.currentLocale;
+    };
+
+    // This function provides access to the loaded locale data.  If
+    // no arguments are passed in, it will simply return the current
+    // global locale object.
+    numeral.localeData = function(key) {
+        if (!key) {
+            return locales[options.currentLocale];
+        }
+
+        key = key.toLowerCase();
+
+        if (!locales[key]) {
+            throw new Error('Unknown locale : ' + key);
+        }
+
+        return locales[key];
+    };
+
+    numeral.reset = function() {
+        for (var property in defaults) {
+            options[property] = defaults[property];
+        }
+    };
+
+    numeral.zeroFormat = function(format) {
+        options.zeroFormat = typeof(format) === 'string' ? format : null;
+    };
+
+    numeral.nullFormat = function (format) {
+        options.nullFormat = typeof(format) === 'string' ? format : null;
+    };
+
+    numeral.defaultFormat = function(format) {
+        options.defaultFormat = typeof(format) === 'string' ? format : '0.0';
+    };
+
+    numeral.register = function(type, name, format) {
+        name = name.toLowerCase();
+
+        if (this[type + 's'][name]) {
+            throw new TypeError(name + ' ' + type + ' already registered.');
+        }
+
+        this[type + 's'][name] = format;
+
+        return format;
+    };
+
+
+    numeral.validate = function(val, culture) {
+        var _decimalSep,
+            _thousandSep,
+            _currSymbol,
+            _valArray,
+            _abbrObj,
+            _thousandRegEx,
+            localeData,
+            temp;
+
+        //coerce val to string
+        if (typeof val !== 'string') {
+            val += '';
+
+            if (console.warn) {
+                console.warn('Numeral.js: Value is not string. It has been co-erced to: ', val);
+            }
+        }
+
+        //trim whitespaces from either sides
+        val = val.trim();
+
+        //if val is just digits return true
+        if (!!val.match(/^\d+$/)) {
+            return true;
+        }
+
+        //if val is empty return false
+        if (val === '') {
+            return false;
+        }
+
+        //get the decimal and thousands separator from numeral.localeData
+        try {
+            //check if the culture is understood by numeral. if not, default it to current locale
+            localeData = numeral.localeData(culture);
+        } catch (e) {
+            localeData = numeral.localeData(numeral.locale());
+        }
+
+        //setup the delimiters and currency symbol based on culture/locale
+        _currSymbol = localeData.currency.symbol;
+        _abbrObj = localeData.abbreviations;
+        _decimalSep = localeData.delimiters.decimal;
+        if (localeData.delimiters.thousands === '.') {
+            _thousandSep = '\\.';
+        } else {
+            _thousandSep = localeData.delimiters.thousands;
+        }
+
+        // validating currency symbol
+        temp = val.match(/^[^\d]+/);
+        if (temp !== null) {
+            val = val.substr(1);
+            if (temp[0] !== _currSymbol) {
+                return false;
+            }
+        }
+
+        //validating abbreviation symbol
+        temp = val.match(/[^\d]+$/);
+        if (temp !== null) {
+            val = val.slice(0, -1);
+            if (temp[0] !== _abbrObj.thousand && temp[0] !== _abbrObj.million && temp[0] !== _abbrObj.billion && temp[0] !== _abbrObj.trillion) {
+                return false;
+            }
+        }
+
+        _thousandRegEx = new RegExp(_thousandSep + '{2}');
+
+        if (!val.match(/[^\d.,]/g)) {
+            _valArray = val.split(_decimalSep);
+            if (_valArray.length > 2) {
+                return false;
+            } else {
+                if (_valArray.length < 2) {
+                    return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx));
+                } else {
+                    if (_valArray[0].length === 1) {
+                        return ( !! _valArray[0].match(/^\d+$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
+                    } else {
+                        return ( !! _valArray[0].match(/^\d+.*\d$/) && !_valArray[0].match(_thousandRegEx) && !! _valArray[1].match(/^\d+$/));
+                    }
+                }
+            }
+        }
+
+        return false;
+    };
+
+
+    /************************************
+        Numeral Prototype
+    ************************************/
+
+    numeral.fn = Numeral.prototype = {
+        clone: function() {
+            return numeral(this);
+        },
+        format: function(inputString, roundingFunction) {
+            var value = this._value,
+                format = inputString || options.defaultFormat,
+                kind,
+                output,
+                formatFunction;
+
+            // make sure we have a roundingFunction
+            roundingFunction = roundingFunction || Math.round;
+
+            // format based on value
+            if (value === 0 && options.zeroFormat !== null) {
+                output = options.zeroFormat;
+            } else if (value === null && options.nullFormat !== null) {
+                output = options.nullFormat;
+            } else {
+                for (kind in formats) {
+                    if (format.match(formats[kind].regexps.format)) {
+                        formatFunction = formats[kind].format;
+
+                        break;
+                    }
+                }
+
+                formatFunction = formatFunction || numeral._.numberToFormat;
+
+                output = formatFunction(value, format, roundingFunction);
+            }
+
+            return output;
+        },
+        value: function() {
+            return this._value;
+        },
+        input: function() {
+            return this._input;
+        },
+        set: function(value) {
+            this._value = Number(value);
+
+            return this;
+        },
+        add: function(value) {
+            var corrFactor = _.correctionFactor.call(null, this._value, value);
+
+            function cback(accum, curr, currI, O) {
+                return accum + Math.round(corrFactor * curr);
+            }
+
+            this._value = _.reduce([this._value, value], cback, 0) / corrFactor;
+
+            return this;
+        },
+        subtract: function(value) {
+            var corrFactor = _.correctionFactor.call(null, this._value, value);
+
+            function cback(accum, curr, currI, O) {
+                return accum - Math.round(corrFactor * curr);
+            }
+
+            this._value = _.reduce([value], cback, Math.round(this._value * corrFactor)) / corrFactor;
+
+            return this;
+        },
+        multiply: function(value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = _.correctionFactor(accum, curr);
+                return Math.round(accum * corrFactor) * Math.round(curr * corrFactor) / Math.round(corrFactor * corrFactor);
+            }
+
+            this._value = _.reduce([this._value, value], cback, 1);
+
+            return this;
+        },
+        divide: function(value) {
+            function cback(accum, curr, currI, O) {
+                var corrFactor = _.correctionFactor(accum, curr);
+                return Math.round(accum * corrFactor) / Math.round(curr * corrFactor);
+            }
+
+            this._value = _.reduce([this._value, value], cback);
+
+            return this;
+        },
+        difference: function(value) {
+            return Math.abs(numeral(this._value).subtract(value).value());
+        }
+    };
+
+    /************************************
+        Default Locale && Format
+    ************************************/
+
+    numeral.register('locale', 'en', {
+        delimiters: {
+            thousands: ',',
+            decimal: '.'
+        },
+        abbreviations: {
+            thousand: 'k',
+            million: 'm',
+            billion: 'b',
+            trillion: 't'
+        },
+        ordinal: function(number) {
+            var b = number % 10;
+            return (~~(number % 100 / 10) === 1) ? 'th' :
+                (b === 1) ? 'st' :
+                (b === 2) ? 'nd' :
+                (b === 3) ? 'rd' : 'th';
+        },
+        currency: {
+            symbol: '$'
+        }
+    });
+
+    
+
+(function() {
+        numeral.register('format', 'bps', {
+            regexps: {
+                format: /(BPS)/,
+                unformat: /(BPS)/
+            },
+            format: function(value, format, roundingFunction) {
+                var space = numeral._.includes(format, ' BPS') ? ' ' : '',
+                    output;
+
+                value = value * 10000;
+
+                // check for space before BPS
+                format = format.replace(/\s?BPS/, '');
+
+                output = numeral._.numberToFormat(value, format, roundingFunction);
+
+                if (numeral._.includes(output, ')')) {
+                    output = output.split('');
+
+                    output.splice(-1, 0, space + 'BPS');
+
+                    output = output.join('');
+                } else {
+                    output = output + space + 'BPS';
+                }
+
+                return output;
+            },
+            unformat: function(string) {
+                return +(numeral._.stringToNumber(string) * 0.0001).toFixed(15);
+            }
+        });
+})();
+
+
+(function() {
+        var decimal = {
+            base: 1000,
+            suffixes: ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+        },
+        binary = {
+            base: 1024,
+            suffixes: ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+        };
+
+    var allSuffixes =  decimal.suffixes.concat(binary.suffixes.filter(function (item) {
+            return decimal.suffixes.indexOf(item) < 0;
+        }));
+        var unformatRegex = allSuffixes.join('|');
+        // Allow support for BPS (http://www.investopedia.com/terms/b/basispoint.asp)
+        unformatRegex = '(' + unformatRegex.replace('B', 'B(?!PS)') + ')';
+
+    numeral.register('format', 'bytes', {
+        regexps: {
+            format: /([0\s]i?b)/,
+            unformat: new RegExp(unformatRegex)
+        },
+        format: function(value, format, roundingFunction) {
+            var output,
+                bytes = numeral._.includes(format, 'ib') ? binary : decimal,
+                suffix = numeral._.includes(format, ' b') || numeral._.includes(format, ' ib') ? ' ' : '',
+                power,
+                min,
+                max;
+
+            // check for space before
+            format = format.replace(/\s?i?b/, '');
+
+            for (power = 0; power <= bytes.suffixes.length; power++) {
+                min = Math.pow(bytes.base, power);
+                max = Math.pow(bytes.base, power + 1);
+
+                if (value === null || value === 0 || value >= min && value < max) {
+                    suffix += bytes.suffixes[power];
+
+                    if (min > 0) {
+                        value = value / min;
+                    }
+
+                    break;
+                }
+            }
+
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            return output + suffix;
+        },
+        unformat: function(string) {
+            var value = numeral._.stringToNumber(string),
+                power,
+                bytesMultiplier;
+
+            if (value) {
+                for (power = decimal.suffixes.length - 1; power >= 0; power--) {
+                    if (numeral._.includes(string, decimal.suffixes[power])) {
+                        bytesMultiplier = Math.pow(decimal.base, power);
+
+                        break;
+                    }
+
+                    if (numeral._.includes(string, binary.suffixes[power])) {
+                        bytesMultiplier = Math.pow(binary.base, power);
+
+                        break;
+                    }
+                }
+
+                value *= (bytesMultiplier || 1);
+            }
+
+            return value;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'currency', {
+        regexps: {
+            format: /(\$)/
+        },
+        format: function(value, format, roundingFunction) {
+            var locale = numeral.locales[numeral.options.currentLocale],
+                symbols = {
+                    before: format.match(/^([\+|\-|\(|\s|\$]*)/)[0],
+                    after: format.match(/([\+|\-|\)|\s|\$]*)$/)[0]
+                },
+                output,
+                symbol,
+                i;
+
+            // strip format of spaces and $
+            format = format.replace(/\s?\$\s?/, '');
+
+            // format the number
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            // update the before and after based on value
+            if (value >= 0) {
+                symbols.before = symbols.before.replace(/[\-\(]/, '');
+                symbols.after = symbols.after.replace(/[\-\)]/, '');
+            } else if (value < 0 && (!numeral._.includes(symbols.before, '-') && !numeral._.includes(symbols.before, '('))) {
+                symbols.before = '-' + symbols.before;
+            }
+
+            // loop through each before symbol
+            for (i = 0; i < symbols.before.length; i++) {
+                symbol = symbols.before[i];
+
+                switch (symbol) {
+                    case '$':
+                        output = numeral._.insert(output, locale.currency.symbol, i);
+                        break;
+                    case ' ':
+                        output = numeral._.insert(output, ' ', i + locale.currency.symbol.length - 1);
+                        break;
+                }
+            }
+
+            // loop through each after symbol
+            for (i = symbols.after.length - 1; i >= 0; i--) {
+                symbol = symbols.after[i];
+
+                switch (symbol) {
+                    case '$':
+                        output = i === symbols.after.length - 1 ? output + locale.currency.symbol : numeral._.insert(output, locale.currency.symbol, -(symbols.after.length - (1 + i)));
+                        break;
+                    case ' ':
+                        output = i === symbols.after.length - 1 ? output + ' ' : numeral._.insert(output, ' ', -(symbols.after.length - (1 + i) + locale.currency.symbol.length - 1));
+                        break;
+                }
+            }
+
+
+            return output;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'exponential', {
+        regexps: {
+            format: /(e\+|e-)/,
+            unformat: /(e\+|e-)/
+        },
+        format: function(value, format, roundingFunction) {
+            var output,
+                exponential = typeof value === 'number' && !numeral._.isNaN(value) ? value.toExponential() : '0e+0',
+                parts = exponential.split('e');
+
+            format = format.replace(/e[\+|\-]{1}0/, '');
+
+            output = numeral._.numberToFormat(Number(parts[0]), format, roundingFunction);
+
+            return output + 'e' + parts[1];
+        },
+        unformat: function(string) {
+            var parts = numeral._.includes(string, 'e+') ? string.split('e+') : string.split('e-'),
+                value = Number(parts[0]),
+                power = Number(parts[1]);
+
+            power = numeral._.includes(string, 'e-') ? power *= -1 : power;
+
+            function cback(accum, curr, currI, O) {
+                var corrFactor = numeral._.correctionFactor(accum, curr),
+                    num = (accum * corrFactor) * (curr * corrFactor) / (corrFactor * corrFactor);
+                return num;
+            }
+
+            return numeral._.reduce([value, Math.pow(10, power)], cback, 1);
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'ordinal', {
+        regexps: {
+            format: /(o)/
+        },
+        format: function(value, format, roundingFunction) {
+            var locale = numeral.locales[numeral.options.currentLocale],
+                output,
+                ordinal = numeral._.includes(format, ' o') ? ' ' : '';
+
+            // check for space before
+            format = format.replace(/\s?o/, '');
+
+            ordinal += locale.ordinal(value);
+
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            return output + ordinal;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'percentage', {
+        regexps: {
+            format: /(%)/,
+            unformat: /(%)/
+        },
+        format: function(value, format, roundingFunction) {
+            var space = numeral._.includes(format, ' %') ? ' ' : '',
+                output;
+
+            if (numeral.options.scalePercentBy100) {
+                value = value * 100;
+            }
+
+            // check for space before %
+            format = format.replace(/\s?\%/, '');
+
+            output = numeral._.numberToFormat(value, format, roundingFunction);
+
+            if (numeral._.includes(output, ')')) {
+                output = output.split('');
+
+                output.splice(-1, 0, space + '%');
+
+                output = output.join('');
+            } else {
+                output = output + space + '%';
+            }
+
+            return output;
+        },
+        unformat: function(string) {
+            var number = numeral._.stringToNumber(string);
+            if (numeral.options.scalePercentBy100) {
+                return number * 0.01;
+            }
+            return number;
+        }
+    });
+})();
+
+
+(function() {
+        numeral.register('format', 'time', {
+        regexps: {
+            format: /(:)/,
+            unformat: /(:)/
+        },
+        format: function(value, format, roundingFunction) {
+            var hours = Math.floor(value / 60 / 60),
+                minutes = Math.floor((value - (hours * 60 * 60)) / 60),
+                seconds = Math.round(value - (hours * 60 * 60) - (minutes * 60));
+
+            return hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+        },
+        unformat: function(string) {
+            var timeArray = string.split(':'),
+                seconds = 0;
+
+            // turn hours and minutes into seconds and add them all up
+            if (timeArray.length === 3) {
+                // hours
+                seconds = seconds + (Number(timeArray[0]) * 60 * 60);
+                // minutes
+                seconds = seconds + (Number(timeArray[1]) * 60);
+                // seconds
+                seconds = seconds + Number(timeArray[2]);
+            } else if (timeArray.length === 2) {
+                // minutes
+                seconds = seconds + (Number(timeArray[0]) * 60);
+                // seconds
+                seconds = seconds + Number(timeArray[1]);
+            }
+            return Number(seconds);
+        }
+    });
+})();
+
+return numeral;
+}));
+
+
+/***/ }),
+
 /***/ "./node_modules/popper.js/dist/esm/popper.js":
 /*!***************************************************!*\
   !*** ./node_modules/popper.js/dist/esm/popper.js ***!
@@ -59625,6 +60726,36 @@ process.umask = function() { return 0; };
 
 
 var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./DatePickerComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DatePickerComponent.vue?vue&type=style&index=0&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css&":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css& ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -64906,7 +66037,6 @@ var render = function() {
                       _vm._v(" "),
                       _c("v2-select", {
                         class: _vm.officeHasError ? "is-invalid" : "",
-                        attrs: { list_level: "cluster" },
                         on: { officeSelected: _vm.assignOffice }
                       }),
                       _vm._v(" "),
@@ -67851,115 +68981,154 @@ var render = function() {
   return _c(
     "div",
     [
-      _c(
-        "div",
-        { staticClass: "col-12" },
-        [
+      _c("div", { staticClass: "row" }, [
+        _c(
+          "div",
+          { staticClass: "col-lg-6" },
+          [
+            _c(
+              "label",
+              {
+                staticClass: "lead mr-2",
+                staticStyle: { color: "white" },
+                attrs: { for: "" }
+              },
+              [_vm._v("Filter:")]
+            ),
+            _vm._v(" "),
+            _c("v2-select", {
+              staticClass: "d-inline-block",
+              staticStyle: { width: "500px" },
+              on: { officeSelected: _vm.assignOffice },
+              model: {
+                value: _vm.office_id,
+                callback: function($$v) {
+                  _vm.office_id = $$v
+                },
+                expression: "office_id"
+              }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-lg-6 float-right d-flex" }, [
           _c(
             "label",
             {
-              staticClass: "lead",
+              staticClass: "lead mr-2",
               staticStyle: { color: "white" },
               attrs: { for: "" }
             },
-            [_vm._v("Filter:")]
+            [_vm._v("Search:")]
           ),
           _vm._v(" "),
-          _c("v2-select", {
-            staticClass: "d-inline-block",
-            staticStyle: { width: "500px" },
-            on: { officeSelected: _vm.assignOffice },
-            model: {
-              value: _vm.office_id,
-              callback: function($$v) {
-                _vm.office_id = $$v
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.query,
+                expression: "query"
               },
-              expression: "office_id"
+              {
+                name: "debounce",
+                rawName: "v-debounce:300ms",
+                value: _vm.inputSearch,
+                expression: "inputSearch",
+                arg: "300ms"
+              }
+            ],
+            staticClass: "form-control border-light pb-2",
+            attrs: { type: "text", id: "search_client" },
+            domProps: { value: _vm.query },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.query = $event.target.value
+              }
             }
           }),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary",
-              attrs: { type: "button" },
-              on: { click: _vm.filter }
-            },
-            [_vm._v("Add New")]
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c("label", { attrs: { for: "" } }, [_vm._v("Search")]),
-      _vm._v(" "),
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.query,
-            expression: "query"
-          },
-          {
-            name: "debounce",
-            rawName: "v-debounce:300ms",
-            value: _vm.inputSearch,
-            expression: "inputSearch",
-            arg: "300ms"
-          }
-        ],
-        staticClass: "form-control",
-        attrs: { type: "text" },
-        domProps: { value: _vm.query },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.query = $event.target.value
-          }
-        }
-      }),
-      _vm._v(" "),
-      _vm.hasRecords
-        ? _c(
-            "div",
-            [
-              _c("paginator", {
-                attrs: { dataset: _vm.lists },
-                on: { updated: _vm.fetch }
-              }),
+          _c("div")
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "w-100 px-3 mt-6" },
+          [
+            _c("table", { staticClass: "table" }, [
+              _vm._m(0),
               _vm._v(" "),
-              _c("table", { staticClass: "table" }, [
-                _vm._m(0),
-                _vm._v(" "),
-                _c(
-                  "tbody",
-                  _vm._l(_vm.lists.data, function(client) {
-                    return _c("tr", { key: client.id }, [
-                      _c("td", [
-                        _c(
-                          "a",
-                          { attrs: { href: _vm.clientLink(client.client_id) } },
-                          [_vm._v(_vm._s(client.client_id))]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(_vm._s(client.firstname + " " + client.lastname))
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(client.office.name))])
-                    ])
-                  }),
-                  0
+              _vm.hasRecords
+                ? _c(
+                    "tbody",
+                    _vm._l(_vm.lists.data, function(client) {
+                      return _c("tr", { key: client.id }, [
+                        _c("td", [
+                          _c(
+                            "a",
+                            {
+                              attrs: { href: _vm.clientLink(client.client_id) }
+                            },
+                            [_vm._v(_vm._s(client.client_id))]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _vm._v(
+                            _vm._s(client.firstname + " " + client.lastname)
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(client.office.name))])
+                      ])
+                    }),
+                    0
+                  )
+                : _vm._e()
+            ]),
+            _vm._v(" "),
+            _c(
+              "p",
+              {
+                staticClass: "lead float-left text-right",
+                staticStyle: { color: "white" }
+              },
+              [
+                _vm._v(
+                  "Showing Records " +
+                    _vm._s(_vm.lists.from) +
+                    " - " +
+                    _vm._s(_vm.lists.to) +
+                    " of " +
+                    _vm._s(_vm.totalRecords) +
+                    " "
                 )
-              ])
-            ],
-            1
-          )
-        : _vm._e(),
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "p",
+              {
+                staticClass: "lead float-right text-right",
+                staticStyle: { color: "white" }
+              },
+              [_vm._v("Total Records: " + _vm._s(_vm.totalRecords) + " ")]
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "clearfix" }),
+            _vm._v(" "),
+            _c("paginator", {
+              attrs: { dataset: _vm.lists },
+              on: { updated: _vm.fetch }
+            })
+          ],
+          1
+        )
+      ]),
       _vm._v(" "),
       _c("loading", {
         attrs: { "is-full-page": true, active: _vm.isLoading },
@@ -70997,7 +72166,9 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "group-wrapper" }, [
     _c("div", { staticClass: "card pb-4" }, [
-      _c("h4", { staticClass: "h4 ml-3 mt-4" }, [_vm._v("Create Branch")]),
+      _c("h4", { staticClass: "h4 ml-3 mt-4" }, [
+        _vm._v("Create " + _vm._s(_vm.level))
+      ]),
       _vm._v(" "),
       _c(
         "form",
@@ -71018,16 +72189,16 @@ var render = function() {
               _vm._v(" "),
               _c("v2-select", {
                 class: _vm.officeHasError ? "is-invalid" : "",
-                attrs: { list_level: this.list_level },
+                attrs: { list_level: _vm.list_level },
                 on: { officeSelected: _vm.assignOffice }
               }),
               _vm._v(" "),
               _vm.officeHasError
                 ? _c("div", { staticClass: "invalid-feedback" }, [
                     _vm._v(
-                      "\n                        " +
+                      "\n\t                        " +
                         _vm._s(_vm.errors.office_id[0]) +
-                        "\n                    "
+                        "\n\t                    "
                     )
                   ])
                 : _vm._e()
@@ -71048,7 +72219,8 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "number" },
+              class: _vm.codeHasError ? "is-invalid" : "",
+              attrs: { type: "text", id: "code" },
               domProps: { value: _vm.fields.code },
               on: {
                 input: function($event) {
@@ -71058,11 +72230,21 @@ var render = function() {
                   _vm.$set(_vm.fields, "code", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _vm.codeHasError
+              ? _c("div", { staticClass: "invalid-feedback" }, [
+                  _vm._v(
+                    "\n\t                        " +
+                      _vm._s(_vm.errors.code[0]) +
+                      "\n\t                    "
+                  )
+                ])
+              : _vm._e()
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "form-group col-md-6" }, [
-            _c("label", { attrs: { for: "cluster_code" } }, [_vm._v("Name")]),
+            _c("label", { attrs: { for: "cluster_code" } }, [_vm._v("Name:")]),
             _vm._v(" "),
             _c("input", {
               directives: [
@@ -71074,7 +72256,12 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "text" },
+              class: _vm.nameHasError ? "is-invalid" : "",
+              attrs: {
+                type: "text",
+                id: "name",
+                readonly: _vm.fields.readonly
+              },
               domProps: { value: _vm.fields.name },
               on: {
                 input: function($event) {
@@ -71084,7 +72271,17 @@ var render = function() {
                   _vm.$set(_vm.fields, "name", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _vm.nameHasError
+              ? _c("div", { staticClass: "invalid-feedback" }, [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.errors.name[0]) +
+                      "\n                        "
+                  )
+                ])
+              : _vm._e()
           ]),
           _vm._v(" "),
           _vm._m(0),
@@ -71206,10 +72403,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&":
-/*!*********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97& ***!
-  \*********************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true&":
+/*!*********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true& ***!
+  \*********************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -71286,24 +72483,32 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _vm._l(_vm.pages, function(page) {
-                return _c("li", { key: page.id, staticClass: "page-item" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      staticStyle: { color: "black" },
-                      attrs: { href: "#" },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.changePage(page)
+              _vm._l(_vm.pages, function(pageItem) {
+                return _c(
+                  "li",
+                  {
+                    key: pageItem.id,
+                    staticClass: "page-item",
+                    class: pageItem == _vm.page ? "page-active" : ""
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        staticStyle: { color: "black" },
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.changePage(pageItem)
+                          }
                         }
-                      }
-                    },
-                    [_vm._v(_vm._s(page))]
-                  )
-                ])
+                      },
+                      [_vm._v(_vm._s(pageItem))]
+                    )
+                  ]
+                )
               }),
               _vm._v(" "),
               _c(
@@ -86316,6 +87521,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 
+window.numeral = __webpack_require__(/*! numeral */ "./node_modules/numeral/numeral.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js"); // window.flatten = require('flat')
 
 window.Swal = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
@@ -86843,9 +88049,11 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _PaginatorComponent_vue_vue_type_template_id_19f31f97___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PaginatorComponent.vue?vue&type=template&id=19f31f97& */ "./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&");
+/* harmony import */ var _PaginatorComponent_vue_vue_type_template_id_19f31f97_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true& */ "./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true&");
 /* harmony import */ var _PaginatorComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PaginatorComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/PaginatorComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _PaginatorComponent_vue_vue_type_style_index_0_id_19f31f97_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css& */ "./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -86853,13 +88061,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _PaginatorComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _PaginatorComponent_vue_vue_type_template_id_19f31f97___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _PaginatorComponent_vue_vue_type_template_id_19f31f97___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _PaginatorComponent_vue_vue_type_template_id_19f31f97_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _PaginatorComponent_vue_vue_type_template_id_19f31f97_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  null,
+  "19f31f97",
   null
   
 )
@@ -86885,19 +88093,35 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&":
-/*!***************************************************************************************!*\
-  !*** ./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97& ***!
-  \***************************************************************************************/
+/***/ "./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css&":
+/*!*****************************************************************************************************************!*\
+  !*** ./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css& ***!
+  \*****************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_style_index_0_id_19f31f97_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=style&index=0&id=19f31f97&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_style_index_0_id_19f31f97_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_style_index_0_id_19f31f97_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_style_index_0_id_19f31f97_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_style_index_0_id_19f31f97_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_style_index_0_id_19f31f97_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true&":
+/*!***************************************************************************************************!*\
+  !*** ./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true& ***!
+  \***************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_template_id_19f31f97___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./PaginatorComponent.vue?vue&type=template&id=19f31f97& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_template_id_19f31f97___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_template_id_19f31f97_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PaginatorComponent.vue?vue&type=template&id=19f31f97&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_template_id_19f31f97_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_template_id_19f31f97___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PaginatorComponent_vue_vue_type_template_id_19f31f97_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -87146,8 +88370,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/nelsontan/Projects/Lumen/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/nelsontan/Projects/Lumen/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/ashbeemorgado/devs/lumen/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/ashbeemorgado/devs/lumen/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

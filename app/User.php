@@ -110,9 +110,6 @@ class User extends Authenticatable
             return $filtered;
         }
 
-
-
-
         $list = $collection->filter(function($item) use($office_level){
             return $item->level == $office_level;
         })->values();
@@ -120,24 +117,17 @@ class User extends Authenticatable
         $lists = $list->map(function($item){
             $branch['id'] = $item->id;
             $branch['name'] = $item->name;
+            
+            if (Office::isChildOf('branch', $item->level)) {
+                $branch['code'] = $item->getTopOffice('branch')->code;
+            }
             return $branch;
         });
-
          
         $filtered = [
             ['level' => ucwords($office_level), 'data' => collect($lists)->sortBy('name')->unique()->values()], 
         ];
         return $filtered;
-
-
-
-        
-
-
-       
-
-     
-
     }
     public function scopesID(){
        

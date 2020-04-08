@@ -12,7 +12,7 @@
                 <div class="row px-3">
                 <div class="form-group col-md-6 col-lg-3">
                     <label for="client_id">Linked To</label>
-                    <v2-select @officeSelected="assignOffice" list_level="cluster" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
+                    <v2-select @officeSelected="assignOffice" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
                     <div class="invalid-feedback" v-if="officeHasError">
                         {{ errors.office_id[0]}}
                     </div>

@@ -98,5 +98,6 @@ export default {
       background: #27293d!important;
       color: white;
     }
+
 </style>
 

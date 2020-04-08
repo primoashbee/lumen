@@ -4,15 +4,38 @@ use App\User;
 use App\Client;
 use App\Office;
 use App\Cluster;
+use App\Deposit;
 use Carbon\Carbon;
 use App\OfficeUser;
+
 use Illuminate\Support\Str;
 
 use App\Imports\OfficeImport;
-
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
   
+    function structure(){
+        $struc = [
+            "level"=>'main_office',
+            "parent_level"=>null,
+            "child"=> [
+                "parent_level"=>"main_office",
+                "level"=>"region",
+                "child"=> [
+                    "parent_level"=>"region",
+                    "level"=>"area",
+                    "child"=> [
+                        "parent_level"=>"area",
+                        "level"=>"branch"
+                    ]
+                ]
+            ]
+        ];
+       
+        
+        return collect($struc);
+        
+    }
     function createAdminAccount(){
         $user = User::create([
             'firstname' => 'Ashbee',
@@ -27,9 +50,52 @@ use Maatwebsite\Excel\Facades\Excel;
         
             OfficeUser::create([
                 'user_id'=>$user->id,
-                'office_id'=>2
-            ]);    
+                'office_id'=>1
+            ]);  
+
+            $user = User::create([
+                'firstname' => 'Nelson',
+                'lastname' => 'Abilgos',
+                'middlename' => 'Tan',
+                'gender' => 'Male',
+                'birthday' => Carbon::parse('1995-11-28'),
+                'email' => 'nelsontan1128@gmail.com',
+                'notes'=>'ajalksdjfdlksafjaldf',
+                'password' => Hash::make('tannelsona')
+            ]);
+        
+            OfficeUser::create([
+                'user_id'=>$user->id,
+                'office_id'=>1
+            ]);   
     }
+
+    function createDeposits(){
+        Deposit::create([
+            'name'=>'RESTRICTED CBU',
+            'product_id'=>'RCBU',
+            'description'=>'aba ewan ko sa inyo',
+            'account_per_client'=>1,
+            'auto_create_on_new_client'=>true,
+            'interest_rate'=>2,
+            'deposit_portfolio' => 0,
+            'deposit_interest_expense' => 0,
+        ]);
+        Deposit::create([
+            'name'=>'VOLUNTARY CBU',
+            'product_id'=>'VCBU',
+            'description'=>'aba ewan ko sa inyo',
+            'account_per_client'=>1,
+            'auto_create_on_new_client'=>true,
+            'interest_rate'=>2,
+            'deposit_portfolio' => 0,
+            'deposit_interest_expense' => 0,
+        ]);
+    }
+
+
+
+
     function generateStucture   (){
         $structure = Excel::toCollection(new OfficeImport, "public/OFFICE STRUCTURE.xlsx");
         $data = array();

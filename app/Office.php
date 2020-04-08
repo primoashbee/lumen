@@ -105,7 +105,8 @@ class Office extends Model
     }
 
     function getTopOffice($level="main_office"){
-        if($this->level=="branch"){
+        
+        if($this->level==$level){
             return $this;
         }
         $parent = $this->getParent();
@@ -115,43 +116,45 @@ class Office extends Model
         if($parent->level == $level){
          return $parent;
         }else{
-            return  $parent->getTopOffice($level);
+            return $parent->getTopOffice($level);
         }
     }
-    
-    public function generateClientID(){
-        
-    }
-
 
     public static function schema(){
     $schema = array(array(
                     "level"=>"main_office",
-                    "parent"=>null
+                    "parent"=>null,
+                    "children" =>['region','area','branch','unit','cluster','account_officer']
                 ),
                 array(
                     "level"=>"region",
-                    "parent"=>"main_office"
+                    "parent"=>"main_office",
+                    "children" =>['area','branch','unit','cluster','account_officer']
                 ),
                 array(
                     "level"=>"area",
                     "parent"=>"region",
+                    "children" =>['branch','unit','cluster','account_officer']
                 ),
                 array(
                     "level"=>"branch",
                     "parent"=>"area",
+                    "children" =>['unit','cluster','account_officer']
                 ),
                 array(
                     "level"=>"unit",
                     "parent"=>"branch",
+                    "children" =>['cluster']
                 ),
                 array(
                     "level"=>"cluster",
                     "parent"=>"unit",
+                    "children" =>[]
                 ),
                 array(
                     "level"=>"account_officer",
                     "parent"=>"branch",
+                    "children" =>[]
                 )
             );
             
@@ -159,11 +162,25 @@ class Office extends Model
     }
 
     public static function getParentOfLevel($level){
+      
         $me = new static;
         $schema = $me->schema();
         $curr_level =  $schema->filter(function($item) use ($level){
+            
             return $item['level'] == $level;
         })->values();
         return $curr_level->first()['parent'];
+    }
+    public static function isChildOf($parent_level, $level){
+        $me = new static;
+        $schema = $me->schema();
+         
+        $list = $schema->filter(function($item) use ($parent_level){
+            if ($item['level']==$parent_level) {
+                return $item;
+            }
+        })->values()->first()['children'];
+    
+        return in_array($level,$list) ? true : false;
     }
 }

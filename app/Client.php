@@ -3,8 +3,10 @@
 namespace App;
 
 use App\Office;
+use App\Events\ClientCreated;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Client extends Model
 {
@@ -63,6 +65,17 @@ class Client extends Model
         'sss'
     ];
 
+    public static function boot(){
+        parent::boot();
+        static::created(function($item) {
+	         event(new ClientCreated($item));
+	    });
+    }
+
+    public function deposits(){
+        return $this->hasMany(DepositAccount::class,'client_id','client_id');
+        // return $this->belongsToMany(Deposit::class, 'client_deposit', 'client_id', 'deposit_id', 'clients.client_id');
+    }
     public function household_income(){
         return $this->hasOne(HouseholdIncome::class, 'client_id','client_id');
     }
@@ -100,7 +113,7 @@ class Client extends Model
         return $me->searchables;
     }
 
-    public static function like($office_id, $query=false){
+    public static function like($office_id, $query){
         $me = new static;
         $searchables = $me->searchables;
        
@@ -108,22 +121,34 @@ class Client extends Model
         $office_ids = $office->getAllChildrenIDS();
         
         if(count($office_ids)>0){
-            if($query!=false){
-                $clients = Client::with('office');
-                foreach($searchables as $item){
-                    $clients->orWhere($item, 'LIKE', '%' .$query.'%');
-                }
+            
+            $office_ids = $office->getLowerOfficeIDS();
+            if($query!=null){
+                $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables, $query){
+                    foreach($searchables as $item){  
+                        $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
+                    }
+                });
                 return $clients;
             }
-        }
-
-        if($query!=false){
-            $clients = Client::with('office');
-                foreach($searchables as $item){
-                    $clients->orWhere($item, 'LIKE', '%' .$query.'%');
-                }
+            $clients = Client::with('office')->whereIn('office_id',$office_ids);
             return $clients;
         }
+
+        if($query!=null){
+            $office_ids = $office->getLowerOfficeIDS();
+                
+            $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables,$query){
+                foreach($searchables as $item){
+                    $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
+                }
+            });
+            return $clients;
+        }
+        
+        $office_ids = $office->getLowerOfficeIDS();       
+        $clients = Client::with('office')->whereIn('office_id',$office_ids);
+        return $clients;
     }
 
 

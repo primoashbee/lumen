@@ -280,39 +280,11 @@ class ClientController extends Controller
     public function list(){
         return view('pages.client-list');
     }
+    
 
     //return JSON data when filtering the list via component
     public function getList(Request $request){
-        
-        $office = Office::find($request->office_id);
-        $office_ids = $office->getAllChildrenIDS();
-        
-
-        //check if selected office has child, > 0 == true
-        if(count($office_ids)>0){
-            $office_ids = $office->getLowerOfficeIDS();
-            if($request->has('search')){
-                $client= Client::like($request->office_id, $request->search)->paginate(30);
-                return response()->json($client);
-            }
-
-            $clients = Client::with('office')
-                        ->whereIn('office_id',$office_ids)
-                        ->paginate(30);
-                return response()->json($clients);
-
-        }
-
-        // if query has search
-        if($request->has('search')){
-            $client = Client::like($request->office_id, $request->search)->paginate(30);
-            return response()->json($client,200);
-        }
-
-        //if query has office_id only
-        $clients = Client::with('office')
-                    ->where('office_id',$office->id)
-                    ->paginate(30);
+        $clients = Client::like($request->office_id, $request->search)->paginate(30);
         return response()->json($clients);
     }
 

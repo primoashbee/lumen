@@ -8,6 +8,7 @@
 						<h4 class="h4 d-inline-block">Filter:</h4>
 						<div class="btn-filter-group ml-4 d-inline-block">
 							<button data-filter="*" class="btn-filters">Show All</button>
+							<button data-filter=".structure" class="btn-filters">Offices</button>
 							<button data-filter=".loans" class="btn-filters">Loan</button>
 							<button data-filter=".deposit" class="btn-filters">Deposit</button>
 							<button data-filter=".reports" class="btn-filters">Reports</button>
@@ -23,12 +24,48 @@
 				</div>
 				
 				<ul class="settings" id="setting-tabs" role="tablist">
-					<li class="settings-item metal">
+					<li class="settings-item structure">
 						<a class="nav-link" id="home-tab" href="">
 							<i class="fas fa-3x fa-sitemap"></i>
 							<p class="title text-center mt-2">Structure</p>
 						</a>
 						
+					</li>
+					<li class="settings-item structure">
+						<a class="nav-link" id="home-tab" href="">
+							<i class="fas fa-3x fa-building"></i>
+							<p class="title text-center mt-2">Region</p>
+						</a>
+					</li>
+					<li class="settings-item structure">
+						<a class="nav-link" id="home-tab" href="">
+							<i class="fas fa-3x fa-warehouse"></i>
+							<p class="title text-center mt-2">Area</p>
+						</a>
+					</li>
+					<li class="settings-item structure">
+						<a class="nav-link" id="home-tab" href="">
+							<i class="fas fa-3x fa-home"></i>
+							<p class="title text-center mt-2">Branch</p>
+						</a>
+					</li>
+					<li class="settings-item structure">
+						<a class="nav-link" id="home-tab" href="">
+							<i class="fas fa-3x fa-layer-group"></i>
+							<p class="title text-center mt-2">Unit</p>
+						</a>
+					</li>
+					<li class="settings-item structure">
+						<a class="nav-link" id="home-tab" href="">
+							<i class="fas fa-3x fa-user-friends"></i>
+							<p class="title text-center mt-2">Cluster</p>
+						</a>
+					</li>
+					<li class="settings-item structure">
+						<a class="nav-link" id="home-tab" href="">
+							<i class="fas fa-3x fa-user"></i>
+							<p class="title text-center mt-2">Account Officer</p>
+						</a>
 					</li>
 					
 					<li class="settings-item user">
