@@ -1,6 +1,6 @@
  <template>
         <div class="row">
-            <div class="col-lg-6 float-left d-flex">]
+            <div class="col-lg-6 float-left d-flex">
                 <label for="" style="color:white" class="lead mr-2">Search:</label>
                 <input type="text" id="office_client" class="form-control border-light pb-2" />
             </div>
