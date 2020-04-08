@@ -2,7 +2,9 @@
 
 use App\Client;
 use App\Office;
+use App\Deposit;
 use Carbon\Carbon;
+use App\DepositAccount;
 use App\Events\TestEvent;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -21,6 +23,17 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
+Route::get('/dp',function(){
+    $parent_level = "branch";
+    $level = "";
+    $list = Office::schema()->filter(function($item) use ($parent_level){
+        if ($item['level']==$parent_level) {
+            return ($item['children']);
+        }
+    })->values()->first()['children'];
+
+    return in_array($level,$list) ? 'yup' :'wala';
+});
 Route::get('/x/{level}',function(Request $request){
         return auth()->user()->scopesBranch(Office::getParentOfLevel($request->level));
     });
@@ -58,14 +71,14 @@ Route::get('/create/penalty', function(){
     return view('pages.create-penalty');
 });
 
-Route::get('/create/office/{level}', 'OfficeController@createLevel');
+Route::get('/create/office/{level}', 'OfficeController@createLevel')->name('create.office');
 
 
 Route::get('/settings', function(){
     return view('pages.settings');
 })->name('administration');
 
-Auth::routes();
+Auth::routes(); 
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard','DashboardController@index')->name('dashboard');

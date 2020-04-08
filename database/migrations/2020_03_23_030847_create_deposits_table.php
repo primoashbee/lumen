@@ -17,13 +17,14 @@ class CreateDepositsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('product_id')->unique();
-            $table->string('description');
-            $table->date('valid_until');
+            $table->mediumText('description')->nullable();
+            $table->date('valid_until')->nullable();
             $table->integer('account_per_client');
             $table->boolean('auto_create_on_new_client')->default(false);
             $table->integer('interest_rate');
             $table->integer('deposit_portfolio');
             $table->integer('deposit_interest_expense');
+            $table->boolean('is_active')->default(true);
 
             
         

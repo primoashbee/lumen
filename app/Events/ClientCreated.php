@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TestEvent
+class ClientCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,10 +19,10 @@ class TestEvent
      *
      * @return void
      */
-    public $item;
-    public function __construct($item)
+    public $client;
+    public function __construct($client)
     {
-        $this->item = $item;
+        $this->client = $client;
     }
 
     /**
