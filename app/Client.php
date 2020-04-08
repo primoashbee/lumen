@@ -119,8 +119,9 @@ class Client extends Model
        
         $office = Office::find($office_id);
         $office_ids = $office->getAllChildrenIDS();
-       
+        
         if(count($office_ids)>0){
+            
             $office_ids = $office->getLowerOfficeIDS();
             if($query!=null){
                 $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables, $query){
@@ -144,6 +145,10 @@ class Client extends Model
             });
             return $clients;
         }
+        
+        $office_ids = $office->getLowerOfficeIDS();       
+        $clients = Client::with('office')->whereIn('office_id',$office_ids);
+        return $clients;
     }
 
 

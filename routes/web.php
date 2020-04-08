@@ -24,7 +24,15 @@ use Symfony\Component\HttpFoundation\Request;
 */
 
 Route::get('/dp',function(){
-    return Carbon::now();
+    $parent_level = "branch";
+    $level = "";
+    $list = Office::schema()->filter(function($item) use ($parent_level){
+        if ($item['level']==$parent_level) {
+            return ($item['children']);
+        }
+    })->values()->first()['children'];
+
+    return in_array($level,$list) ? 'yup' :'wala';
 });
 Route::get('/x/{level}',function(Request $request){
         return auth()->user()->scopesBranch(Office::getParentOfLevel($request->level));

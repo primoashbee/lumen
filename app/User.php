@@ -117,6 +117,10 @@ class User extends Authenticatable
         $lists = $list->map(function($item){
             $branch['id'] = $item->id;
             $branch['name'] = $item->name;
+            
+            if (Office::isChildOf('branch', $item->level)) {
+                $branch['code'] = $item->getTopOffice('branch')->code;
+            }
             return $branch;
         });
          
