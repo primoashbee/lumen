@@ -1,9 +1,17 @@
 @extends('layouts.user')
 @section('content')
+
 	<div class="content content pl-32 pr-8 mt-4" id="content-full">
+
 	  <div class="row">
 		    <div class="col-md-8"> 	
 		      <div class="card pb-4">
+		      	<nav aria-label="breadcrumb">
+				  <ol class="breadcrumb">
+				    <li class="breadcrumb-item"><a href="/clients">Client List</a></li>
+				    <li class="breadcrumb-item active" aria-current="page">Profile</li>
+				  </ol>
+				</nav>
 		        <div class="card-header my-2">
 		          <div class="d-block text-center client-image">
 		            <img src="{{asset($client->profile_picture_path)}}" class="avatar" alt="Profile Photo">

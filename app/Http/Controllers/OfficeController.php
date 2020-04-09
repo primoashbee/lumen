@@ -11,24 +11,11 @@ use Illuminate\Http\Request;
 class OfficeController extends Controller
 {
     public function createOffice(Request $request){
-        $request->code = $this->generateCode($request);
-        if ($request->level == "cluster") {
-            $request->name = $request->code;
-        }
-        $this->validator(
-                [
-                    'name' => $request->name,
-                    'code' => $request->code,
-                    'level' => $request->level,
-                    'office_id' => $request->office_id
-                ]
-            )->validate();
-
+        $this->validator($request->all())->validate();
         try{
-            
             Office::create(
                 [
-                    'code' => $request->code,
+                    'code' => $this->generateCode($request),
                     'name' => $request->name,
                     'level' => $request->level,
                     'parent_id' => $request->office_id
@@ -68,9 +55,7 @@ class OfficeController extends Controller
 
     public function generateCode(Request $request)
     {
-    	$levels = ['cluster','unit','account_officer'];
-        $code =  in_array($request->level, $levels) ? Office::find($request->office_id)->code."-".$request->code : $request->code;        
-
+    	$code = $request->code;     
     	if ($request->level == "account_officer") {
     		$office = Office::find($request->office_id);
     		$children = $office->getAllChildren();
@@ -79,12 +64,11 @@ class OfficeController extends Controller
     			return $item->level == "account_officer";
     		});
     		if ($list->count() > 0) {
-    			return $code."-".$request->code. pad($list->count()+1, 2);
+    			return $request->code.pad($list->count()+1, 2);
     		}else{
-    			return $code."-".$request->code. pad(1, 2);
+    			return $request->code. pad(1, 2);
     		}
     	}
-
     	return $code;
 	}
 	public function createLevel($level){
@@ -93,9 +77,9 @@ class OfficeController extends Controller
 			
 	}
 
-    public function viewOffice($office){
-        $officeList = Office::with('parent')->where('level', $office)->get();
-        return view('pages.office-list', compact(['officeList','office']));
+    public function viewOffice($level){
+        $officeList = Office::with('parent')->where('level', $level)->get();
+        return view('pages.office-list', compact(['officeList','level']));
     }
 
     public function editOffice($id){

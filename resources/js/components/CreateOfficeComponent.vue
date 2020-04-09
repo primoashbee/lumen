@@ -1,7 +1,13 @@
 <template>
 	<div class="group-wrapper">
 			<div class="card pb-4">
-				<h4 class="h4 ml-3 mt-4">Create Office</h4>
+				<nav aria-label="breadcrumb">
+		          <ol class="breadcrumb">
+		            <li class="breadcrumb-item"><a :href="toOffice()">Office List</a></li>
+		            <li class="breadcrumb-item active" aria-current="page">Create Office</li>
+		          </ol>
+		        </nav>
+				<h4 class="h4 ml-3 mt-4">New Office</h4>
 				<form @submit.prevent="submit">
 					<div class="form-group col-md-6 mt-4">
 			  			<label>Assign To:</label>
@@ -11,23 +17,19 @@
 	                    </div>
 			  		</div>
 
-			  		<!-- <div class="form-group col-md-6">
+			  		<div class="form-group col-md-6">
 			  			<label for="code">Code</label>
 						<div class="input-group mb-3">
-						  <div class="input-group-prepend">
-						    <span class="input-group-text" id="basic-addon3">https://example.com/users/</span>
+						  <div class="input-group-prepend mr-0">
+						    <span class="input-group-text" v-text="fields.branch_code" id="basic-addon3"></span>
 						  </div>
-						  <input type="text" class="form-control" id="code" aria-describedby="basic-addon3">
+						  <input type="text" class="form-control" id="code" aria-describedby="basic-addon3"
+						  v-model="fields.code" v-bind:class="codeHasError ? 'is-invalid' : ''">
+						  <div class="invalid-feedback" v-if="codeHasError">
+		                        {{ errors.code[0]}}
+		                    </div>
 						</div>
-			  		</div> -->
-
-			  		<div class="form-group col-md-6">
-				  		<label>Code:</label>
-				  		<input type="text" v-model="fields.code" id="code" class="form-control" v-bind:class="codeHasError ? 'is-invalid' : ''">
-				  		<div class="invalid-feedback" v-if="codeHasError">
-	                        {{ errors.code[0]}}
-	                    </div>
-				  	</div>
+					</div>	
 
 				  	<div class="form-group col-md-6">
 				  		<label for="cluster_code">Name:</label>
@@ -61,6 +63,7 @@
    	 			fields:{
    	 				'office_id':"",
    	 				'code':"",
+   	 				"branch_code":"######",
    	 				'name':"",
    	 				"level":"",
    	 				"readonly":false
@@ -89,13 +92,27 @@
 	        }
    	 	},
    	 	methods:{
+   	 		toOffice(){
+   	 			return "/office/"+this.level
+   	 		},
    	 		assignOffice(value){
+   	 			if (this.level == "cluster" || this.level == "unit" || this.level == "account_officer") { 
+   	 				this.fields.branch_code = value['code']
+   	 			}
 	            this.fields.office_id = value['id']
 	        },
-	        submit(){
-	        	if (this.level == "cluster") {
-	   	 			this.fields.name = this.fields.code
+	        underBranch(){
+
+	        	if (this.fields.level == "cluster" || this.fields.level == "unit" || this.fields.level == "account_officer") {
+	        		
+	   	 			this.fields.code = this.fields.branch_code + "-" + this.fields.code
+	   	 			if (this.fields.level == "cluster") {
+	   	 				this.fields.name = this.fields.code
+	   	 			}
 	   	 		}
+	        },
+	        submit(){
+	        	this.underBranch()
 	        	 axios.post('/create/office', this.fields)
                 .then(res=>{
                     this.isLoading = false
