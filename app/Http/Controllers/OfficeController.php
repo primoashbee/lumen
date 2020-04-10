@@ -78,13 +78,25 @@ class OfficeController extends Controller
 	}
 
     public function viewOffice($level){
-        $officeList = Office::with('parent')->where('level', $level)->get();
-        return view('pages.office-list', compact(['officeList','level']));
+        $office = Office::where('level', $level)->first();
+
+        if(empty($office)){
+            abort(404); 
+        }
+
+        return view('pages.office-list', compact('level'));
+    }
+
+    public function getOfficeList($level){
+        $officeList = Office::with('parent')->where('level', $level)->paginate(15);
+        // dd($officeList);
+        return response()->json($officeList);
     }
 
     public function editOffice($id){
         $office = Office::find($id);
-        if($office===null){
+
+        if(empty($office)){
             abort(404);
         }
 

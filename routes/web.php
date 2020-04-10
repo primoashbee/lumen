@@ -98,7 +98,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/edit/client','ClientController@update');
     
     Route::post('/create/office/', 'OfficeController@createOffice');
+
     Route::get('/office/{level}', 'OfficeController@viewOffice');
+    Route::get('/office/list/{level}','OfficeController@getOfficeList');
 
     Route::get('/edit/office/{id}', 'OfficeController@editOffice');
     Route::post('/edit/office/', 'OfficeController@updateOffice');

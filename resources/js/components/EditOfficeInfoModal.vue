@@ -1,33 +1,27 @@
 <template>
-	<div class="group-wrapper">
-			<div class="card pb-4">
-				<nav aria-label="breadcrumb">
-		          <ol class="breadcrumb">
-		            <li class="breadcrumb-item"><a :href="toOffice()">Office List</a></li>
-		            <li class="breadcrumb-item active" aria-current="page">Edit Office</li>
-		          </ol>
-		        </nav>
-				<h4 class="h4 ml-3 mt-4">Change Office</h4>
-				<form @submit.prevent="submit">
-					<div class="form-group col-md-6 mt-4">
+	<div>
+	  <div>
+	    <b-modal id="my-modal" size="lg" hide-footer modal-title="Change Office" title="Edit Office">
+	    	<form @submit.prevent="submit">
+					<div class="form-group mt-4">
 			  			<label>Assign To:</label>
 			  			<v2-select @officeSelected="assignOffice" :list_level="list_level" :default_value="fields.parent_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
 			  			<div class="invalid-feedback" v-if="officeHasError">
 	                        {{ errors.office_id[0]}}
 	                    </div>
 			  		</div>
-					<div class="form-group col-md-6">
+					<div class="form-group">
 			  			<label for="code">Code</label>
 						<div class="input-group mb-3">
 						  <input type="text" class="form-control" id="code" aria-describedby="basic-addon3"
-						  v-model="fields.code" v-bind:class="codeHasError ? 'is-invalid' : ''" :readonly="fields.code_readonly">
+						  v-model="info.code" v-bind:class="codeHasError ? 'is-invalid' : ''" :readonly="fields.code_readonly">
 						  <div class="invalid-feedback" v-if="codeHasError">
 		                        {{ errors.code[0]}}
 		                    </div>
 						</div>
 					</div>
 
-				  	<div class="form-group col-md-6">
+				  	<div class="form-group">
 				  		<label for="cluster_code">Name:</label>
 				  		<input type="text" v-model="fields.name" id="name" class="form-control" v-bind:class="nameHasError ? 'is-invalid' : ''" :readonly="fields.name_readonly">
 				  		<div class="invalid-feedback" v-if="nameHasError">
@@ -35,47 +29,64 @@
                         </div>
 				  	</div>
 
-					<div class="form-group col-md-6">
+					<div class="form-group">
 				  		<label>Notes</label>
 				  		<textarea class="form-control"></textarea>
 				  	</div>
-				  	<button type="submit" class="ml-3 btn btn-primary">Submit</button>
+				  	<button type="submit" class="btn btn-primary">Submit</button>
 				  	
 			  	</form>
-			  	
-		  	</div> 
+	    </b-modal>
+	  </div>
 	</div>
 </template>
+<style type="text/css">
+	@import "~vue-multiselect/dist/vue-multiselect.min.css";
+    .modal-body .form-group label,.modal-body .form-group .form-control,.modal-title{
+    	color: black!important;
+    }
+    .modal-title{
+	    font-size: 1.4rem;
+    }
+    .multiselect__tags{
+      background: transparent;
+      border-color:#2b3553!important;
+    }
+    .multiselect__input{
+      background: transparent!important;
+      
+    }
+    .modal .multiselect__single{
+      background: transparent!important;
+      color: black;
+    }
+    
+</style>
 <script type="text/javascript">
-	import SelectComponentV2 from './SelectComponentV2';
-	import Swal from 'sweetalert2';
+	
 	export default{
-		components: {
-        	SelectComponentV2
-   	 	},
-   	 	props:['office','list_level'],
-   	 	data(){
-   	 		return{
-   	 			fields:{
-   	 				"id":"",
+		props:['info',"list_level"],
+		data(){
+			return{
+				"officeInfo":[],
+				"variants": ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
+				"headerTextVariant": 'dark',
+				"modalShow":false,
+				fields:{
+					"id":"",
    	 				"office_id":"",
+   	 				"parent_id":"",
    	 				"level":"",
    	 				"code":"",
    	 				"branch_code":"######",
    	 				"name":"",
    	 				"code_readonly":true,
    	 				"name_readonly":true
-   	 			},
-   	 			errors:{}
-   	 		}
-   	 	},
-   	 	created(){
-   	 		this.populateOffice()
-   	 		if (this.fields.level == "account_officer" || this.fields.level == "unit") {
-   	 			this.fields.name_readonly = false
-   	 		}
-   	 	},
-   	 	computed:{
+				},
+				errors:{}
+			}
+		},
+		computed:{
    	 		hasErrors(){
 	            return Object.keys(this.errors).length > 0;
 	        },
@@ -87,16 +98,28 @@
 	        },
 	        codeHasError(){
 	        	return this.errors.hasOwnProperty('code')
-	        },
-	        officeInfo(){
-	        	return JSON.parse(this.office)
 	        }
    	 	},
-   	 	methods:{
-   	 		toOffice(){
-   	 			return "/office/"+this.fields.level
-   	 		},
-   	 		assignOffice(value){
+		created(){
+			this.$root.$on('bv::modal::show', (bvEvent, modalId) => {
+				console.log(this.info);
+		      if (bvEvent.type == "show") {
+		      	this.officeInfo = this.info
+		      	var vm = this
+	        	var office = this.officeInfo
+	        	$.each(office,function(k,v){
+                        vm.fields[k] = v
+	            })
+	            this.fields.office_id = office.parent_id
+		      }
+		      if (this.fields.level == "account_officer" || this.fields.level == "unit") {
+	   	 			this.fields.name_readonly = false
+	   	 		}
+		    })
+		    
+		},
+		methods:{
+			assignOffice(value){
 	            this.fields.office_id = value['id']
 	        },
 	        submit(){
@@ -120,18 +143,7 @@
                 .catch(error=>{
                     this.errors = error.response.data.errors || {}
                 })
-	        },
-	        populateOffice(){
-
-	        	var vm = this
-	        	var office = this.officeInfo
-	        	$.each(office,function(k,v){
-                        vm.fields[k] = v
-	            })
-	           
-
-	            this.fields.office_id = office.parent_id
 	        }
-   	 	}
+		}
 	}
 </script>

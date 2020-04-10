@@ -8,7 +8,7 @@
 					<h3 class="h3">{{ucwords(str_replace("_"," ",$level))}} List</h3>
 				</div>
 				<div class="card-body">
-					<office-list offices="{{$officeList}}" level="{{$level}}"></office-list>
+					<office-list level="{{$level}}"></office-list>
 				</div>
 			</div>
 		</div>

@@ -76,8 +76,7 @@ export default {
                 var item = obj.data.filter(office => {
                    office.id == this.default_value ? this.value = office : ''
                 })
-              })
-              
+              }) 
           }
         })
     }

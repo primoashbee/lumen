@@ -10,9 +10,12 @@ require('./bootstrap');
 import { VueMaskDirective } from 'v-mask'
 window.numeral = require('numeral');
 
+
 window.Vue = require('vue');
 // window.flatten = require('flat')
-
+import { BootstrapVue } from 'bootstrap-vue'
+Vue.use(BootstrapVue)
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 window.Swal = require('sweetalert2');
 window.moment = require('moment');
 // import VuePaginate from 'vue-paginate'
@@ -41,7 +44,7 @@ Vue.component('paginator', require('./components/PaginatorComponent.vue').defaul
 Vue.component('upload-file', require('./components/UploadSampleComponent.vue').default);
 Vue.component('create-office', require('./components/CreateOfficeComponent.vue').default);
 Vue.component('office-list', require('./components/OfficeListComponent.vue').default);
-Vue.component('update-office', require('./components/UpdateOfficeComponent.vue').default);
+Vue.component('modal-office', require('./components/EditOfficeInfoModal.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
