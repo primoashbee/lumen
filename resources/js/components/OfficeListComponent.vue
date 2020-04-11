@@ -2,7 +2,8 @@
         <div class="row">
             <div class="col-lg-6 float-left d-flex">
                 <label for="" style="color:white" class="lead mr-2">Search:</label>
-                <input type="text" id="office_client" class="form-control border-light pb-2"/>
+                <input type="text" id="office_client" class="form-control border-light pb-2" v-model="query"
+                v-debounce:300ms="inputSearch"/>
             </div>
             <div class="col-lg-6 text-right">
                 <a :href="createOfficeLink()" type="submit" class="btn btn-primary px-8">Create {{this.officeName(this.level)}}</a>
@@ -59,13 +60,14 @@
         },
         data(){
            return { 
-                "officeList":[],
-                "singleOfficeInfo":[],
-                "toOffice":"/edit/office/",
-                'hasRecords': false,
-                "isLoading":false,
-                "list_level":"",
-                'query':""
+                officeList:[],
+                singleOfficeInfo:[],
+                toOffice:"/edit/office/",
+                list_level:"",
+                query:"",
+                hasRecords: false,
+                isLoading:false
+                
                 // modalShow:false
            }
         },
@@ -73,8 +75,8 @@
             createOfficeLink(){
                 return '/create/office/'+this.level
             },
-            fetchOfficeLink(){
-                return '/office/list/'+this.level
+            inputSearch(){
+                this.fetch()
             },
             toUpdateOfficeLink(office_code){
                 return this.toOffice + office_code
@@ -92,17 +94,31 @@
                 if (this.viewableRecords > 0){
                     this.hasRecords = true
                 }
-                
             },
-            url(page=1){
-                return `/office/list/`+this.level+`?page=`+page
+            fetch(page){
+                if(page==undefined){
+                    axios.get(this.fetchOfficeLink).then(res => {
+                        this.officeList = res.data
+                        this.checkIfHasRecords()
+                        this.isLoading =false
+                    })
+                }else{
+                    axios.get(this.fetchOfficeLink+'?page='+page)
+                    .then(res => {
+                        this.checkIfHasRecords()
+                        this.isLoading =false
+                        this.officeList = res.data
+                    })
+                }
+
             }
         },
         created(){  
-            axios.get(this.fetchOfficeLink()).then(res => {
-                console.log(res.data)
-                this.officeList = res.data
-            })
+            // axios.get(this.fetchOfficeLink()).then(res => {
+            //     this.officeList = res.data
+            //     // console.log(res.data);
+            // })
+            this.fetch()
 
         },
         computed:{
@@ -111,7 +127,22 @@
             },
             viewableRecords(){
                 return Object.keys(this.officeList.data).length
+            },
+            fetchOfficeLink(){
+                var str ="/office/list/"+this.level
+                var params_count=0
+                if(this.query!=""){
+                    params_count++
+                    if(params_count > 1){
+                        str+="?&search="+this.query
+                    }else{
+                        str+="?&search="+this.query
+                    }
+                }
+                
+                return str
             }
+  
         }
 
     }

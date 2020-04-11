@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Office;
 use App\Rules\OfficeId;
 use App\Rules\OfficeLevel;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+
 
 class OfficeController extends Controller
 {
@@ -87,9 +89,8 @@ class OfficeController extends Controller
         return view('pages.office-list', compact('level'));
     }
 
-    public function getOfficeList($level){
-        $officeList = Office::with('parent')->where('level', $level)->paginate(15);
-        // dd($officeList);
+    public function getOfficeList(Request $request, $level){
+        $officeList = Office::like($level, $request->search)->paginate(15);
         return response()->json($officeList);
     }
 
