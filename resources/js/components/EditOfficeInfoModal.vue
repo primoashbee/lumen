@@ -1,7 +1,7 @@
 <template>
 	<div>
 	  <div>
-	    <b-modal id="my-modal" size="lg" hide-footer modal-title="Change Office" title="Edit Office">
+	    <b-modal id="my-modal" size="lg" hide-footer modal-title="Change Office" title="Edit Office" :header-bg-variant="background" :body-bg-variant="background">
 	    	<form @submit.prevent="submit">
 					<div class="form-group mt-4">
 			  			<label>Assign To:</label>
@@ -42,23 +42,24 @@
 </template>
 <style type="text/css">
 	@import "~vue-multiselect/dist/vue-multiselect.min.css";
-    .modal-body .form-group label,.modal-body .form-group .form-control,.modal-title{
-    	color: black!important;
+    .modal-body .form-group label,.modal-body .form-group .form-control,.modal-title,.modal .multiselect__single,.close{
+    	color: #fff!important;
+    }
+    .modal.fade.show{
+    	background: rgba(255,255,255,0.3);
+    }
+    .modal-content{
+    	border-color: #fff;
     }
     .modal-title{
 	    font-size: 1.4rem;
     }
     .multiselect__tags{
-      background: transparent;
       border-color:#2b3553!important;
     }
-    .multiselect__input{
+    .multiselect__input,.modal .multiselect__single, .multiselect__tags{
       background: transparent!important;
       
-    }
-    .modal .multiselect__single{
-      background: transparent!important;
-      color: black;
     }
     
 </style>
@@ -68,10 +69,6 @@
 		props:['info',"list_level"],
 		data(){
 			return{
-				"officeInfo":[],
-				"variants": ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
-				"headerTextVariant": 'dark',
-				"modalShow":false,
 				fields:{
 					"id":"",
    	 				"office_id":"",
@@ -83,6 +80,11 @@
    	 				"code_readonly":true,
    	 				"name_readonly":true
 				},
+				"officeInfo":[],
+				"variants": ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
+				"background":'dark',
+				"text_color":"light",
+				
 				errors:{}
 			}
 		},
@@ -102,21 +104,21 @@
    	 	},
 		created(){
 			this.$root.$on('bv::modal::show', (bvEvent, modalId) => {
-				console.log(this.info);
 		      if (bvEvent.type == "show") {
 		      	this.officeInfo = this.info
 		      	var vm = this
 	        	var office = this.officeInfo
+	        	 this.fields.office_id = office.parent_id
 	        	$.each(office,function(k,v){
                         vm.fields[k] = v
 	            })
-	            this.fields.office_id = office.parent_id
+	           
+	            
 		      }
 		      if (this.fields.level == "account_officer" || this.fields.level == "unit") {
 	   	 			this.fields.name_readonly = false
 	   	 		}
 		    })
-		    
 		},
 		methods:{
 			assignOffice(value){
