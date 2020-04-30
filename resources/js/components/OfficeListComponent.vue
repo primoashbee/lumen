@@ -24,7 +24,7 @@
                             <td>{{office.name}}</td>
                             <td>{{office.parent.name}}</td>
                             <td>
-                                <b-button v-b-modal.my-modal @click="show(office,office.parent.level)">
+                                <b-button :id="office.id" @click="showModal">
                                     <i class="far fa-edit"></i>
                                 </b-button>
                             </td>
@@ -35,12 +35,75 @@
                 <p class="lead float-right text-right" style="color:white">Total Records: {{totalRecords}} </p>
                 <div class="clearfix"></div>
                 <paginator :dataset="officeList" @updated="fetch"></paginator>
-                <modal-office :info="singleOfficeInfo" :list_level="this.list_level"></modal-office>
+
                 <loading :is-full-page="true" :active.sync="isLoading" ></loading>
             </div>
+
+             <b-modal id="office-modal" v-model="show" size="lg" hide-footer modal-title="Change Office" title="Edit Office" :header-bg-variant="background" :body-bg-variant="background">
+                <form @submit.prevent="submit">
+                    <div class="form-group mt-4">
+                        <label>Assign To:</label>
+                        <v2-select @officeSelected="assignOffice" :list_level="list_level" :default_value="fields.parent_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
+                        <div class="invalid-feedback" v-if="officeHasError">
+                            {{ errors.office_id[0]}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="code">Code</label>
+                        <div class="input-group mb-3">
+                          <input type="text" class="form-control" id="code" aria-describedby="basic-addon3"
+                          v-model="fields.code" v-bind:class="codeHasError ? 'is-invalid' : ''" :readonly="this.code_readonly">
+                          <div class="invalid-feedback" v-if="codeHasError">
+                                {{ errors.code[0]}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cluster_code">Name:</label>
+                        <input type="text" v-model="fields.name" id="name" class="form-control" v-bind:class="nameHasError ? 'is-invalid' : ''" :readonly="this.checkLevel()">
+                        <div class="invalid-feedback" v-if="nameHasError">
+                            {{ errors.name[0]}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea class="form-control"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    
+                </form>
+            </b-modal>
+
         </div>
 
+       
+
 </template>
+<style type="text/css">
+    @import "~vue-multiselect/dist/vue-multiselect.min.css";
+    .modal-body .close,.modal-header .close{
+        color: #fff!important;
+    }
+    .modal.fade.show{
+        background: rgba(255,255,255,0.3);
+    }
+    .modal-content{
+        border-color: #fff;
+    }
+    .modal-title{
+        font-size: 1.4rem;
+    }
+    .multiselect__tags{
+      border-color:#2b3553!important;
+    }
+    .multiselect__input,.modal .multiselect__single, .multiselect__tags{
+      background: transparent!important;
+      
+    }
+    
+</style>
 
 <script>
     import SelectComponentV2 from './SelectComponentV2';
@@ -54,46 +117,105 @@
     import Loading from 'vue-loading-overlay';
     import 'vue-loading-overlay/dist/vue-loading.css';
     export default{
-        props:['offices','level'],
+        props:['level','list_level'],
         components:{
             Loading
         },
         data(){
            return { 
                 officeList:[],
-                singleOfficeInfo:[],
+                OfficeInfo:[],
                 toOffice:"/edit/office/",
-                list_level:"",
                 query:"",
+                fields:{
+                    "id":"",
+                    "office_id":"",
+                    "parent_id":"",
+                    "level":"",
+                    "code":"",
+                    "name":"",
+                },
                 hasRecords: false,
-                isLoading:false
-                
-                // modalShow:false
+                isLoading:false,
+                code_readonly:true,
+                name_readonly:false,
+                "variants": ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
+                "background":'dark',
+                "show":false,
+                errors:{}
            }
         },
         methods:{
+            checkLevel(){
+                if (this.fields.level == "cluster") {
+                    return this.name_readonly = true
+                }
+            },
             createOfficeLink(){
                 return '/create/office/'+this.level
             },
             inputSearch(){
                 this.fetch()
             },
-            toUpdateOfficeLink(office_code){
+            toEditOfficeLink(office_code){
                 return this.toOffice + office_code
             },
             officeName(string) 
             {
                 return string.charAt(0).toUpperCase() + string.slice(1).replace(/_/,' ');
             },
-            show(office,list_level){
-                this.list_level = list_level
-                this.singleOfficeInfo = office
+            showModal(e){
+                this.fields.id = e.currentTarget.getAttribute('id')
+                this.getSingleOffice()
+            },
+            getSingleOffice(){
+                axios.get(this.toEditOfficeLink(this.fields.id)).
+                then(res => {
+                    var vm = this
+                    $.each(res.data,function(k,v){
+                        vm.fields[k] = v
+                    })
+                    this.fields.office_id = this.fields.parent_id;
+                    this.show = true
+                }).catch(error =>{
+                    Swal.fire({
+                        icon: 'error',
+                        title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Error!</span>',
+                        text: "Office not found",
+                        confirmButtonText: 'OK'
+                    })
+                })
+
             },
             checkIfHasRecords(){
                 this.hasRecords = false
                 if (this.viewableRecords > 0){
                     this.hasRecords = true
                 }
+            },
+            assignOffice(value){
+                this.fields.office_id = value['id']
+            },
+            submit(){
+                if (this.fields.level == "cluster") {
+                    this.fields.name = this.officeInfo.code
+                }
+                axios.post('/edit/office', this.fields)
+                .then(res=>{
+                    this.isLoading = false
+                    Swal.fire({
+                        icon: 'success',
+                        title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
+                        text: res.data.msg,
+                        confirmButtonText: 'OK'
+                    })
+                    .then(res=>{
+                        location.reload();
+                    })  
+                })
+                .catch(error=>{
+                    this.errors = error.response.data.errors || {}
+                })
             },
             fetch(page){
                 if(page==undefined){
@@ -110,18 +232,21 @@
                         this.officeList = res.data
                     })
                 }
-
             }
         },
+        mounted() {
+            this.$root.$on('bv::modal::hide', (bvEvent) => {
+              this.errors = {}
+            })
+            this.$root.$on('bv::modal::close', (bvEvent) => {
+                this.errors = {}
+            })
+        },
         created(){  
-            // axios.get(this.fetchOfficeLink()).then(res => {
-            //     this.officeList = res.data
-            //     // console.log(res.data);
-            // })
             this.fetch()
-
         },
         computed:{
+
             totalRecords(){
                 return numeral(this.officeList.total).format('0,0')
             },
@@ -141,6 +266,18 @@
                 }
                 
                 return str
+            },
+            hasErrors(){
+                return Object.keys(this.errors).length > 0;
+            },
+            officeHasError(){
+                return this.errors.hasOwnProperty('office_id')
+            },
+            nameHasError(){
+                return this.errors.hasOwnProperty('name')
+            },
+            codeHasError(){
+                return this.errors.hasOwnProperty('code')
             }
   
         }

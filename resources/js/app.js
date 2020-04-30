@@ -44,7 +44,6 @@ Vue.component('paginator', require('./components/PaginatorComponent.vue').defaul
 Vue.component('upload-file', require('./components/UploadSampleComponent.vue').default);
 Vue.component('create-office', require('./components/CreateOfficeComponent.vue').default);
 Vue.component('office-list', require('./components/OfficeListComponent.vue').default);
-Vue.component('modal-office', require('./components/EditOfficeInfoModal.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

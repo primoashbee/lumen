@@ -81,12 +81,8 @@ class OfficeController extends Controller
 
     public function viewOffice($level){
         $office = Office::where('level', $level)->first();
-
-        if(empty($office)){
-            abort(404); 
-        }
-
-        return view('pages.office-list', compact('level'));
+        $list_level = Office::getParentOfLevel($level);
+        return view('pages.office-list', compact(['level','list_level']));
     }
 
     public function getOfficeList(Request $request, $level){
@@ -95,14 +91,11 @@ class OfficeController extends Controller
     }
 
     public function editOffice($id){
-        $office = Office::find($id);
-
-        if(empty($office)){
-            abort(404);
+        $office = Office::with('parent')->find($id);
+        if (empty($office)) {
+            return response()->json(['error' => "Office does not exist"],404);
         }
-
-        $list_level = Office::getParentOfLevel($office->level);
-        return view('pages.update-office',compact(['office','list_level']));
+        return response()->json($office);
     }
 
     public function updateOffice(Request $request){
