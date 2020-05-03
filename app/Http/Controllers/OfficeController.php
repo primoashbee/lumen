@@ -98,10 +98,10 @@ class OfficeController extends Controller
         return response()->json($office);
     }
 
-    public function updateOffice(Request $request){
+    public function updateOffice(Request $request, $id){
         
-        $this->validator($request->all(),true,$request->id)->validate();
-        $office = Office::find($request->id);
+        $this->validator($request->all(),true,$id)->validate();
+        $office = Office::find($id);
         try{
         $office->update(
             [

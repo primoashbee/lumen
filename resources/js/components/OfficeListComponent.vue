@@ -52,7 +52,7 @@
                         <label for="code">Code</label>
                         <div class="input-group mb-3">
                           <input type="text" class="form-control" id="code" aria-describedby="basic-addon3"
-                          v-model="fields.code" v-bind:class="codeHasError ? 'is-invalid' : ''" :readonly="this.code_readonly">
+                          v-model="fields.code" v-bind:class="codeHasError ? 'is-invalid' : ''" :readonly="code_readonly">
                           <div class="invalid-feedback" v-if="codeHasError">
                                 {{ errors.code[0]}}
                             </div>
@@ -61,7 +61,7 @@
 
                     <div class="form-group">
                         <label for="cluster_code">Name:</label>
-                        <input type="text" v-model="fields.name" id="name" class="form-control" v-bind:class="nameHasError ? 'is-invalid' : ''" :readonly="this.checkLevel()">
+                        <input type="text" v-model="fields.name" id="name" class="form-control" v-bind:class="nameHasError ? 'is-invalid' : ''" :readonly="checkLevel()">
                         <div class="invalid-feedback" v-if="nameHasError">
                             {{ errors.name[0]}}
                         </div>
@@ -124,7 +124,6 @@
         data(){
            return { 
                 officeList:[],
-                OfficeInfo:[],
                 toOffice:"/edit/office/",
                 query:"",
                 fields:{
@@ -139,9 +138,9 @@
                 isLoading:false,
                 code_readonly:true,
                 name_readonly:false,
-                "variants": ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
-                "background":'dark',
-                "show":false,
+                variants: ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
+                background:'dark',
+                show:false,
                 errors:{}
            }
         },
@@ -175,8 +174,8 @@
                     $.each(res.data,function(k,v){
                         vm.fields[k] = v
                     })
-                    this.fields.office_id = this.fields.parent_id;
-                    this.show = true
+                    vm.fields.office_id = vm.fields.parent_id;
+                    vm.show = true
                 }).catch(error =>{
                     Swal.fire({
                         icon: 'error',
@@ -200,7 +199,7 @@
                 if (this.fields.level == "cluster") {
                     this.fields.name = this.officeInfo.code
                 }
-                axios.post('/edit/office', this.fields)
+                axios.post(this.toEditOfficeLink(this.fields.id), this.fields)
                 .then(res=>{
                     this.isLoading = false
                     Swal.fire({
@@ -235,8 +234,8 @@
             }
         },
         mounted() {
-            this.$root.$on('bv::modal::hide', (bvEvent) => {
-              this.errors = {}
+            this.$root.$on('bv::modal::hidden', (bvEvent) => {
+                this.errors = {}
             })
             this.$root.$on('bv::modal::close', (bvEvent) => {
                 this.errors = {}
@@ -246,7 +245,6 @@
             this.fetch()
         },
         computed:{
-
             totalRecords(){
                 return numeral(this.officeList.total).format('0,0')
             },

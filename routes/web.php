@@ -103,7 +103,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/office/list/{level}','OfficeController@getOfficeList');
 
     Route::get('/edit/office/{id}', 'OfficeController@editOffice');
-    Route::post('/edit/office/', 'OfficeController@updateOffice');
+    Route::post('/edit/office/{id}', 'OfficeController@updateOffice');
 
 
     Route::get('/z',function(Request $request){
