@@ -15,6 +15,11 @@ class CreateDepositTransactionsTable extends Migration
     {
         Schema::create('deposit_transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('deposit_account_id');
+            $table->string('transaction_type');
+            $table->double('amount');
+            $table->string('payment_method');
+            $table->longText('notes');
             $table->timestamps();
         });
     }

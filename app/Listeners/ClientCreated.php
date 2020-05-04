@@ -36,6 +36,7 @@ class ClientCreated
                 $accs[] = array(
                     'client_id'=>$event->client->client_id,
                     'deposit_id'=>$value,
+                    'balance' => rand(500,10000)/10,
                     'created_at'=> Carbon::now(),
                     'updated_at'=> Carbon::now(),
                 );
