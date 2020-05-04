@@ -152,6 +152,9 @@ class Client extends Model
         return $clients;
     }
 
+    public static function fcid($client_id){
+        return Client::where('client_id',$client_id)->first();
+    }
 
     
 }

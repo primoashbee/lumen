@@ -6,7 +6,7 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/clients">Client List</a></li>
-            <li class="breadcrumb-item"><a :href="this.toClient()">Profile</a></li>
+            <li class="breadcrumb-item"><a :href="toClient()">Profile</a></li>
             <li class="breadcrumb-item active" aria-current="page">Edit Client</li>
           </ol>
         </nav>
@@ -623,18 +623,18 @@ export default {
         }
     },
     computed:{
-        
         clientInfo(){
             return JSON.parse(this.client)
         },
         total_household_income(){
             var total = 
-             parseFloat(this.fields.service_type_monthly_gross_income) +
-             parseFloat(this.fields.employed_monthly_gross_income) +
-             parseFloat(this.fields.spouse_service_type_monthly_gross_income) +
-             parseFloat(this.fields.spouse_employed_monthly_gross_income) +
-             parseFloat(this.fields.remittance_amount) + 
-             parseFloat(this.fields.pension_amount) 
+            parseFloat(this.fields.service_type_monthly_gross_income === NaN || this.fields.service_type_monthly_gross_income === null  ? 0 : this.fields.service_type_monthly_gross_income) +
+            parseFloat(this.fields.employed_monthly_gross_income === NaN || this.fields.employed_monthly_gross_income === null ? 0 : this.fields.employed_monthly_gross_income) +
+            parseFloat(this.fields.spouse_service_type_monthly_gross_income === NaN || this.fields.spouse_service_type_monthly_gross_income === null ? 0 : this.fields.spouse_service_type_monthly_gross_income) +
+            parseFloat(this.fields.spouse_employed_monthly_gross_income === NaN || this.fields.spouse_employed_monthly_gross_income === null ? 0 : this.fields.spouse_employed_monthly_gross_income) +
+            parseFloat(this.fields.remittance_amount === NaN || this.fields.remittance_amount ===null ? 0 : this.fields.remittance_amount) +
+            parseFloat(this.fields.pension_amount === NaN || this.fields.pension_amount === null ? 0 : this.fields.pension_amount)
+            
             if(isNaN(total)){
                 return 'Use positive integers for amounts only';
             }
@@ -817,7 +817,7 @@ export default {
         },
         populateData(){
             var vm = this
-            $.each(this.clientInfo,function(k,v){
+            $.each(vm.clientInfo,function(k,v){
                 if(k =="household_income"){
                     $.each(v,function(hK,hV){
                         var key = hK.replace("household_income","")
@@ -887,7 +887,7 @@ export default {
         submit(){
             this.errors = {}
             var vm = this
-            this.fields['total_household_income'] = this.total_household_income
+            vm.fields['total_household_income'] = vm.total_household_income
             let formData = new FormData();
             
             $.each(vm.fields, function(k,v){    

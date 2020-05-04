@@ -19,7 +19,7 @@ class CreateDepositTransactionsTable extends Migration
             $table->string('transaction_type');
             $table->double('amount');
             $table->string('payment_method');
-            $table->longText('notes');
+            $table->longText('notes')->nullable();
             $table->timestamps();
         });
     }

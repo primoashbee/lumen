@@ -30,7 +30,7 @@ $factory->define(User::class, function (Faker $faker) {
     //     'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
     //     'remember_token' => Str::random(10),
     // ];
-    $gender = $faker->randomElement(['male', 'female']);
+    $gender = $faker->randomElement(['MALE', 'FEMALE']);
     return [ 
         'firstname'=> $faker->firstName,
         'middlename'=>$faker->lastName,
@@ -59,13 +59,13 @@ $factory->define(Cluster::class, function(Faker $faker){
 
 $factory->define(Client::class,function (Faker $faker) {
     $office = new Office();
-    $gender = $faker->randomElement(['male', 'female']);
-    $civil_status = $faker->randomElement(['Single', 'Married','Divorced']);
-    $education = $faker->randomElement(['Elementary', 'Highschool','College']);
+    $gender = $faker->randomElement(['MALE', 'FEMALE']);
+    $civil_status = $faker->randomElement(['SINGLE', 'MARRIED','DIVORCED']);
+    $education = $faker->randomElement(['ELEMENTARY', 'HIGH SCHOOL','COLLEGE','VOCATIONAL']);
     $barangay = $faker->randomElement(['San Jose', 'Sta. Rita','Gordon Heights','Pag-asa']);
     $province = $faker->randomElement(['Zambales', 'Pampanga','Bataan']);
     $dependents = rand(1,5);
-    $house_type = $faker->randomElement(['Rented','Owned']);
+    $house_type = $faker->randomElement(['RENTED','OWNED']);
     $mobile_number = '09'.rand(100000000,199999999);
     $office = $faker->randomElement(Office::where('level','branch')->take(10)->get());
     // $office = Office::where('name', '')->first();
@@ -130,7 +130,7 @@ $factory->define(HouseholdIncome::class, function (Faker $faker, $client_id){
     //if self-emplyoed service type should be not null
     if($is_self_employed){
         $is_employed = false;
-        $service_type = $faker->randomElement(['Agriculture','Trading/Merchandising','Manufacturing','Service','Others']);
+        $service_type = $faker->randomElement(['AGRICULTURE','TRADING/MERCHANDISING','MANUFACTURING','SERVICE','OTHERS']);
         $service_type_monthly_gross_income = rand(100,200) * 500;
     }else{
         $is_employed = true;
