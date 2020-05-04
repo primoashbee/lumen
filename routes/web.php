@@ -99,21 +99,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/create/office/', 'OfficeController@createOffice');
 
     Route::get('/z',function(Request $request){
-        $ids = Office::find(19)->getLowerOfficeIDS();
-        return Client::with('office')->whereIn('office_id',$ids)->where(function(Builder $query){
-            $query->orWhere('firstname','LIKE','%parker%');
-            $query->orWhere('lastname','LIKE','%parker%');
-        })->count();
-        // return Client::select(DB::table('clients')->whereIn('office_id',$ids))->where('firstname','LIKE', '%parker%')->orWhere('lastname','LIKE', '%parker%')->count();
-        // // return  DB::table('clients')->selectRaw("SELECT * from (SELECT * from clients where office_id IN(?)) x ",[74,129,19])->count();
-        // return Client::select('x.*')->from(
-        //     DB::table('clients')->select("(SELECT * from clients) x")->whereIn('office_id',$ids)
-        //     // ->whereRaw('office_id IN(?)',$ids)
-        // )->count();
-        // return Client::addSelect([
-        //     'gender'=>Client::select('gender')->where('gender','MALE')->limit(1)
-        //     ])->get();
-
+       return view('test');
     });
 });
 

@@ -20,6 +20,9 @@ class CreateDepositAccountsTable extends Migration
             $table->bigIncrements('id');
             $table->string('client_id');
             $table->integer('deposit_id');
+            $table->double('balance')->default(0);
+            $table->double('accrued_interest')->default(0);
+            $table->string('status')->default('active');
             $table->timestamps();
         });
         // Schema::create('client_deposit', function (Blueprint $table) {

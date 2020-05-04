@@ -1,23 +1,32 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">Example Component</div>
-
-                    <div class="card-body">
-                        I'm an example component.
-                    </div>
-                </div>
-            </div>
+	<div class="group-wrapper">
+        <div class="card pb-4">
+            <b-button @click="showModal" variant="primary" id="24">Show Modal</b-button>
         </div>
-    </div>
+        <light-modal :show="status">
+            <template #body>
+               <input type="text" class="form-control" v-model="text">
+            </template>
+        </light-modal>
+	</div>
 </template>
 
 <script>
+import Modal from "./ModalComponent";
     export default {
-        mounted() {
-            console.log('Component mounted.')
+        components: {
+            Modal
+        },
+        methods: {
+            showModal(){
+                this.status = true
+            }
+        },
+        data(){
+            return {
+                status: false,
+                text: null
+            }
         }
     }
 </script>

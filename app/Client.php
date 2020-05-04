@@ -73,6 +73,7 @@ class Client extends Model
     }
 
     public function deposits(){
+        
         return $this->hasMany(DepositAccount::class,'client_id','client_id');
         // return $this->belongsToMany(Deposit::class, 'client_deposit', 'client_id', 'deposit_id', 'clients.client_id');
     }

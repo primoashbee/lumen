@@ -7,7 +7,8 @@
 require('./bootstrap');
 
 
-import { VueMaskDirective } from 'v-mask'
+import { VueMaskDirective } from 'v-mask';
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 window.numeral = require('numeral');
 
 window.Vue = require('vue');
@@ -28,6 +29,9 @@ window.moment = require('moment');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
+
 Vue.directive('mask', VueMaskDirective);
 
 Vue.component('org-structure', require('./components/OfficeStructureComponent.vue').default);
@@ -40,6 +44,8 @@ Vue.component('client-list', require('./components/ClientListComponent.vue').def
 Vue.component('paginator', require('./components/PaginatorComponent.vue').default);
 Vue.component('upload-file', require('./components/UploadSampleComponent.vue').default);
 Vue.component('create-office', require('./components/CreateOfficeComponent.vue').default);
+Vue.component('light-modal', require('./components/ModalComponent.vue').default);
+Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

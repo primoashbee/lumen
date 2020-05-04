@@ -139,24 +139,35 @@
 			              <tbody>
 			              	<tr>
 			                  <td>
-			                    <p>Account #</p>
+			                    <p>Deposit Type</p>
+			                  </td>
+			                  <td>
+			                    <p>Balance</p>
 			                  </td>
 			                  <td>
 			                    <p>Status</p>
 			                  </td>
-			                </tr>
+							</tr>
+							
+							@foreach($client->deposits as $key=>$cbu)
 			                <tr>
 			                  <td>
 			                    <a href="">
-			                      <p class="title">MCBU0001</p>
+			                      <p class="title">{{$cbu->type->name	}}</p>
 			                    </a>
 			                  </td>
 			                  <td>
+			                   
+									{{$cbu->balance}}
+								
+			                  </td>
+			                  <td>
 			                    <span class="active position-relative px-2">
-			                      Active
+			                      {{$cbu->status}}
 			                    </span>
 			                  </td>
-			                </tr>
+							</tr>
+							@endforeach
 			              </tbody>
 			            </table>
 			          </div>
