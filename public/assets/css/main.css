@@ -1433,3 +1433,62 @@ select {
 /*END SETTINGS PAGE*/
 
 
+#basic-addon3{
+    background-color: transparent;
+    border: 1px solid #e8e8e8!important;
+    color:hsla(0,0%,100%,.6);
+    font-family: 'Open Sans', sans-serif!important;
+}
+
+/*BREADCRUMBS*/
+
+ol {
+  list-style: none;
+}
+.breadcrumb {
+  width: 100%;
+  float: left;
+  position: relative;
+  display: block;
+  background: rgba(0, 0, 0, 0.05);
+}
+.breadcrumb ol {
+  list-style: none;
+}
+.breadcrumb li {
+  height: 30px;
+  
+  line-height: 30px;
+  float: left;
+  font-size: 1rem;
+}
+.breadcrumb li a:after{
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    border:1px solid #fdad7d;
+    width: 0%;
+    opacity: 0;
+    transition: all ease 0.3s;
+}
+.breadcrumb li:not(.active):hover a:after{
+    opacity: 1;
+    width: 100%;
+}
+.breadcrumb li a {
+    position: relative;
+  text-decoration: none;
+  color: hsla(0,0%,100%,.8)!important;
+
+}
+/*.breadcrumb li .fa {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+}*/
+.breadcrumb a:hover {
+  text-decoration: none;
+}
+
+/*END OF BREADCRUMBS*/

@@ -11,8 +11,10 @@ import { VueMaskDirective } from 'v-mask';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 window.numeral = require('numeral');
 
+
 window.Vue = require('vue');
 // window.flatten = require('flat')
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 window.Swal = require('sweetalert2');
 window.moment = require('moment');
@@ -46,6 +48,7 @@ Vue.component('upload-file', require('./components/UploadSampleComponent.vue').d
 Vue.component('create-office', require('./components/CreateOfficeComponent.vue').default);
 Vue.component('light-modal', require('./components/ModalComponent.vue').default);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('office-list', require('./components/OfficeListComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

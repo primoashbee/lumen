@@ -68,7 +68,7 @@ export default {
             toClient: '/client/',
         }
     },
-    components: {
+    components:{
         Loading
     },
     methods : {

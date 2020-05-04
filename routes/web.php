@@ -96,7 +96,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/client/{client_id}','ClientController@view')->name('get.client.info');
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
+    
     Route::post('/create/office/', 'OfficeController@createOffice');
+
+    Route::get('/office/{level}', 'OfficeController@viewOffice');
+    Route::get('/office/list/{level}','OfficeController@getOfficeList');
+
+    Route::get('/edit/office/{id}', 'OfficeController@editOffice');
+    Route::post('/edit/office/{id}', 'OfficeController@updateOffice');
+
 
     Route::get('/z',function(Request $request){
        return view('test');

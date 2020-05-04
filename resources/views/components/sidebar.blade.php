@@ -31,7 +31,7 @@
 								</a>
 							</li>
 							<li class="sub-list">
-								<a class="sub-nav" href="/create/group">
+								<a class="sub-nav" href="/create/office/cluster">
 									<i class="">CL</i>
 									<p>Cluster</p>
 								</a>

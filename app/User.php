@@ -118,7 +118,7 @@ class User extends Authenticatable
             $branch['id'] = $item->id;
             $branch['name'] = $item->name;
             
-            if (Office::isChildOf('branch', $item->level)) {
+            if (Office::isChildOf('branch', $item->level) || Office::isChildOf('branch',$item->level == "branch")) {
                 $branch['code'] = $item->getTopOffice('branch')->code;
             }
             return $branch;

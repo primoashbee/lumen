@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Office extends Model
@@ -9,6 +9,9 @@ class Office extends Model
     // protected $with = ['parent'];
     protected $fillable = ['name','code','parent_id','level'];
     protected $schema;
+    protected $searchables = [
+        'name',
+    ];
 
     public function parent(){
         return $this->belongsTo(static::class, 'parent_id');
@@ -183,4 +186,25 @@ class Office extends Model
     
         return in_array($level,$list) ? true : false;
     }
+
+    public static function like($level, $query){
+        $me = new static;
+        $searchables = $me->searchables;
+       
+        $office = Office::where('level', $level)->get();
+        
+        if(count($office)>0){
+            if($query!=null){
+                $office = Office::with('parent')->where('level',$level)->where(function(Builder $dbQuery) use($searchables, $query){
+                    foreach($searchables as $item){  
+                        $dbQuery->where($item,'LIKE','%'.$query.'%');
+                    }
+                });
+                return $office;
+            }
+            $office = Office::with('parent')->where('level',$level);
+            return $office;
+        }
+    }
+
 }
