@@ -58,6 +58,22 @@ td,tr{
     font-weight: 300;
 }
 
+/*Color Utilities*/
+.t-white{
+    color: #fff!important;
+}
+
+/*Font size utilities*/
+.text-xs    {font-size: .75rem!important;}
+.text-sm    {font-size: .875rem!important;}
+.text-base  {font-size: 1rem!important;}
+.text-lg    {font-size: 1.125rem!important;}
+.text-xl    {font-size: 1.25rem!important;}
+.text-2xl   {font-size: 1.5rem!important;}
+.text-3xl   {font-size: 1.875rem!important;}
+.text-4xl   {font-size: 2.25rem!important;}
+.text-5xl   {font-size: 3rem!important;}
+.text-6xl   {font-size: 4rem!important;}
 
 /*Padding utilities*/
 .p-0,.p0	{padding: 0;}
@@ -817,14 +833,14 @@ body.light-mode select {
 a.btn-create{
     position: relative;
     background-color: #ef823f;
-    background-size: 210% 210%;
-    background-position: top right;
     transition: all 0.15s ease;
     box-shadow: none;
     color: rgba(255, 255, 255, 0.9);
     font-size: 0.8rem;
     border-radius: 5px;
     padding: 5px;
+    margin-top: 15px;
+    display: block;
 }
 a.btn-create:hover{
     transform: translateY(-1.5px);

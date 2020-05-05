@@ -16,77 +16,78 @@
 		          <div class="d-block text-center client-image">
 		            <img src="{{asset($client->profile_picture_path)}}" class="avatar" alt="Profile Photo">
 		          </div>
-				  <h4 class="px-1 text-center">{{$client->name()}}</h4>
+				  <h4 class="px-1 text-center text-lg">{{$client->name()}}</h4>
 		        </div>
 		        <div class="card-body">
-		          <div class="content-wrapper">
+		          <div class="content-wrapper profile-information">
+		          	<h3 class="my-3 text-xl">Personal Details</h3>
 		            <div class="row">
 		              <div class="form-group col-md-2">
-		                <p class="title">{{$client->client_id}}</p>
-		                <p class="text-muted">Client ID</p>
+		                <p class="title text-lg">{{$client->client_id}}</p>
+		                <p class="text-muted text-lg">Client ID</p>
 		              </div>
 		              <div class="form-group col-md-2 p0">
-		                <p class="title">{{$client->nickname}}</p>
-		                <p class="text-muted">Nickname</p>
+		                <p class="title text-lg">{{$client->nickname}}</p>
+		                <p class="text-muted text-lg">Nickname</p>
 		              </div>
 		              <div class="form-group col-md-2 p0">
-		                <p class="title">{{$client->birthday}}</p>
-		                <p class="text-muted">Date Of Birth</p>
+		                <p class="title text-lg">{{$client->birthday}}</p>
+		                <p class="text-muted text-lg">Date Of Birth</p>
 		              </div>
 		              <div class="form-group col-md-2 p0">
-		                <p class="title">{{$client->birthplace}}</p>
-		                <p class="text-muted">Birthplace</p>
+		                <p class="title text-lg">{{$client->birthplace}}</p>
+		                <p class="text-muted text-lg">Birthplace</p>
 		              </div>
 		              <div class="form-group col-md-4">
-		                <p class="title"> {{$client->civil_status}}</p>
-		                <p class="text-muted">Marital Status</p>
+		                <p class="title text-lg"> {{$client->civil_status}}</p>
+		                <p class="text-muted text-lg">Marital Status</p>
 		              </div>
 		            </div>
 		            <div class="row my-5">
 		              <div class="col-md-4">
-		                <p class="title">{{$client->education}}</p>
-		                <p class="text-muted">Educational Attainment</p>
+		                <p class="title text-lg">{{$client->education}}</p>
+		                <p class="text-muted text-lg">Educational Attainment</p>
 		              </div>
 		              <div class="col-md-4">
-		                <p class="title">{{$client->fb_account}}</p>
-		                <p class="text-muted">Facebook Account</p>
+		                <p class="title text-lg">{{$client->fb_account}}</p>
+		                <p class="text-muted text-lg">Facebook Account</p>
 		              </div>
 		              <div class="col-md-4">
-		                <p class="title">{{$client->contact_number}}</p>
-		                <p class="text-muted">Phone Number</p>
+		                <p class="title text-lg">{{$client->contact_number}}</p>
+		                <p class="text-muted text-lg">Phone Number</p>
 		              </div>
 		            </div>
-		            <h3 class="my-3">Address Information</h3>
+		            <h3 class="my-3 text-xl">Address Information</h3>
 		            <div class="row my-4">
 		              <div class="col-md-6">
-		                <p class="title">{{$client->street_address}}</p>
-		                <p class="text-muted">Street Address</p>
+		                <p class="title text-lg">{{$client->street_address}}</p>
+		                <p class="text-muted text-lg">Residential Street Address</p>
 		              </div>
 		              <div class="col-md-6">
-		                <p class="title">{{$client->business_address}}</p>
-		                <p class="text-muted">Business Address</p>
+		                <p class="title text-lg">{{$client->business_address}}</p>
+		                <p class="text-muted text-lg">Business Address</p>
 		              </div>
 		            </div>
 		            <div class="row px-3">
 		              <div class="col-md-3 p0">
-		                <p class="title">{{$client->barangay_address}}</p>
-		                <p class="text-muted">Barangay</p>
+		                <p class="title text-lg">{{$client->barangay_address}}</p>
+		                <p class="text-muted text-lg">Barangay</p>
 		              </div>
 		              <div class="col-md-3">
-		                <p class="title">{{$client->city_address}}</p>
-		                <p class="text-muted">City</p>
+		                <p class="title text-lg">{{$client->city_address}}</p>
+		                <p class="text-muted text-lg">City</p>
 		              </div>
 		              <div class="col-md-2">
-		                <p class="title">{{$client->province_address}}</p>
-		                <p class="text-muted">Province</p>
+		                <p class="title text-lg">{{$client->province_address}}</p>
+		                <p class="text-muted text-lg">Province</p>
 		              </div>
 		              <div class="col-md-2 col-md-offset-2">
-		                <p class="title">{{$client->zipcode}}</p>
-		                <p class="text-muted">Zip code</p>
+		                <p class="title text-lg">{{$client->zipcode}}</p>
+		                <p class="text-muted text-lg">Zip code</p>
 		              </div>
 		            </div>
 		          </div>
-		          <div class="col-lg-10 mt-4">
+		          <div class="col-lg-10 mt-4 p0">
 		          	<a href="/edit/client/{{$client->client_id}}" type="submit" class="btn btn-primary mt-8 px-8">Edit Client</a>
 		          	<div  class="file-input-signature float-right">
 		                <img src="https://cdn.sstatic.net/Img/unified/sprites.svg?v=e5e58ae7df45" class="img-thumbnail" alt="Cinque Terre" > 
@@ -99,9 +100,11 @@
 		    <div class="col-md-4">
 		      <div class="card">
 		        <div class="card-header">
-		          <h4>Loan Accounts
-		            <a href="" class="float-right btn-create">Create Account</a>
-		          </h4>
+		          <div class="float-left text-center">
+		          	<i class="fas fa-3x fa-hand-holding-usd t-white"></i>
+		          	<h4 class="mt-2">Loan Accounts</h4>
+		          </div>
+		           <a href="" class="float-right btn-create">Create Account</a>
 		        </div>
 		        <div class="card-body">
 		          <div class="table-accounts table-full-width table-responsive">
@@ -136,9 +139,11 @@
 
 		      <div class="card">
 			        <div class="card-header">
-			          <h4>Deposit Accounts
-			            <a href="" data-toggle="modal" data-target=".bd-example-modal-lg" class="float-right btn-create">Create Account</a>
-			          </h4>
+			          <div class="float-left text-center">
+			          	<i class="fas fa-3x fa-donate t-white"></i>
+			          	<h4 class="mt-2">Deposit Accounts</h4>
+			          </div>
+			          <a href="" data-toggle="modal" data-target=".bd-example-modal-lg" class="float-right btn-create">Create Account</a>
 
 			        </div>
 			        <div class="card-body">
@@ -160,8 +165,8 @@
 							@foreach($client->deposits as $key=>$cbu)
 			                <tr>
 			                  <td>
-			                    <a href="">
-			                      <p class="title">{{$cbu->type->name	}}</p>
+			                    <a href="/deposit/{{$cbu->deposit_id}}/{{$cbu->client_id}}">
+			                      <p class="title">{{$cbu->type->name}}</p>
 			                    </a>
 			                  </td>
 			                  <td>
