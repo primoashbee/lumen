@@ -7,7 +7,7 @@
 		            <li class="breadcrumb-item active" aria-current="page">Create Office</li>
 		          </ol>
 		        </nav>
-				<h4 class="h4 ml-3 mt-4">New Office</h4>
+				<h4 class="h4 ml-3 mt-4">Create a new {{title}}</h4>
 				<form @submit.prevent="submit">
 					<div class="form-group col-md-6 mt-4">
 			  			<label>Assign To:</label>
@@ -29,11 +29,17 @@
 		                        {{ errors.code[0]}}
 		                    </div>
 						</div>
-					</div>	
+					
+					</div>
+					<div class="form-group col-md-6">
+						<input type="checkbox" v-model="fields.same_as_code" id="checkbox">
+
+						<label for="checkbox"><span class="pr-5 mt-4" style="color:rgb(169, 169, 178)" > Name is same with Code </span></label>
+					</div>
 
 				  	<div class="form-group col-md-6">
 				  		<label for="cluster_code">Name:</label>
-				  		<input type="text" v-model="fields.name" id="name" class="form-control" v-bind:class="nameHasError ? 'is-invalid' : ''" :readonly="fields.readonly">
+				  		<input type="text" v-model="fields.name" id="name" class="form-control" v-bind:class="nameHasError ? 'is-invalid' : ''" :readonly="fields.same_as_code">
 				  		<div class="invalid-feedback" v-if="nameHasError">
                             {{ errors.name[0]}}
                         </div>
@@ -63,11 +69,14 @@
    	 			fields:{
    	 				'office_id':"",
    	 				'code':"",
-   	 				"branch_code":"######",
+					"branch_code":"######",
+					"level_code":null,
    	 				'name':"",
    	 				"level":"",
-   	 				"readonly":false
-   	 			},
+					"readonly":true,
+					"same_as_code":false
+				},
+				withHyphen: ['unit','account_officer','cluster'],	
    	 			errors:{}
    	 		}
    	 	},
@@ -89,30 +98,52 @@
 	        },
 	        codeHasError(){
 	        	return this.errors.hasOwnProperty('code')
-	        }
+			},
+			levelCode(){
+				if(this.withHyphen.includes(this.level)){
+					console.log('hey')
+					return this.fields.branch_code + '-'+this.fields.code
+				}
+				return this.fields.branch_code + this.fields.code
+			},
+			title(){
+				var str = this.level
+				str = str.replace('_',' ')
+				str = str.toLowerCase().split(' ');
+				for (var i = 0; i < str.length; i++) {
+					str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1); 
+				}
+				return str.join(' ');
+
+			}
+
+			
    	 	},
    	 	methods:{
    	 		toOffice(){
    	 			return "/office/"+this.level
    	 		},
    	 		assignOffice(value){
-   	 			if (this.level == "cluster" || this.level == "unit" || this.level == "account_officer") { 
-   	 				this.fields.branch_code = value['code']
-   	 			}
+				
+   	 			// if (this.level == "cluster" || this.level == "unit" || this.level == "account_officer") { 
+   	 			// 	this.fields.branch_code = value['code']
+				// 	}
+				this.fields.branch_code = value.prefix
+					
 	            this.fields.office_id = value['id']
-	        },
-	        underBranch(){
-
-	        	if (this.fields.level == "cluster" || this.fields.level == "unit" || this.fields.level == "account_officer") {
-	        		
-	   	 			this.fields.code = this.fields.branch_code + "-" + this.fields.code
-	   	 			if (this.fields.level == "cluster") {
-	   	 				this.fields.name = this.fields.code
-	   	 			}
-	   	 		}
-	        },
+			},
+			formatCode(){
+				if(this.withHyphen.includes(this.level)){
+					return this.fields.level_code = this.fields.branch_code+ "-"+this.fields.code
+				}
+				return this.fields.level_code = this.fields.branch_code+this.fields.code
+			},
 	        submit(){
-	        	this.underBranch()
+				this.formatCode()
+				 if(this.fields.same_as_code){
+					 this.fields.name = this.levelCode 
+				 }
+				 
 	        	 axios.post('/create/office', this.fields)
                 .then(res=>{
                     this.isLoading = false
@@ -130,6 +161,20 @@
                     this.errors = error.response.data.errors || {}
                 })
 	        }
-   	 	}
+		},
+		watch:{
+			// "fields.code":function(val){
+			// 	if(this.fields.same_as_code){
+			// 		this.fields.name = this.levelCode
+			// 	}
+			// },
+			// "fields.same_as_code":function(val){
+			// 	if(val){
+			// 		this.fields.name = this.levelCode
+			// 	}else{
+			// 		this.fields.name=""	
+			// 	}
+			// }
+		}	
 	}
 </script>
