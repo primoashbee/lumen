@@ -299,7 +299,7 @@ class ClientController extends Controller
     }
 
     public function view($client_id){
-        $client = Client::where('client_id',$client_id)->first();
+        $client = Client::with('household_income')->where('client_id',$client_id)->first();
         if($client===null){
             abort(503);
             return response()->route('client.list');

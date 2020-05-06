@@ -12,87 +12,133 @@
 				    <li class="breadcrumb-item active" aria-current="page">Profile</li>
 				  </ol>
 				</nav>
-		        <div class="card-header my-2">
-		          <div class="d-block text-center client-image">
-		            <img src="{{asset($client->profile_picture_path)}}" class="avatar" alt="Profile Photo">
-		          </div>
-				  <h4 class="px-1 text-center text-lg">{{$client->name()}}</h4>
-		        </div>
-		        <div class="card-body">
-		          <div class="content-wrapper profile-information">
-		          	<h3 class="my-3 text-xl">Personal Details</h3>
-		            <div class="row">
-		              <div class="form-group col-md-2">
-		                <p class="title text-lg">{{$client->client_id}}</p>
-		                <p class="text-muted text-lg">Client ID</p>
-		              </div>
-		              <div class="form-group col-md-2 p0">
-		                <p class="title text-lg">{{$client->nickname}}</p>
-		                <p class="text-muted text-lg">Nickname</p>
-		              </div>
-		              <div class="form-group col-md-2 p0">
-		                <p class="title text-lg">{{$client->birthday}}</p>
-		                <p class="text-muted text-lg">Date Of Birth</p>
-		              </div>
-		              <div class="form-group col-md-2 p0">
-		                <p class="title text-lg">{{$client->birthplace}}</p>
-		                <p class="text-muted text-lg">Birthplace</p>
-		              </div>
-		              <div class="form-group col-md-4">
-		                <p class="title text-lg"> {{$client->civil_status}}</p>
-		                <p class="text-muted text-lg">Marital Status</p>
-		              </div>
-		            </div>
-		            <div class="row my-5">
-		              <div class="col-md-4">
-		                <p class="title text-lg">{{$client->education}}</p>
-		                <p class="text-muted text-lg">Educational Attainment</p>
-		              </div>
-		              <div class="col-md-4">
-		                <p class="title text-lg">{{$client->fb_account}}</p>
-		                <p class="text-muted text-lg">Facebook Account</p>
-		              </div>
-		              <div class="col-md-4">
-		                <p class="title text-lg">{{$client->contact_number}}</p>
-		                <p class="text-muted text-lg">Phone Number</p>
-		              </div>
-		            </div>
-		            <h3 class="my-3 text-xl">Address Information</h3>
-		            <div class="row my-4">
-		              <div class="col-md-6">
-		                <p class="title text-lg">{{$client->street_address}}</p>
-		                <p class="text-muted text-lg">Residential Street Address</p>
-		              </div>
-		              <div class="col-md-6">
-		                <p class="title text-lg">{{$client->business_address}}</p>
-		                <p class="text-muted text-lg">Business Address</p>
-		              </div>
-		            </div>
-		            <div class="row px-3">
-		              <div class="col-md-3 p0">
-		                <p class="title text-lg">{{$client->barangay_address}}</p>
-		                <p class="text-muted text-lg">Barangay</p>
-		              </div>
-		              <div class="col-md-3">
-		                <p class="title text-lg">{{$client->city_address}}</p>
-		                <p class="text-muted text-lg">City</p>
-		              </div>
-		              <div class="col-md-2">
-		                <p class="title text-lg">{{$client->province_address}}</p>
-		                <p class="text-muted text-lg">Province</p>
-		              </div>
-		              <div class="col-md-2 col-md-offset-2">
-		                <p class="title text-lg">{{$client->zipcode}}</p>
-		                <p class="text-muted text-lg">Zip code</p>
-		              </div>
-		            </div>
-		          </div>
-		          <div class="col-lg-10 mt-4 p0">
-		          	<a href="/edit/client/{{$client->client_id}}" type="submit" class="btn btn-primary mt-8 px-8">Edit Client</a>
-		          	<div  class="file-input-signature float-right">
-		                <img src="https://cdn.sstatic.net/Img/unified/sprites.svg?v=e5e58ae7df45" class="img-thumbnail" alt="Cinque Terre" > 
-		            </div>
-		          </div>
+				<div class="row">
+					<div class="col-lg-4 profile-wrapper pl-8 pr-24">
+						<div class="text-center profile-picture">
+			            	<img src="{{asset($client->profile_picture_path)}}" class="w-100" alt="Profile Photo">
+			            </div>
+			            <div class="mt-8">
+			            	<h5 class="title text-2xl">Personal Details</h5>
+			            	<div class="p-details mt-4">
+			            		<p class="title text-lg">Birthday</p>
+				                <p class="text-muted text-lg">{{$client->birthday}}</p>
+				            </div>
+				            <div class="p-details mt-4">
+			            		<p class="title text-lg">Birthplace</p>
+				                <p class="text-muted text-lg">{{$client->birthplace}}</p>
+				            </div>
+				            <div class="p-details mt-4">
+			            		<p class="title text-lg">Gender</p>
+				                <p class="text-muted text-lg">{{$client->gender}}</p>
+				            </div>
+				            <div class="p-details mt-4">
+			            		<p class="title text-lg">Civil Status</p>
+				                <p class="text-muted text-lg">{{$client->education}}</p>
+				            </div>
+				            <div class="p-details mt-4">
+			            		<p class="title text-lg">Educational Attainment</p>
+				                <p class="text-muted text-lg">{{$client->education}}</p>
+				            </div>
+				            <div class="p-details mt-4">
+			            		<p class="title text-lg">Facebook Account </p>
+				                <p class="text-muted text-lg">{{$client->fb_account}}</p>
+				            </div>
+			            </div>
+					</div>
+
+					<div class="col-lg-8 profile-wrapper">
+						<a href="/edit/client/{{$client->client_id}}" type="submit" class="btn btn-primary float-right mr-4">Edit Client</a>
+						<div class="p-details">
+							<p class="title text-2xl">{{$client->name()}}</p>
+							<p class="text-muted text-base">Nickname: {{$client->nickname}}</p>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-6">
+								<div class="p-details mt-4 d-inline-block file-input-signature">
+				            		<p class="title text-xl mb-2">Signature</p>
+					            	<img src="https://i.ya-webdesign.com/images/scribble-signature-png-6.png" class="w-100 img-thumbnail" alt="Cinque Terre" > 
+					            </div>
+							</div>
+							<div class="col-lg-6">
+								<div class="d-inline-block p-details mt-4 rating">
+									<p class="title text-xl">Rating</p>
+									 <i class="star-1">★</i>
+									  <i class="star-2">★</i>
+									  <i class="star-3">★</i>
+									  <i class="star-4">★</i>
+									  <i class="star-5">★</i>
+								</div>
+								<div class="p-details mt-4">
+									<p class="title text-xl">Created at</p>
+									<p class="text-muted text-lg">{{$client->created_at->format('F, j Y')}}</p>
+								</div>
+								<div class="p-details mt-2">
+									<p class="title text-xl">Status: <span class="active-status text-lg">ACTIVE</span></p>
+								</div>
+							</div>
+						</div>
+
+						
+						
+
+
+						<div class="profile-menu-tabs mt-8 pr-8">
+							<ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#personal" role="tab" aria-controls="home" aria-selected="true">Business 
+                                    Information</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="profile" aria-selected="false">Contact Information</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+			                    <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="nav-home-tab">
+			                 		<div class="p-details">
+			                 			<span class="title text-xl mr-8">Address:</span>
+										<span class="text-muted text-lg">{{$client->business_address}}</span>
+			                 		</div>
+			                 		<div class="p-details mt-4">
+			                 			<span class="title text-xl mr-8">Business Type:</span>
+										<span class="text-muted text-lg">{{$client->household_income->service_type}}</span>
+			                 		</div>
+			                 		
+
+			                    </div>
+			                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="nav-profile-tab">
+			                      	<div class="p-details mt-4">
+			                 			<span class="title text-xl mr-8">Phone Number:</span>
+										<span class="text-muted text-lg">{{$client->contact_number}}</span>
+			                 		</div>
+			                 		<div class="p-details mt-4">
+			                 			<span class="title text-xl mr-8">Street Address:</span>
+										<span class="text-muted text-lg">{{$client->street_address}}</span>
+			                 		</div>
+			                 		<div class="p-details mt-4">
+			                 			<span class="title text-xl mr-8">Barangay:</span>
+										<span class="text-muted text-lg">{{$client->barangay_address}}</span>
+			                 		</div>
+			                 		<div class="p-details mt-4">
+			                 			<span class="title text-xl mr-8">City:</span>
+										<span class="text-muted text-lg">{{$client->city_address}}</span>
+			                 		</div>
+			                 		<div class="p-details mt-4">
+			                 			<span class="title text-xl mr-8">Province:</span>
+										<span class="text-muted text-lg">{{$client->province_address}}</span>
+			                 		</div>
+			                 		<div class="p-details mt-4">
+			                 			<span class="title text-xl mr-8">Zipcode:</span>
+										<span class="text-muted text-lg">{{$client->zipcode}}</span>
+			                 		</div>
+			                    </div>
+			                 </div>
+						</div>
+					</div>
+				</div>
+		        <div class="p-details mt-8 p-4">
+		        	<p class="title text-2xl mb-2">Notes</p>
+		        	<textarea value="notes" rows="3" cols="40" class="form-control">{{$client->notes}}</textarea>
 		        </div>
 		      </div>
 		    </div>
@@ -101,7 +147,6 @@
 		      <div class="card">
 		        <div class="card-header">
 		          <div class="float-left text-center">
-		          	<i class="fas fa-3x fa-hand-holding-usd t-white"></i>
 		          	<h4 class="mt-2">Loan Accounts</h4>
 		          </div>
 		           <a href="" class="float-right btn-create">Create Account</a>
@@ -140,7 +185,6 @@
 		      <div class="card">
 			        <div class="card-header">
 			          <div class="float-left text-center">
-			          	<i class="fas fa-3x fa-donate t-white"></i>
 			          	<h4 class="mt-2">Deposit Accounts</h4>
 			          </div>
 			          <a href="" data-toggle="modal" data-target=".bd-example-modal-lg" class="float-right btn-create">Create Account</a>
@@ -165,12 +209,11 @@
 							@foreach($client->deposits as $key=>$cbu)
 			                <tr>
 			                  <td>
-			                    <a href="/deposit/{{$cbu->deposit_id}}/{{$cbu->client_id}}">
+			                    <a href="/client/{{$cbu->client_id}}/deposit/{{$cbu->deposit_id}}">
 			                      <p class="title">{{$cbu->type->name}}</p>
 			                    </a>
 			                  </td>
 			                  <td>
-			                   
 									{{$cbu->balance}}
 								
 			                  </td>

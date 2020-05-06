@@ -42,14 +42,14 @@
              <b-modal id="office-modal" v-model="show" size="lg" hide-footer modal-title="Change Office" title="Edit Office" :header-bg-variant="background" :body-bg-variant="background">
                 <form @submit.prevent="submit">
                     <div class="form-group mt-4">
-                        <label>Assign To:</label>
+                        <label class="text-lg">Assign To:</label>
                         <v2-select @officeSelected="assignOffice" :list_level="list_level" :default_value="fields.parent_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
                         <div class="invalid-feedback" v-if="officeHasError">
                             {{ errors.office_id[0]}}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="code">Code</label>
+                        <label class="text-lg" for="code">Code</label>
                         <div class="input-group mb-3">
                           <input type="text" class="form-control" id="code" aria-describedby="basic-addon3"
                           v-model="fields.code" v-bind:class="codeHasError ? 'is-invalid' : ''" :readonly="code_readonly">
@@ -60,7 +60,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="cluster_code">Name:</label>
+                        <label class="text-lg" for="cluster_code">Name:</label>
                         <input type="text" v-model="fields.name" id="name" class="form-control" v-bind:class="nameHasError ? 'is-invalid' : ''" :readonly="checkLevel()">
                         <div class="invalid-feedback" v-if="nameHasError">
                             {{ errors.name[0]}}
@@ -68,7 +68,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Notes</label>
+                        <label class="text-lg">Notes</label>
                         <textarea class="form-control"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>

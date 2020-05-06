@@ -62,6 +62,9 @@ td,tr{
 .t-white{
     color: #fff!important;
 }
+.b-btm{
+    border-bottom: 1px solid #6c757d;
+}
 
 /*Font size utilities*/
 .text-xs    {font-size: .75rem!important;}
@@ -839,7 +842,6 @@ a.btn-create{
     font-size: 0.8rem;
     border-radius: 5px;
     padding: 5px;
-    margin-top: 15px;
     display: block;
 }
 a.btn-create:hover{
@@ -1508,3 +1510,61 @@ ol {
 }
 
 /*END OF BREADCRUMBS*/
+
+/*CLIENT PROFILE PAGE*/
+.profile-picture{
+    height: 241px;
+    width: 241px;
+}
+.rating i {
+  display: inline-block;
+  width: 0;
+  height: 1.5em;
+  border-width: 0 0.75em;
+  border-style: solid;
+  border-radius: .22em;
+  color: white;
+  background: #ef8240;
+  border-color: #ef8240;
+  font-style: normal;
+  line-height: 1.6em;
+  text-indent: -0.5em;
+  text-shadow: 1px 0 1px #b3b3b3;
+}
+.profile-menu-tabs ul.nav-tabs{
+    border-bottom:1px solid #ef8240;
+}
+.profile-menu-tabs .nav-tabs .nav-link.active{
+    color: #fff;
+    background-color: transparent;
+    border-color: #ef8240 #ef8240 transparent #ef8240;
+}
+.profile-menu-tabs .nav-item a{
+    border: 1px solid transparent;
+    display: inline-block; 
+    border-bottom: 0px; 
+    margin: 0px;    
+  color: #fff;
+    cursor: pointer;
+}
+.profile-menu-tabs .nav-tabs .nav-link:not(.active):hover {
+    border-color: transparent;
+}
+.p-details span.title:first-child{
+    width: 145px;
+    display: inline-block;
+}
+.p-details span.title:last-child{
+    width: 126px;
+    display: inline-block;
+}
+.p-details span.title{
+    color:hsla(0,0%,100%,.8)!important;
+}
+.p-details p span.active-status,
+.d-details p span.active{
+    padding: 5px 20px;
+    border-radius:15px;
+    border:1px solid green;
+    position: relative;
+}
