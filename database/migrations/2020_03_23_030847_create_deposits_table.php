@@ -18,6 +18,7 @@ class CreateDepositsTable extends Migration
             $table->string('name');
             $table->string('product_id')->unique();
             $table->mediumText('description')->nullable();
+            $table->double('minimum_deposit_per_transaction');
             $table->date('valid_until')->nullable();
             $table->integer('account_per_client');
             $table->boolean('auto_create_on_new_client')->default(false);

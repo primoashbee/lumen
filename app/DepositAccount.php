@@ -15,9 +15,13 @@ class DepositAccount extends Model
         'deposit_id',
         'balance',
         'accrued_interest',
-        'status'
+        'status',
+        'repayment_date',
+        'user_id'
     ];
- 
+    protected $casts = [
+        'created_at' => 'datetime:F d, Y',
+    ];
     public function type(){
         return $this->belongsTo(Deposit::class,'deposit_id');
     }
@@ -26,37 +30,54 @@ class DepositAccount extends Model
         return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
     }
 
-    public function deposit($value){
+    public function deposit(array $data){
         
-        $trans = DepositTransaction::create([
-            'deposit_account_id' => $this->client_id,
-            'transaction_type'=>'deposit',
-            'amount'=>$value,
-            'payment_method'=>'CASH IN BANK'
+        $new_balance = $this->getRawOriginal('balance') + $data['amount'];
+        DepositTransaction::create([
+            'transaction_id' => uniqid(),
+            'deposit_account_id' => $this->id,
+            'transaction_type'=>'Deposit',
+            'amount'=>$data['amount'],
+            'payment_method'=>$data['payment_method'],
+            'repayment_date'=>$data['repayment_date'],
+            'user_id'=> auth()->user()->id,
+            'balance' => $new_balance
         ]);
+            
         
-        
-        
-        $this->balance = $this->getRawOriginal('balance') + $value;
+        $this->balance = $new_balance;
         return $this->save();
         
     }
 
-    public function withdraw($value){
-        if($this->getRawOriginal('balance') < $value){
+    public function withdraw(array $data){
+        if($this->getRawOriginal('balance') < $data['amount']){
             return false;
         }
+        $new_balance = $this->getRawOriginal('balance') - $data['amount'];
+
         DepositTransaction::create([
-            'deposit_account_id' => $this->client_id,
-            'transaction_type'=>'withdraw',
-            'amount'=>$value,
-            'payment_method'=>'CASH IN BANK'
+            'transaction_id' => uniqid(),
+            'deposit_account_id' => $this->id,
+            'transaction_type'=>'Withdraw',
+            'amount'=>$data['amount'],
+            'payment_method'=>$data['payment_method'],
+            'repayment_date'=>$data['repayment_date'],
+            'user_id'=> auth()->user()->id,
+            'balance' => $new_balance
         ]);
         
-        
-        
-        $this->balance = $this->getRawOriginal('balance') - $value;
-        return $this->save();
-        
+        $this->balance = $new_balance;
+        return $this->save();        
     }
+
+    public function transactions(){
+        return $this->hasMany(DepositTransaction::class)->orderBy('created_at','desc');
+    }
+
+    public function client(){
+        return $this->belongsTo(Client::class,'client_id','client_id');
+    }
+
+
 }

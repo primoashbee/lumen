@@ -105,14 +105,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit/office/{id}', 'OfficeController@editOffice');
     Route::post('/edit/office/{id}', 'OfficeController@updateOffice');
 
-    Route::get('client/{client}/deposit/{deposit}', function(){
-        return view('pages.deposit-dashboard');
-    }); 
+    Route::get('client/{client_id}/deposit/{deposit_account_id}', 'ClientController@depositAccount')->name('client.deposit'); 
 
-
-    Route::get('/z',function(Request $request){
-       return view('test');
-    });
+    Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit');
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

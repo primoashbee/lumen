@@ -43,6 +43,7 @@ class ClientCreated
             }
            
             DepositAccount::insert($accs);
+            
         }
         Log::info('Client created : '.$event->client->client_id);
     }

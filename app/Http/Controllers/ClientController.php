@@ -3,19 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Client;
-use App\Office;
 use Carbon\Carbon;
 use App\Rules\Gender;
+use App\DepositAccount;
 use App\Rules\OfficeID;
 use App\HouseholdIncome;
 use App\Rules\HouseType;
 use App\Rules\CivilStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\MessageBag;
 use App\Rules\EducationalAttainment;
 use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
@@ -542,6 +541,11 @@ class ClientController extends Controller
         }
 
         return $request;
+    }
+    public function depositAccount($client_id,$deposit_id){
+        $account = DepositAccount::find($deposit_id)->load(['type','transactions','client']);
+        
+        return view('pages.deposit-dashboard',compact('account'));
     }
 }
 

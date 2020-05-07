@@ -8,7 +8,7 @@
     <div class="logo-container">
     <img src="{{ asset('assets/img/logo.png')}}">
     </div>
-    <a class="navbar-brand l-text float-left" href="#">Create Client</a>
+    <a class="navbar-brand l-text float-left" href="#"></a>
 
   </div>
   <div>

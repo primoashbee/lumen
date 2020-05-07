@@ -209,7 +209,7 @@
 							@foreach($client->deposits as $key=>$cbu)
 			                <tr>
 			                  <td>
-			                    <a href="/client/{{$cbu->client_id}}/deposit/{{$cbu->deposit_id}}">
+							  <a href="{{route('client.deposit',[$cbu->client_id,$cbu->id])}}">
 			                      <p class="title">{{$cbu->type->name}}</p>
 			                    </a>
 			                  </td>
