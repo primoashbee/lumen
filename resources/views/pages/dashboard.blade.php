@@ -10,6 +10,7 @@
                         <div class="col-md-6">
                             <h5 class="chart-header">Total Shipments</h5>
                             <h2 class="chart-title">Performance</h2>
+                            <payment-methods></payment-methods>
                         </div>
                         <div class="col-md-6">
                             <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">

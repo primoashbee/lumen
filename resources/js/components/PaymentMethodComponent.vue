@@ -4,9 +4,7 @@
     
     v-model="value" 
     :options="options" 
-    :multiple="false" 
-    group-values="data" 
-    group-label="level" 
+    :multiple="false"  
     :group-select="false" 
     :allow-empty="false"
     placeholder="Select Level"
@@ -14,7 +12,7 @@
     label="name"
     @input = "emitToParent"
     >
-      <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+      <span slot="noResult">Oops! No payment method found. Consider changing the search query.</span>
     </multiselect>
     <input type="hidden" name="payment_method" :value="value.id" @change="emitToParent">
     
@@ -29,8 +27,12 @@ export default {
   components: {
     Multiselect
   },
+  props: ['payment_type'],
   created(){
-
+    axios.get('/payment/methods?payment_type='+this.payment_type)
+    .then(res=>{
+      this.options = res.data
+    })
   },
   data () {
     return {
@@ -42,8 +44,8 @@ export default {
   methods: {
     emitToParent(){
       if(this.value!=null){
-        
-        this.$emit('officeSelected', this.value);
+        console.log(this.value)
+        this.$emit('paymentSelected', this.value);
       }
     }
   }
