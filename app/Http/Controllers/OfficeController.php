@@ -13,21 +13,22 @@ use Illuminate\Http\Request;
 class OfficeController extends Controller
 {
     public function createOffice(Request $request){
+
+        var_dump($request->all());
         $this->validator($request->all())->validate();
-        try{
+        
             Office::create(
                 [
-                    'code' => $this->generateCode($request),
+                    'code' => $request->level_code,
                     'name' => $request->name,
                     'level' => $request->level,
                     'parent_id' => $request->office_id
                 ]
             ); 
             return response()->json(['msg'=>'Office succesfully created'],200);
-        }catch(ValidationException $e)
-        {   
-            return response()->json(['errors'=>$e->getErrors()],500);
-        }
+           
+        //    return response()->json(['errors'=>$e->getErrors()],500);
+        
     }
 
     public function validator(array $data, $for_update=false, $id=null){
