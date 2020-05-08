@@ -543,8 +543,7 @@ class ClientController extends Controller
         return $request;
     }
     public function depositAccount($client_id,$deposit_id){
-        $account = DepositAccount::find($deposit_id)->load(['type','transactions','client']);
-        
+        $account = DepositAccount::find($deposit_id)->load(['type','transactions','client.office']);
         return view('pages.deposit-dashboard',compact('account'));
     }
 }

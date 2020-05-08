@@ -39,6 +39,22 @@ use Maatwebsite\Excel\Facades\Excel;
     }
     function createAdminAccount(){
         $user = User::create([
+            'firstname' => 'Scheduler',
+            'lastname' => 'Scheduler',
+            'middlename' => 'Scheduler',
+            'gender' => 'Male',
+            'birthday' => Carbon::parse('1994-11-26'),
+            'email' => 'scheduler@icloud.com',
+            'notes'=>'scheduler account',
+            'password' => Hash::make('sv9h4pld')
+        ]);
+
+        OfficeUser::create([
+            'user_id'=>$user->id,
+            'office_id'=>1
+        ]);  
+
+        $user = User::create([
             'firstname' => 'Ashbee',
             'lastname' => 'Morgado',
             'middlename' => 'Allego',

@@ -32,7 +32,7 @@
 			            <p class="text-muted text-lg">Product code</p>
 					</div>
 					<div class="d-inline-block mr-16">
-						<p class="title text-lg">0</p>
+						<p class="title text-lg">{{account_info.accrued_interest}}</p>
 			            <p class="text-muted text-lg">Accrued Interest</p>
 					</div>
 		        </div>    
@@ -176,7 +176,6 @@ import Swal from 'sweetalert2';
                 modal:{
 					modalState:false,
 					modal_title:null,
-				
 				},
 				fields: {
 					office_id: null,
@@ -185,7 +184,6 @@ import Swal from 'sweetalert2';
 					amount: null,
 					deposit_account_id: null,
 					repayment_date: null
-
 				},
                 errors:{}
 			}
