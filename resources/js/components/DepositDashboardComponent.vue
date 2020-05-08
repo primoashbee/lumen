@@ -8,52 +8,66 @@
     	</nav>
 		<div class="card-header">
 
-			<div class="row">
+			<div class="row b-btm">
 				<div class="col-lg-6">
-					<div class="d-details b-btm">
+					<div class="d-details">
 						<h1 class="title text-4xl">{{account_info.type.name}}</h1>
-						<h1 class="italic text-2xl">{{account_info.client_id + '-' + account_info.client.firstname + ' ' +account_info.client.lastname}}</h1>
+						<div class="d-block mr-16">
+							<span class="title text-lg mr-2">Description:</span>
+							<span class="text-muted text-lg">{{account_info.type.description}}</span>
+						</div>
 						<p class="title text-xl mt-4 pb-4">Status: <span class="active text-lg">ACTIVE</span></p>
+						<div class="content-wrapper d-block mb-12 w-100">
+							<div class="d-inline-block mr-16">
+								<p class="title text-lg">{{account_info.type.product_id}}</p>
+					            <p class="text-muted text-lg">Product code</p>
+							</div>
+							<div class="d-inline-block mr-16">
+								<p class="title text-lg">0</p>
+					            <p class="text-muted text-lg">Accrued Interest</p>
+							</div>
+				        </div>    
+						<div class="content-wrapper d-block w-100 mb-12">
+							<div class="d-inline-block mr-16">
+								<p class="title text-lg">Active</p>
+					            <p class="text-muted text-lg">Status</p>
+							</div>
+							<div class="d-inline-block mr-16">
+								<p class="title text-lg">{{account_info.type.interest_rate}}</p>
+					            <p class="text-muted text-lg">Interest Rate (per annum)</p>
+							</div>
+				            <div class="d-inline-block mr-16">
+				                <p class="title text-lg">{{account_info.balance}}</p>
+				                <p class="text-muted text-lg">Balance</p>
+				            </div>
+				            <div class="d-inline-block">
+				                <p class="title text-lg">{{account_info.created_at}}</p>
+				                <p class="text-muted text-lg">Date Created</p>
+				            </div>
+				        </div> 
 					</div>
 				</div>
-				<div class="col-lg-6 text-right">
-					<b-button class="btn btn-primary mr-2" @click="showModal('deposit')">Enter Deposit</b-button>
-					<b-button class="btn btn-primary" @click="showModal('withdraw')">Enter Withdrawal</b-button>
+				<div class="col-lg-6">
+					<div class="c-info-wrap float-right">
+						<div class="t-wrap mb-2">
+							<b-button class="btn btn-primary mr-2" @click="showModal('deposit')">Enter Deposit</b-button>
+							<b-button class="btn btn-primary" @click="showModal('withdraw')">Enter Withdrawal</b-button>
+
+						</div>
+						<div class="dt-wrap b-all p-2">
+							<div class="t-row">
+								<div class="t-cell">
+									<img :src="account_info.client.profile_picture_path" class="img-thumbnail">
+								</div>
+								<div class="t-cell text-left v-mid px-4">
+									<h1 class="text-xl">{{account_info.client.firstname + ' ' +account_info.client.lastname}}</h1>
+									<h1 class="text-sm">{{account_info.client_id}}</h1>
+									<h1 class="text-sm">{{account_info.client.office.name}}</h1>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="row mt-8 px-4">
-				<div class="content-wrapper d-block mb-12 w-100">
-					<div class="d-inline-block mr-16">
-						<p class="title text-lg">{{account_info.type.description}}</p>
-			            <p class="text-muted text-lg">Description</p>
-					</div>
-					<div class="d-inline-block mr-16">
-						<p class="title text-lg">{{account_info.type.product_id}}</p>
-			            <p class="text-muted text-lg">Product code</p>
-					</div>
-					<div class="d-inline-block mr-16">
-						<p class="title text-lg">0</p>
-			            <p class="text-muted text-lg">Accrued Interest</p>
-					</div>
-		        </div>    
-				<div class="content-wrapper d-block w-100 mb-12">
-					<div class="d-inline-block mr-16">
-						<p class="title text-lg">Active</p>
-			            <p class="text-muted text-lg">Status</p>
-					</div>
-					<div class="d-inline-block mr-16">
-						<p class="title text-lg">{{account_info.type.interest_rate}}</p>
-			            <p class="text-muted text-lg">Interest Rate (per annum)</p>
-					</div>
-		            <div class="d-inline-block mr-16">
-		                <p class="title text-lg">{{account_info.balance}}</p>
-		                <p class="text-muted text-lg">Balance</p>
-		            </div>
-		            <div class="d-inline-block">
-		                <p class="title text-lg">{{account_info.created_at}}</p>
-		                <p class="text-muted text-lg">Date Created</p>
-		            </div>
-		        </div>  
 			</div>
 		</div>
 
@@ -139,6 +153,10 @@
                         {{ errors.repayment_date[0]}}
                     </div>
 				</div>
+				<div class="form-group">
+		        	<label>Notes</label>
+		        	<textarea value="notes" rows="3" cols="40" class="form-control"></textarea>
+		        </div>
 		        <button type="submit" class="btn btn-primary">Submit</button>
 		    </form>
 		</b-modal>
@@ -195,7 +213,14 @@ import Swal from 'sweetalert2';
                 errors:{}
 			}
 		},
-
+		mounted() {
+            this.$root.$on('bv::modal::hidden', (bvEvent) => {
+                this.errors = {}
+            })
+            this.$root.$on('bv::modal::close', (bvEvent) => {
+                this.errors = {}
+            })
+        },
 		created(){
 			this.fields.deposit_account_id = this.account_info.id
 		},

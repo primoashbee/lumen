@@ -4493,6 +4493,7 @@ time, mark, audio, video {
 label{
     cursor: pointer;
 }
+
 a{
     text-decoration: none!important;
 }
@@ -4533,8 +4534,28 @@ td,tr{
 .t-white{
     color: #fff!important;
 }
+/*END COLOR*/
 .b-btm{
     border-bottom: 1px solid #6c757d;
+}
+.b-top{
+    border-top: 1px solid #6c757d;
+}
+.italic{
+    font-style: italic;
+}
+
+.t-row{
+    display: table-row;
+}
+.t-cell{
+    display: table-cell;
+}
+.v-mid{
+    vertical-align: middle;
+}
+.b-all{
+    border: 1px solid #6c757d;
 }
 
 /*Font size utilities*/
@@ -5183,7 +5204,7 @@ body.dark-mode .card .table tbody tr:first-child td,
 body.dark-mode .card .table>tbody>tr>td,
 body.dark-mode .table tr a,body.dark-mode .form-group p.title,
 body.dark-mode label.entries,
-body.dark-mode .row p.title{
+body.dark-mode .row p.title,.multiselect__input{
     color: hsla(0,0%,100%,.8)!important;
 }
 
@@ -6029,7 +6050,7 @@ ol {
     width: 126px;
     display: inline-block;
 }
-.p-details span.title{
+.p-details span.title,.d-details span.title{
     color:hsla(0,0%,100%,.8)!important;
 }
 .p-details p span.active-status,
@@ -6038,4 +6059,11 @@ ol {
     border-radius:15px;
     border:1px solid green;
     position: relative;
+}
+.h-details h1{
+    line-height: 1;
+}
+.t-cell img{
+    width: 150px;
+    height: 150px;
 }
