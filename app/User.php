@@ -113,19 +113,35 @@ class User extends Authenticatable
         $list = $collection->filter(function($item) use($office_level){
             return $item->level == $office_level;
         })->values();
-
-        $lists = $list->map(function($item){
+        
+        $lists = $list->map(function($item) use ($office_level){
             $branch['id'] = $item->id;
             $branch['name'] = $item->name;
             
+            if($office_level=="main_office"){
+                //make region
+                $branch['prefix'] = pad(Office::levelCount('region')+1,'3');
+            }elseif($office_level=="region"){
+                //make area
+                $branch['prefix'] = pad(Office::levelCount('area')+1,'2');
+            }elseif($office_level=="area"){
+                
+                $branch['prefix'] = pad(Office::levelCount('branch')+1,'3');
+            }
+            
+            
             if (Office::isChildOf('branch', $item->level) || Office::isChildOf('branch',$item->level == "branch")) {
                 $branch['code'] = $item->getTopOffice('branch')->code;
+                $branch['prefix'] = $item->getTopOffice('branch')->code;
             }
             return $branch;
         });
          
         $filtered = [
-            ['level' => ucwords($office_level), 'data' => collect($lists)->sortBy('name')->unique()->values()], 
+            [
+                'level' => ucwords($office_level), 
+                'data' => collect($lists)->sortBy('name')->unique()->values()
+            ], 
         ];
         return $filtered;
     }

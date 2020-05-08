@@ -11,6 +11,7 @@ use App\OfficeUser;
 use Illuminate\Support\Str;
 
 use App\Imports\OfficeImport;
+use App\PaymentMethod;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
   
@@ -96,7 +97,165 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
 
-
+    function generatePaymentMethods(){
+        $methods = array(
+            [
+            'name'=>'CASH IN BANK - BANK OF COMMERCE',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - BDO',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - BPI',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - CHINA BANK',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - EAST WEST',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - EAST WEST (RURAL)',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - LAND BANK',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - PBB',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - PNB',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - PNB (SAVINGS)',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - RCBC SAVINGS',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - SECURITY BANK',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CASH IN BANK - UCPB',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
+            [
+            'name'=>'CTLP',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ]            
+        );
+        PaymentMethod::insert($methods);
+    }
 
     function generateStucture   (){
         $structure = Excel::toCollection(new OfficeImport, "public/OFFICE STRUCTURE.xlsx");

@@ -50,6 +50,7 @@ Vue.component('light-modal', require('./components/ModalComponent.vue').default)
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('office-list', require('./components/OfficeListComponent.vue').default);
 Vue.component('deposit-dashboard', require('./components/DepositDashboardComponent.vue').default);
+Vue.component('payment-methods', require('./components/PaymentMethodComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

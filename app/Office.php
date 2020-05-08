@@ -13,6 +13,10 @@ class Office extends Model
         'name',
     ];
 
+    public static function levelCount($level){
+        $me = new static;
+        return $me->where('level',$level)->count();
+    }
     public function parent(){
         return $this->belongsTo(static::class, 'parent_id');
     }

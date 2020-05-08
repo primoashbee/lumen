@@ -15,8 +15,16 @@ class CreatePaymentMethodsTable extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->unique();
+            $table->boolean('for_disbursement');
+            $table->boolean('for_repayment');
+            $table->boolean('for_deposit');
+            $table->boolean('for_withdrawal');
+            $table->boolean('for_recovery');
+            $table->integer('gl_account_code');
             $table->timestamps();
         });
+        generatePaymentMethods();
     }
 
     /**

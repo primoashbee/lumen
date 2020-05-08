@@ -117,7 +117,7 @@
 		    </div>
 		</div>
 
-		<b-modal id="deposit-modal" v-model="modal.modalState" size="lg" hide-footer :title="modal.modal_title" :header-bg-variant="background" :body-bg-variant="background">
+		<b-modal id="deposit-modal" v-model="modal.modalState" size="lg" hide-footer :title="modal.modal_title" :header-bg-variant="background" :body-bg-variant="background" >
 		    <form @submit.prevent="submitDeposit">
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">Branch</label>
@@ -128,12 +128,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<label class="text-lg">Payment Method</label>
-                    <select class="form-control" v-model="fields.payment_method" v-bind:class="paymentMethodHasError ? 'is-invalid' : ''">
-                    	<option :value="null">CHOOSE AN OPTION</option>
-                    	<option value="CASH IN BANK - EAST WEST">CASH IN BANK - EAST WEST</option>
-                    	<option value="CASH IN BANK - CHINABANK">CASH IN BANK - CHINABANK</option>
-                    	<option value="CASH IN BANK - COMMERCE">CASH IN BANK - COMMERCE</option>
-                    </select>
+					<payment-methods payment_type="for_deposit" @paymentSelected="paymentSelected" v-bind:class="paymentMethodHasError ? 'is-invalid' : ''" ></payment-methods>
 					<div class="invalid-feedback" v-if="paymentMethodHasError">
                         {{ errors.payment_method[0]}}
                     </div>
@@ -195,10 +190,10 @@ import Swal from 'sweetalert2';
 		data(){
 			return{
 				variants: ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
-                background:'dark',
+				background:'dark',
                 modal:{
 					modalState:false,
-					modal_title:null
+					modal_title:null,
 				
 				},
 				fields: {
@@ -236,6 +231,9 @@ import Swal from 'sweetalert2';
 				}
 
 			},
+			paymentSelected(value){
+				this.fields.payment_method = value['id']
+			},
 			assignOffice(value){
                 this.fields.office_id = value['id']
 			},
@@ -251,7 +249,7 @@ import Swal from 'sweetalert2';
 							confirmButtonText: 'OK'
 						})
 						.then(res=>{
-							//location.reload();
+							location.reload();
 						})
 					})
 					.catch(error=>{
@@ -278,6 +276,19 @@ import Swal from 'sweetalert2';
             },
             clientLink(){
 				return '/client/'+this.account_info.client_id
+			}
+		},
+		watch: {
+			'modal.modalState' : function(){
+				if(!this.modal.modalState){
+					this.errors = []
+					this.fields.office_id = null,
+					this.fields.type=null,
+					this.fields.payment_method = null,
+					this.fields.amount = null,
+					this.fields.deposit_account_id = null,
+					this.fields.repayment_date = null
+				}
 			}
 		}
 	}
