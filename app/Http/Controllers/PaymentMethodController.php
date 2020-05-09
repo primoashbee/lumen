@@ -13,5 +13,7 @@ class PaymentMethodController extends Controller
         if(in_array($request->payment_type,Schema::getColumnListing('payment_methods'))){
             return PaymentMethod::where($request->payment_type, true)->orderBy('name','asc')->get(['name','id']);
         }
+
+        return view('pages.payment-method');
     }
 }
