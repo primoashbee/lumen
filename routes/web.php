@@ -71,6 +71,10 @@ Route::get('/create/penalty', function(){
     return view('pages.create-penalty');
 });
 
+Route::get('/create/deposit', function(){
+    return view('pages.create-deposit');
+});
+
 Route::get('/create/office/{level}', 'OfficeController@createLevel')->name('create.office');
 
 
