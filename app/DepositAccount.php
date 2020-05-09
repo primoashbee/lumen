@@ -148,5 +148,11 @@ class DepositAccount extends Model
    
     }
 
+    public function getStatusAttribute($value){
+        return ucwords($value);
+    }
 
+    public function totalDeposits(){
+        
+    }
 }

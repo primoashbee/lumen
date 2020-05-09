@@ -15,7 +15,7 @@
 				<div class="row">
 					<div class="col-lg-4 profile-wrapper pl-8 pr-24">
 						<div class="text-center profile-picture">
-			            	<img src="{{asset($client->profile_picture_path)}}" class="w-100" alt="Profile Photo">
+			            	<img src="{{asset($client->profile_picture_path)}}" class="w-100 img-thumbnail" alt="Profile Photo">
 			            </div>
 			            <div class="mt-8">
 			            	<h5 class="title text-2xl">Personal Details</h5>
@@ -57,7 +57,7 @@
 							<div class="col-lg-6">
 								<div class="p-details mt-4 d-inline-block file-input-signature">
 				            		<p class="title text-xl mb-2">Signature</p>
-					            	<img src="https://i.ya-webdesign.com/images/scribble-signature-png-6.png" class="w-100 img-thumbnail" alt="Cinque Terre" > 
+					            	<img src="{{asset($client->signature_path)}}" class="w-100 img-thumbnail" alt="Profile Photo">
 					            </div>
 							</div>
 							<div class="col-lg-6">
@@ -71,7 +71,7 @@
 								</div>
 								<div class="p-details mt-4">
 									<p class="title text-xl">Created at</p>
-									<p class="text-muted text-lg">{{$client->created_at->format('F, j Y')}}</p>
+									<p class="text-muted text-lg">{{$client->created_at->format('F, j Y')}} - {{$client->created_at->diffForHumans()}}</p>
 								</div>
 								<div class="p-details mt-2">
 									<p class="title text-xl">Status: <span class="active-status text-lg">ACTIVE</span></p>
@@ -224,6 +224,14 @@
 			                  </td>
 							</tr>
 							@endforeach
+							<tr style="border:none;">
+								<td class="text-right pr-2">
+									Total
+								</td>
+								<td class="">
+									{{$client->totalDeposits()}}
+								</td>
+							</tr>
 			              </tbody>
 			            </table>
 			          </div>

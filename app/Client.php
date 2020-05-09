@@ -65,6 +65,8 @@ class Client extends Model
         'sss'
     ];
 
+    
+
     public static function boot(){
         parent::boot();
         static::created(function($item) {
@@ -155,6 +157,25 @@ class Client extends Model
     public static function fcid($client_id){
         return Client::where('client_id',$client_id)->first();
     }
+
+    public function totalDeposits(){
+
+        $accounts = $this->deposits;
+
+        $total = 0;
+
+        $accounts->map(function($item) use(&$total){
+            $total += $item->getRawOriginal('balance');
+        });
+
+        return env('CURRENCY_SIGN').' '.number_format($total,2,'.',',');
+        
+    }
+
+    public function getBirthdayAttribute($value){
+        return Carbon::parse($value)->format('F d, Y');
+    }
+
 
     
 }

@@ -923,9 +923,9 @@ export default {
                         allowEnterKey: true // default value
                     })
                     .then(res=>{
-                        location.reload();
+                        location.href = this.toClient()
                     })
-                    },10)
+                    },1)
  
 
                 })
