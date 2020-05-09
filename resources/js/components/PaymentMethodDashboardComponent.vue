@@ -34,35 +34,23 @@
 	             		<table class="table">
 			                <thead>
 			                    <tr>
-			                    	<td><p class="text-xl title">Status</p></td>
-			                        <td><p class="text-xl title">Payment Method</p></td>
-			                        <td><p class="text-xl title">Disbursement</p></td>
-			                        <td><p class="text-xl title">Repayment</p></td>
-			                        <td><p class="text-xl title">Recovery</p></td>
-			                        <td><p class="text-xl title">Deposit</p></td>
-			                        <td><p class="text-xl title">Withdrawal</p></td>
-			                        <td><p class="text-xl title">Action</p></td>
+			                        <td><p class="title">Payment Method</p></td>
+			                        <td><p class="title">Disbursement</p></td>
+			                        <td><p class="title">Repayment</p></td>
+			                        <td><p class="title">Recovery</p></td>
+			                        <td><p class="title">Deposit</p></td>
+			                        <td><p class="title">Withdrawal</p></td>
+			                        <td><p class="title">Action</p></td>
 			                    </tr>
 			                </thead>
 			                <tbody>
 			                    <tr>
-			                    	<td>
-			                        	<div class="form-group">
-			                        		<div class="form-check">
-					                        	<label for="status">
-					                                <input class="form-check-input cb-type" v-model="selectAll" @click="selectAllTransactions" id="status" type="checkbox">
-					                                <span class="form-check-sign">
-					                                </span>
-					                            </label>
-				                            </div>
-			                            </div>
-			                        </td>
-			                        <td><p class="title text-lg">CASH IN BANK - BDO</p></td>
+			                        <td>CASH IN BANK - BDO</td>
 			                        <td>
 			                        	<div class="form-group">
 			                        		<div class="form-check">
 					                        	<label for="disbursement">
-					                                <input class="form-check-input cb-type" v-model="transactions.disbursement" id="disbursement" type="checkbox">
+					                                <input class="form-check-input cb-type" id="disbursement" type="checkbox">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -73,7 +61,7 @@
 			                        	<div class="form-group">
 			                        		<div class="form-check">
 					                        	<label for="repayment">
-					                                <input class="form-check-input cb-type" v-model="transactions.repayment" id="repayment" type="checkbox">
+					                                <input class="form-check-input cb-type" id="repayment" type="checkbox">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -84,7 +72,7 @@
 			                        	<div class="form-group">
 			                        		<div class="form-check">
 					                        	<label for="recovery">
-					                                <input class="form-check-input cb-type" v-model="transactions.recovery" id="recovery" type="checkbox">
+					                                <input class="form-check-input cb-type" id="recovery" type="checkbox">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -95,7 +83,7 @@
 			                        	<div class="form-group">
 			                        		<div class="form-check">
 					                        	<label for="deposit">
-					                                <input class="form-check-input cb-type" v-model="transactions.deposit" id="deposit" type="checkbox">
+					                                <input class="form-check-input cb-type" id="deposit" type="checkbox">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -106,7 +94,7 @@
 			                        	<div class="form-group">
 			                        		<div class="form-check">
 					                        	<label for="withdrawal">
-					                                <input class="form-check-input cb-type" v-model="transactions.withdrawal" id="withdrawal" type="checkbox">
+					                                <input class="form-check-input cb-type" id="withdrawal" type="checkbox">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -128,32 +116,32 @@
 	             		<table class="table">
 			                <thead>
 			                    <tr>
-			                        <td><p class="text-xl title">Branch</p></td>
-			                        <td><p class="text-xl title">Disbursement</p></td>
-			                        <td><p class="text-xl title">Repayment</p></td>
-			                        <td><p class="text-xl title">Recovery</p></td>
-			                        <td><p class="text-xl title">Deposit</p></td>
-			                        <td><p class="text-xl title">Withdrawal</p></td>
-			                        <td><p class="text-xl title">Action</p></td>
+			                        <td><p class="title">Branch</p></td>
+			                        <td><p class="title">Disbursement</p></td>
+			                        <td><p class="title">Repayment</p></td>
+			                        <td><p class="title">Recovery</p></td>
+			                        <td><p class="title">Deposit</p></td>
+			                        <td><p class="title">Withdrawal</p></td>
+			                        <td><p class="title">Action</p></td>
 			                    </tr>
 			                </thead>
 			                <tbody>
 			                    <tr>
-			                        <td><p class="title text-lg">Angeles</p></td>
+			                        <td>Angeles</td>
 			                        <td>
-			                        	<p class="title text-lg">CASH IN BANK - EAST WEST</p>
+			                        	CASH IN BANK - EAST WEST
 			                        </td>
 			                        <td>
-			                        	<p class="title text-lg">CASH IN BANK - BDO</p>
+			                        	CASH IN BANK - BDO
 			                        </td>
 			                        <td>
-			                        	<p class="title text-lg">CASH IN BANK - EAST WEST</p>
+			                        	CASH IN BANK - EAST WEST
 			                        </td>
 			                        <td>
-			                        	<p class="title text-lg">CASH IN BANK - EAST WEST</p>
+			                        	CASH IN BANK - EAST WEST
 			                        </td>
 			                        <td>
-			                        	<p class="title text-lg">CASH IN BANK - EAST WEST</p>
+			                        	CASH IN BANK - EAST WEST
 			                        </td>
 			                        <td>
 			                        	<b-button @click="showBranchPaymentMethodModal">
@@ -172,15 +160,20 @@
              <b-modal id="payment-method-modal" v-model="show" size="lg" hide-footer title="Edit Payment Method" :header-bg-variant="background" :body-bg-variant="background">
                 <form @submit.prevent="submit">
                     <div class="form-group">
-                    	<label class="text-xl" for="name">Payment Method Name</label>
-                    	<input type="text" class="form-control text-xl">
+                    	<label class="text-lg" for="name">Payment Method Name</label>
+                    	<input type="text" class="form-control">
                     </div>
                     <div class="form-group">
-                    	<label class="text-xl">Linked to GL Account:</label>
-                    	<select class="form-control">
-                    		<option value="">Select GL Account</option>
-                    		<option value="">Select GL Account</option>
-                    	</select>
+                    	<label class="text-lg">Status:</label>
+                    	<div class="p0 form-check d-inline-block">
+                            <label class="pl-2 form-check-label" for="active">
+                                <input class="form-check-input cb-type" v-model="fields.active" id="active" type="checkbox">
+                                <span class="form-check-sign">
+                                <span class="check"></span>
+                                </span>
+                                <label class="text-lg ml-3" for="active">Active</label>
+                            </label>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
@@ -235,7 +228,7 @@
 	tr td .form-check-sign{
 		position: absolute;
 	}
-	tr td .form-check-sign,.form-check .form-check-sign::before,.form-check .form-check-sign::after{
+	tr td .form-check-sign::before,tr td .form-check-sign::after{
 		top: 5px;
 	}
 
@@ -247,15 +240,9 @@
 				show:false,
 				fields:{
 					payment_method:null,
+					active:true,
+					disable:false,
 				},
-				transactions:{
-					disbursement:false,
-					repayment:false,
-					deposit:false,
-					withdrawal:false,
-					recovery:false
-				},
-				selectAll:false,
 				showBranchPaymentMethod:false,
 				variants: ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
                 background:'dark',
@@ -271,12 +258,6 @@
 			},
 			paymentSelected(value){
 				this.fields.payment_method = value['id']
-			},
-			selectAllTransactions(){
-				var vm = this.transactions;
-				$.each(this.transactions, function(k, v){
-					vm[k] = !v
-				})
 			}
 		},
 		computed:{
