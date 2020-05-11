@@ -17,31 +17,31 @@
 						<div class="text-center profile-picture">
 			            	<img src="{{asset($client->profile_picture_path)}}" class="w-100 img-thumbnail" alt="Profile Photo">
 			            </div>
-			            <div class="mt-8">
+			            <div class="mt-12">
 			            	<h5 class="title text-2xl">Personal Details</h5>
 			            	<div class="p-details mt-4">
-			            		<p class="title text-lg">Birthday</p>
-				                <p class="text-muted text-lg">{{$client->birthday}}</p>
+			            		<p class="title text-xl">Birthday</p>
+				                <p class="text-muted text-xl">{{$client->birthday}}</p>
 				            </div>
 				            <div class="p-details mt-4">
-			            		<p class="title text-lg">Birthplace</p>
-				                <p class="text-muted text-lg">{{$client->birthplace}}</p>
+			            		<p class="title text-xl">Birthplace</p>
+				                <p class="text-muted text-xl">{{$client->birthplace}}</p>
 				            </div>
 				            <div class="p-details mt-4">
-			            		<p class="title text-lg">Gender</p>
-				                <p class="text-muted text-lg">{{$client->gender}}</p>
+			            		<p class="title text-xl">Gender</p>
+				                <p class="text-muted text-xl">{{$client->gender}}</p>
 				            </div>
 				            <div class="p-details mt-4">
-			            		<p class="title text-lg">Civil Status</p>
-				                <p class="text-muted text-lg">{{$client->education}}</p>
+			            		<p class="title text-xl">Civil Status</p>
+				                <p class="text-muted text-xl">{{$client->education}}</p>
 				            </div>
 				            <div class="p-details mt-4">
-			            		<p class="title text-lg">Educational Attainment</p>
-				                <p class="text-muted text-lg">{{$client->education}}</p>
+			            		<p class="title text-xl">Educational Attainment</p>
+				                <p class="text-muted text-xl">{{$client->education}}</p>
 				            </div>
 				            <div class="p-details mt-4">
-			            		<p class="title text-lg">Facebook Account </p>
-				                <p class="text-muted text-lg">{{$client->fb_account}}</p>
+			            		<p class="title text-xl">Facebook Account </p>
+				                <p class="text-muted text-xl">{{$client->fb_account}}</p>
 				            </div>
 			            </div>
 					</div>
@@ -49,8 +49,8 @@
 					<div class="col-lg-8 profile-wrapper">
 						<a href="/edit/client/{{$client->client_id}}" type="submit" class="btn btn-primary float-right mr-4">Edit Client</a>
 						<div class="p-details">
-							<p class="title text-2xl">{{$client->name()}}</p>
-							<p class="text-muted text-base">Nickname: {{$client->nickname}}</p>
+							<p class="title text-3xl">{{$client->name()}}</p>
+							<p class="text-muted text-lg">Nickname: {{$client->nickname}}</p>
 						</div>
 
 						<div class="row">
@@ -71,7 +71,7 @@
 								</div>
 								<div class="p-details mt-4">
 									<p class="title text-xl">Created at</p>
-									<p class="text-muted text-lg">{{$client->created_at->format('F, j Y')}} - {{$client->created_at->diffForHumans()}}</p>
+									<p class="text-muted text-xl">{{$client->created_at->format('F, j Y')}} - {{$client->created_at->diffForHumans()}}</p>
 								</div>
 								<div class="p-details mt-2">
 									<p class="title text-xl">Status: <span class="active-status text-lg">ACTIVE</span></p>
@@ -86,22 +86,22 @@
 						<div class="profile-menu-tabs mt-8 pr-8">
 							<ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#personal" role="tab" aria-controls="home" aria-selected="true">Business 
+                                    <a class="nav-link active text-xl" id="home-tab" data-toggle="tab" href="#personal" role="tab" aria-controls="home" aria-selected="true">Business 
                                     Information</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="profile" aria-selected="false">Contact Information</a>
+                                    <a class="nav-link text-xl" id="profile-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="profile" aria-selected="false">Contact Information</a>
                                 </li>
                             </ul>
                             <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
 			                    <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="nav-home-tab">
 			                 		<div class="p-details">
 			                 			<span class="title text-xl mr-8">Address:</span>
-										<span class="text-muted text-lg">{{$client->business_address}}</span>
+										<span class="text-muted text-xl">{{$client->business_address}}</span>
 			                 		</div>
 			                 		<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">Business Type:</span>
-										<span class="text-muted text-lg">{{$client->household_income->service_type}}</span>
+										<span class="text-muted text-xl">{{$client->household_income->service_type}}</span>
 			                 		</div>
 			                 		
 
@@ -109,27 +109,27 @@
 			                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="nav-profile-tab">
 			                      	<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">Phone Number:</span>
-										<span class="text-muted text-lg">{{$client->contact_number}}</span>
+										<span class="text-muted text-xl">{{$client->contact_number}}</span>
 			                 		</div>
 			                 		<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">Street Address:</span>
-										<span class="text-muted text-lg">{{$client->street_address}}</span>
+										<span class="text-muted text-xl">{{$client->street_address}}</span>
 			                 		</div>
 			                 		<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">Barangay:</span>
-										<span class="text-muted text-lg">{{$client->barangay_address}}</span>
+										<span class="text-muted text-xl">{{$client->barangay_address}}</span>
 			                 		</div>
 			                 		<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">City:</span>
-										<span class="text-muted text-lg">{{$client->city_address}}</span>
+										<span class="text-muted text-xl">{{$client->city_address}}</span>
 			                 		</div>
 			                 		<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">Province:</span>
-										<span class="text-muted text-lg">{{$client->province_address}}</span>
+										<span class="text-muted text-xl">{{$client->province_address}}</span>
 			                 		</div>
 			                 		<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">Zipcode:</span>
-										<span class="text-muted text-lg">{{$client->zipcode}}</span>
+										<span class="text-muted text-xl">{{$client->zipcode}}</span>
 			                 		</div>
 			                    </div>
 			                 </div>
@@ -147,9 +147,9 @@
 		      <div class="card">
 		        <div class="card-header">
 		          <div class="float-left text-center">
-		          	<h4 class="mt-2">Loan Accounts</h4>
+		          	<h4 class="text-2xl">Loan Accounts</h4>
 		          </div>
-		           <a href="" class="float-right btn-create">Create Account</a>
+		           <a href="" class="float-right btn-create text-base">Create Account</a>
 		        </div>
 		        <div class="card-body">
 		          <div class="table-accounts table-full-width table-responsive">
@@ -158,20 +158,20 @@
 		              <tbody>
 		              	<tr>
 		                  <td>
-		                    <p>Account #</p>
+		                    <p class="text-lg">Account #</p>
 		                  </td>
 		                  <td>
-		                    <p>Status</p>
+		                    <p class="text-lg">Status</p>
 		                  </td>
 		                </tr>
 		                <tr>
 		                  <td>
 		                    <a href="">
-		                      <p class="title">MCBU0001</p>
+		                      <p class="title text-lg">MCBU0001</p>
 		                    </a>
 		                  </td>
 		                  <td>
-		                    <span class="active position-relative px-2">
+		                    <span class="text-lg active position-relative px-2">
 		                      Active
 		                    </span>
 		                  </td>
@@ -185,9 +185,9 @@
 		      <div class="card">
 			        <div class="card-header">
 			          <div class="float-left text-center">
-			          	<h4 class="mt-2">Deposit Accounts</h4>
+			          	<h4 class="text-2xl">Deposit Accounts</h4>
 			          </div>
-			          <a href="" data-toggle="modal" data-target=".bd-example-modal-lg" class="float-right btn-create">Create Account</a>
+			          <a href="" class="float-right btn-create text-base">Create Account</a>
 
 			        </div>
 			        <div class="card-body">
@@ -196,13 +196,13 @@
 			              <tbody>
 			              	<tr>
 			                  <td>
-			                    <p>Deposit Type</p>
+			                    <p class="text-lg">Deposit Type</p>
 			                  </td>
 			                  <td>
-			                    <p>Balance</p>
+			                    <p class="text-lg">Balance</p>
 			                  </td>
 			                  <td>
-			                    <p>Status</p>
+			                    <p class="text-lg">Status</p>
 			                  </td>
 							</tr>
 							
@@ -210,27 +210,24 @@
 			                <tr>
 			                  <td>
 							  <a href="{{route('client.deposit',[$cbu->client_id,$cbu->id])}}">
-			                      <p class="title">{{$cbu->type->name}}</p>
+			                      <p class="title text-lg">{{$cbu->type->name}}</p>
 			                    </a>
 			                  </td>
 			                  <td>
-									{{$cbu->balance}}
+									<p class="text-lg">{{$cbu->balance}}</p>
 								
 			                  </td>
 			                  <td>
-			                    <span class="active position-relative px-2">
+			                    <span class="text-lg active position-relative px-2">
 			                      {{$cbu->status}}
 			                    </span>
 			                  </td>
 							</tr>
 							@endforeach
 							<tr style="border:none;">
-								<td class="text-right pr-2">
-									Total
-								</td>
-								<td class="">
-									{{$client->totalDeposits()}}
-								</td>
+								<td class="text-xl text-center" colspan="3">
+									<span>Total: {{$client->totalDeposits()}}
+								</td>	
 							</tr>
 			              </tbody>
 			            </table>

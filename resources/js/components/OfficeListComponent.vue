@@ -12,17 +12,17 @@
                 <table class="table" >
                     <thead>
                         <tr>
-                            <td><p class="title">Code</p></td>
-                            <td><p class="title">Name</p></td>
-                            <td><p class="title">Linked To</p></td>
-                            <td><p class="title">Action</p></td>
+                            <td><p class="title text-lg">Code</p></td>
+                            <td><p class="title text-lg">Name</p></td>
+                            <td><p class="title text-lg">Linked To</p></td>
+                            <td><p class="title text-lg">Action</p></td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="office in officeList.data">
-                            <td>{{office.code}}</td>
-                            <td>{{office.name}}</td>
-                            <td>{{office.parent.name}}</td>
+                            <td><p class="text-lg">{{office.code}}</p></td>
+                            <td><p class="text-lg">{{office.name}}</p></td>
+                            <td><p class="text-lg">{{office.parent.name}}</p></td>
                             <td>
                                 <b-button :id="office.id" @click="showModal">
                                     <i class="far fa-edit"></i>

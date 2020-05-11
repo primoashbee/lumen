@@ -7,12 +7,12 @@
 					<div class="filters-container d-inline-block mb-4 col-md-6">
 						<h4 class="h4 d-inline-block">Filter:</h4>
 						<div class="btn-filter-group ml-4 d-inline-block">
-							<button data-filter="*" class="btn-filters">Show All</button>
-							<button data-filter=".structure" class="btn-filters">Offices</button>
-							<button data-filter=".loans" class="btn-filters">Loan</button>
-							<button data-filter=".deposit" class="btn-filters">Deposit</button>
-							<button data-filter=".reports" class="btn-filters">Reports</button>
-							<button data-filter=".user" class="btn-filters">Users</button>
+							<button data-filter="*" class="text-base btn-filters">Show All</button>
+							<button data-filter=".structure" class="text-base btn-filters">Offices</button>
+							<button data-filter=".loans" class="text-base btn-filters">Loan</button>
+							<button data-filter=".deposit" class="text-base btn-filters">Deposit</button>
+							<button data-filter=".reports" class="text-base btn-filters">Reports</button>
+							<button data-filter=".user" class="text-base btn-filters">Users</button>
 						</div>
 					</div>
 

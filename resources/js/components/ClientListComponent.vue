@@ -18,16 +18,16 @@
             <table class="table" >
                 <thead>
                     <tr>
-                        <td><p class="title">Client ID</p></td>
-                        <td><p class="title">Name</p></td>
-                        <td><p class="title">Linked To</p></td>
+                        <td><p class="title text-lg">Client ID</p></td>
+                        <td><p class="title text-lg">Name</p></td>
+                        <td><p class="title text-lg">Linked To</p></td>
                     </tr>
                 </thead>
                 <tbody v-if="hasRecords">
                     <tr v-for="client in lists.data" :key="client.id">
-                        <td><a :href="clientLink(client.client_id)">{{client.client_id}}</a></td>
-                        <td>{{client.firstname + ' ' + client.lastname}}</td>
-                        <td>{{client.office.name}}</td>
+                        <td><a class="text-lg" :href="clientLink(client.client_id)">{{client.client_id}}</a></td>
+                        <td><p class="text-lg">{{client.firstname + ' ' + client.lastname}}</p></td>
+                        <td><p class="text-lg">{{client.office.name}}</p></td>
                     </tr>
                 </tbody>
             </table>

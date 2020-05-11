@@ -5320,7 +5320,7 @@ a.btn-create:hover{
 }
 
 .text-muted{
-    color: #6c757d;
+    color: hsla(0,0%,100%,.6)!important;
 }
 body div.navbar, body div.navbar ul li{
 	background-color: transparent;
@@ -5609,7 +5609,7 @@ textarea.form-control{
     border: 1px solid #cad1d7;
     border-color: #2b3553;
     border-radius: .4285rem;
-    font-size: 1rem;
+    font-size: 1.25rem;
     outline: none;
     transition: color .3s ease-in-out,border-color .3s ease-in-out,background-color .3s ease-in-out;
 }
@@ -5629,6 +5629,7 @@ textarea.form-control:hover{
 div.form-group label{
     color: hsla(0,0%,100%,.6);
     font-weight: 300;
+    font-size: 1rem;
 }
 .search_text{
     border: none;
