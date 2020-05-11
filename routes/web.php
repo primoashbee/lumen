@@ -110,6 +110,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit');
     Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
 
+    Route::get('/deposit/bulk', function(){
+        return view('pages.deposit-bulk-transactions');
+    });
+
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

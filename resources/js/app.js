@@ -51,6 +51,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('office-list', require('./components/OfficeListComponent.vue').default);
 Vue.component('deposit-dashboard', require('./components/DepositDashboardComponent.vue').default);
 Vue.component('payment-methods', require('./components/PaymentMethodComponent.vue').default);
+Vue.component('bulk-deposit-transaction', require('./components/BulkDepositTransactionComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
