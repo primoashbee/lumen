@@ -108,6 +108,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/edit/office/{id}', 'OfficeController@updateOffice');
 
     Route::get('/deposit', 'DepositController@index');
+    Route::get('/deposit/list', 'DepositController@getDepositList');
     Route::get('/create/deposit', 'DepositController@create')->name('create.deposit');
     Route::post('/create/deposit', 'DepositController@store');
 

@@ -17,6 +17,11 @@ class DepositController extends Controller
   		return view('pages.create-deposit');
   	}
 
+    public function getDepositList(){
+      $deposit = Deposit::paginate(10);
+      return response()->json($deposit);
+    }
+
   	public function store(Request $request){
   		$this->validator($request->all())->validate();
 

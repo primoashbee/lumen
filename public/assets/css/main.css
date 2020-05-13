@@ -1562,9 +1562,15 @@ ol {
     color:hsla(0,0%,100%,.8)!important;
 }
 .p-details p span.active-status,
+tr td span.d_active,
+tr td span.d_inactive,
 .d-details p span.active{
     padding: 5px 20px;
     border-radius:15px;
     border:1px solid green;
     position: relative;
+}
+
+tr td span.d_inactive{
+    border:1px solid #6c757d;
 }
