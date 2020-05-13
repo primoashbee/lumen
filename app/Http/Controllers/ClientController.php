@@ -149,7 +149,7 @@ class ClientController extends Controller
                 $image = $request->file('profile_picture_path');
                 // $filename = $image->getClientOriginalName();   
                 $image_resize = Image::make($image->getRealPath());
-                // $image_resize->resize(600, 600);
+                $image_resize->resize(600, 600);
                 $image_resize->save(public_path($this->profile_path . $filename), 50);
                 ini_set('memory_limit','128M');
             }
@@ -513,7 +513,7 @@ class ClientController extends Controller
             $image = $request->file('profile_picture_path');
             // $filename = $image->getClientOriginalName();   
             $image_resize = Image::make($image->getRealPath());
-            // $image_resize->resize(600, 600);
+            $image_resize->resize(600, 600);
             $image_resize->save(public_path($this->profile_path . $filename),50);
             ini_set('memory_limit','128M');
         }
@@ -543,7 +543,7 @@ class ClientController extends Controller
         return $request;
     }
     public function depositAccount($client_id,$deposit_id){
-        $account = DepositAccount::find($deposit_id)->load(['type','transactions','client.office']);
+        $account = DepositAccount::find($deposit_id)->load(['type','transactions.paymentMethod','transactions.postedBy','client.office']);
         return view('pages.deposit-dashboard',compact('account'));
     }
 }

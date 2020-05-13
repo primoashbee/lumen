@@ -24,7 +24,8 @@ class CreatePaymentMethodsTable extends Migration
             $table->integer('gl_account_code');
             $table->timestamps();
         });
-        generatePaymentMethods();
+        
+        
     }
 
     /**

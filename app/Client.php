@@ -153,6 +153,23 @@ class Client extends Model
         $clients = Client::with('office')->whereIn('office_id',$office_ids);
         return $clients;
     }
+    public static function search($query){
+        $me = new static;
+        $searchables = $me->searchables;
+        $searchables = collect($searchables)->forget(array_search('civil_status',$searchables));
+        if($query==""){
+            return null;
+        }
+        $office_ids = collect(auth()->user()->scopes())->pluck('id');
+        $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables, $query){
+            foreach($searchables as $item){  
+                $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
+            }
+        });
+        return $clients->get();
+
+    }
+
 
     public static function fcid($client_id){
         return Client::where('client_id',$client_id)->first();

@@ -8,7 +8,7 @@
     <div class="logo-container">
     <img src="{{ asset('assets/img/logo.png')}}">
     </div>
-    <a class="navbar-brand l-text float-left" href="#"></a>
+    <a class="navbar-brand l-text float-left" href="#">{{ucwords(breadcrumbize(request()->path()))}}</a>
 
   </div>
   <div>
@@ -34,15 +34,4 @@
     </li>
   </ul>
 </nav>
-<div class="modal fade modal-search" id="search_bar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <input type="text" class="form-control search_text" placeholder="SEARCH" name="">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+<multi-search></multi-search>

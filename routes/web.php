@@ -23,16 +23,8 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
-Route::get('/dp',function(){
-    $parent_level = "branch";
-    $level = "";
-    $list = Office::schema()->filter(function($item) use ($parent_level){
-        if ($item['level']==$parent_level) {
-            return ($item['children']);
-        }
-    })->values()->first()['children'];
-
-    return in_array($level,$list) ? 'yup' :'wala';
+Route::get('/zz',function(){
+    echo env('APP_NAME');
 });
 Route::get('/x/{level}',function(Request $request){
         return auth()->user()->scopesBranch(Office::getParentOfLevel($request->level));
@@ -56,27 +48,6 @@ Route::get('/z',function(){
 });
 
 
-Route::get('/create/role', function(){
-    return view('pages.create-role');
-});
-Route::get('/create/user', function(){
-    return view('pages.create-user');
-});
-
-Route::get('/create/fee', function(){
-    return view('pages.create-fees');
-});
-
-Route::get('/create/penalty', function(){
-    return view('pages.create-penalty');
-});
-
-Route::get('/create/office/{level}', 'OfficeController@createLevel')->name('create.office');
-
-
-Route::get('/settings', function(){
-    return view('pages.settings');
-})->name('administration');
 
 Auth::routes(); 
 
@@ -108,9 +79,37 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('client/{client_id}/deposit/{deposit_account_id}', 'ClientController@depositAccount')->name('client.deposit'); 
 
     Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit');
+    Route::post('/deposit/account/post/interest','DepositAccountController@postInterestByUser')->name('deposit.account.post.interest');
+
     Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
 
+    Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');
+
+
+    Route::get('/create/role', function(){
+        return view('pages.create-role');
+    });
+    Route::get('/create/user', function(){
+        return view('pages.create-user');
+    });
+
+    Route::get('/create/fee', function(){
+        return view('pages.create-fees');
+    });
+
+    Route::get('/create/penalty', function(){
+        return view('pages.create-penalty');
+    });
+
+    Route::get('/create/office/{level}', 'OfficeController@createLevel')->name('create.office');
+
+    Route::post('/search','SearchController@search');
+
+    Route::get('/settings', function(){
+        return view('pages.settings');
+    })->name('administration');
+
+    Route::get('/user/{user}','UserController@get');
 });
 
-Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');
 

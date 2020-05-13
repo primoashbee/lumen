@@ -31,7 +31,9 @@ export default {
   created(){
     axios.get('/payment/methods?payment_type='+this.payment_type)
     .then(res=>{
-      this.options = res.data
+      this.options = res.data.methods
+      this.value = res.data.default_payment
+      this.emitToParent();
     })
   },
   data () {
