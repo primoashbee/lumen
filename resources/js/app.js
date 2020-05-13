@@ -50,7 +50,9 @@ Vue.component('light-modal', require('./components/ModalComponent.vue').default)
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('office-list', require('./components/OfficeListComponent.vue').default);
 Vue.component('deposit-dashboard', require('./components/DepositDashboardComponent.vue').default);
-Vue.component('create-deposit', require('./components/CreateDepositComponent.vue').default);
+Vue.component('create-deposit', require('./components/DepositCreateComponent.vue').default);
+Vue.component('update-deposit', require('./components/DepositUpdateComponent.vue').default);
+Vue.component('deposit-list', require('./components/DepositListComponent.vue').default);
 Vue.component('payment-methods', require('./components/PaymentMethodComponent.vue').default);
 
 /**

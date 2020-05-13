@@ -71,9 +71,7 @@ Route::get('/create/penalty', function(){
     return view('pages.create-penalty');
 });
 
-Route::get('/create/deposit', function(){
-    return view('pages.create-deposit');
-});
+
 
 Route::get('/create/office/{level}', 'OfficeController@createLevel')->name('create.office');
 
@@ -108,6 +106,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/edit/office/{id}', 'OfficeController@editOffice');
     Route::post('/edit/office/{id}', 'OfficeController@updateOffice');
+
+    Route::get('/deposit', 'DepositController@index');
+    Route::get('/create/deposit', 'DepositController@create')->name('create.deposit');
+    Route::post('/create/deposit', 'DepositController@store');
+
+    Route::get('/edit/deposit/{product_id}', 'DepositController@getDepositInfo');
+    Route::post('/edit/deposit/{product_id}', 'DepositController@updateDeposit');
+
 
     Route::get('client/{client_id}/deposit/{deposit_account_id}', 'ClientController@depositAccount')->name('client.deposit'); 
 
