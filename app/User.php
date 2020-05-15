@@ -2,10 +2,11 @@
 
 namespace App;
 
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -29,6 +30,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $searchables = [
+        'firstname',
+        'lastname',
+        'email'
+    ];
     /**
      * The attributes that should be cast to native types.
      *
@@ -38,7 +44,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = ['fullname'];
+
     public function name(){
+        return $this->firstname.' '.$this->lastname;
+    }
+    public function getFullnameAttribute(){
         return $this->firstname.' '.$this->lastname;
     }
     
@@ -63,12 +74,13 @@ class User extends Authenticatable
 
     public function scopesBranch($level = null){
         $office_level = $level;
-     
+        
         $collection = collect($this->scopes());
         if ($office_level==null) {
             $branches = [];
             $clusters = [];
             $officers = [];
+            $units = [];
     
             
             $branches = $collection->filter(function($item){
@@ -81,6 +93,7 @@ class User extends Authenticatable
                 return $branch;
             });
             
+
             $clusters = $collection->filter(function($item){
                 return $item->level=="cluster";
             })->values();
@@ -92,7 +105,7 @@ class User extends Authenticatable
             });
             
             $officers = $collection->filter(function($item){
-                return $item->level=="officer";
+                return $item->level=="account_officer";
             })->values();
             
     
@@ -101,11 +114,23 @@ class User extends Authenticatable
                 $officer['name'] = $item->name;
                 return $officer;
             });
+
+            $units = $collection->filter(function($item){
+                return $item->level=="unit";
+            })->values();
+            
+    
+            $units = $units->map(function($item){
+                $unit['id'] = $item->id;
+                $unit['name'] = $item->name;
+                return $unit;
+            });
             
             $filtered = [
                 ['level' => 'Branches', 'data' => collect($branches)->sortBy('name')->unique()->values()], 
                 ['level' => 'Clusters', 'data' => collect($clusters)->sortBy('name')->unique()->values()], 
-                ['level' => 'Officers', 'data' => collect($officers)->sortBy('name')->unique()->values()]
+                ['level' => 'Officers', 'data' => collect($officers)->sortBy('name')->unique()->values()],
+                ['level' => 'Units', 'data' => collect($units)->sortBy('name')->unique()->values()]
             ];
             return $filtered;
         }
@@ -156,6 +181,21 @@ class User extends Authenticatable
         }
 
         return $scopes;
+    }
+
+    public static function search($query){
+        $me = new static;
+        $searchables = $me->searchables;
+        if($query==""){
+            return null;
+        }
+        $users = User::where(function(Builder $dbQuery) use ($query,$searchables){
+            foreach($searchables as $item){  
+                $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
+            }
+        });
+        
+        return $users->get();
     }
 
 

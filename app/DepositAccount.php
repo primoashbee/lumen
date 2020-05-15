@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\User;
 use App\Deposit;
 use Carbon\Carbon;
 use App\DepositTransaction;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class DepositAccount extends Model
 {
     //
-
+    protected $appends = ['new_balance','new_balance_formatted'];
     protected $fillable = [
         'client_id',
         'deposit_id',
@@ -161,31 +162,53 @@ class DepositAccount extends Model
 
     }
 
-    public function postInterest($by_scheduler=true){
+    public function postInterest(){
         
-        $user_id = 1;
-        if(!$by_scheduler){
-            $user_id = auth()->user()->id;
-        }
+       
         $current_balance = $this->getRawOriginal('balance');
         $accrued_interest = $this->getRawOriginal('accrued_interest');
         $new_balance = $current_balance + $accrued_interest;
         $this->accrued_interest = 0;
         $this->balance = $new_balance;
         if ($accrued_interest > 0) {
-            PostedAccruedInterest::create(
-                [
-                'deposit_account_id'=>$this->id,
+
+            $this->transactions()->create([
+                'transaction_id' => uniqid(),
+                'transaction_type'=>'Interest Posting',
                 'amount'=>$accrued_interest,
-                'user_id' =>$user_id,
-            ]
-            );
+                'payment_method'=>$this->branch()->defaultPaymentMethods()['for_deposit'],
+                'repayment_date'=>Carbon::now(),
+                'user_id'=> 1,
+                'balance' => $new_balance
+            ]);
+            
         }else{
             return false;
         }
         return $this->save();
     }
+    public function postInterestByUser($user_id){
+        $current_balance = $this->getRawOriginal('balance');
+        $accrued_interest = $this->getRawOriginal('accrued_interest');
+        $new_balance = $current_balance + $accrued_interest;
+        $this->accrued_interest = 0;
+        $this->balance = $new_balance;
 
+        if ($accrued_interest > 0) {
+            $this->transactions()->create([
+                'transaction_id' => uniqid(),
+                'transaction_type'=>'Interest Posting',
+                'amount'=>$accrued_interest,
+                'payment_method'=>$this->branch()->defaultPaymentMethods()['for_deposit'],
+                'repayment_date'=>Carbon::now(),
+                'user_id'=> auth()->user()->id,
+                'balance' => $new_balance
+            ]);
+        }else{
+            return false;
+        }
+        return $this->save();
+    }
     public function postInterestAll(){
         $list = DepositAccount::listForInterestPosting();
     }
@@ -198,4 +221,25 @@ class DepositAccount extends Model
     }
 
     
+
+    public function getAccruedInterestAttribute($value){
+        return round($value,4); 
+    }
+
+    public function getNewBalanceAttribute(){
+        return ($this->getRawOriginal('balance') + $this->getRawOriginal('accrued_interest'));
+    }
+    public function getNewBalanceFormattedAttribute(){
+        return env('CURRENCY_SIGN')." ".round(($this->getRawOriginal('balance') + $this->getRawOriginal('accrued_interest')),4);
+    }
+
+    public function lastTransaction(){
+        return $this->transactions->first();
+    }
+
+
+    public function branch(){
+        return $this->client->office;
+    }
+
 }

@@ -4,6 +4,7 @@ use App\User;
 use App\Client;
 use App\Office;
 use App\Cluster;
+use App\DefaultPaymentMethod;
 use App\Deposit;
 use Carbon\Carbon;
 use App\OfficeUser;
@@ -85,6 +86,21 @@ use Maatwebsite\Excel\Facades\Excel;
                 'user_id'=>$user->id,
                 'office_id'=>1
             ]);   
+            $user = User::create([
+                'firstname' => 'Hannah Arien',
+                'lastname' => 'Mangalindan',
+                'middlename' => 'Morgado',
+                'gender' => 'Female',
+                'birthday' => Carbon::parse('1997-05-31'),
+                'email' => 'arien@morgado.com',
+                'notes'=>'ajalksdjfdlksafjaldf',
+                'password' => Hash::make('sv9h4pld')
+            ]);
+        
+            OfficeUser::create([
+                'user_id'=>$user->id,
+                'office_id'=>21
+            ]);   
     }
 
     function createDeposits(){
@@ -115,6 +131,17 @@ use Maatwebsite\Excel\Facades\Excel;
 
     function generatePaymentMethods(){
         $methods = array(
+            [
+            'name'=>'CASH ON HAND',
+            'for_disbursement'=>true,
+            'for_repayment'=>true,
+            'for_deposit'=>true,
+            'for_withdrawal'=>true,
+            'for_recovery'=>true,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ],
             [
             'name'=>'CASH IN BANK - BANK OF COMMERCE',
             'for_disbursement'=>true,
@@ -273,6 +300,21 @@ use Maatwebsite\Excel\Facades\Excel;
         PaymentMethod::insert($methods);
     }
 
+    function generateDefaultPaymentMethods(){
+        $list = Office::where('level','branch')->get();
+
+        $list->map(function($branch){
+            DefaultPaymentMethod::create([
+                'office_id'=>$branch->id,
+                'disbursement_payment_method_id'=>1,
+                'repayment_payment_method_id'=>1,
+                'deposit_payment_method_id'=>1,
+                'withdrawal_payment_method_id'=>1,
+                'recovery_payment_method_id'=>1,
+                ]);
+        });
+    }
+
     function generateStucture   (){
         $structure = Excel::toCollection(new OfficeImport, "public/OFFICE STRUCTURE.xlsx");
         $data = array();
@@ -416,5 +458,9 @@ use Maatwebsite\Excel\Facades\Excel;
         if(!Storage::disk('local')->exists('profile_photos')){
             Storage::makeDirectory('public/profile_photos');
         }
+    }
+
+    function breadcrumbize($string){
+        return str_replace('/',' / ',$string);
     }
 ?>

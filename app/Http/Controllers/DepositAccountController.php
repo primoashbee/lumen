@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Office;
 use App\DepositAccount;
 use App\Rules\OfficeID;
-use App\Rules\PaymentMethod;
+use App\Rules\PreventLaterThanLastTransactionDate;
 use Illuminate\Http\Request;
 use App\Rules\TransactionType;
 use App\Rules\PaymentMethodList;
@@ -42,7 +42,7 @@ class DepositAccountController extends Controller
                 'amount'=>['required','numeric',new WithdrawAmountLessThanBalance($acc)],
                 'payment_method'=>['required',new PaymentMethod()],
                 'deposit_account_id'=>['required','exists:deposit_accounts,id'],
-                'repayment_date'=>['required','date', new PreventFutureDate()],
+                'repayment_date'=>['required','date', new PreventFutureDate(), new PreventLaterThanLastTransactionDate($data['deposit_account_id'])],
                 'type'=>['required', new TransactionType()]
             ];
         }elseif($data['type']=="deposit"){
@@ -51,7 +51,7 @@ class DepositAccountController extends Controller
                 'amount'=>['required','gte:'.$minimum,'numeric'],
                 'payment_method'=>['required', new PaymentMethod()],
                 'deposit_account_id'=>['required','exists:deposit_accounts,id'],
-                'repayment_date'=>['required','date', new PreventFutureDate()],
+                'repayment_date'=>['required','date', new PreventFutureDate(), new PreventLaterThanLastTransactionDate($data['deposit_account_id'])],
                 'type'=>['required', new TransactionType()]
             ];
         }
@@ -97,5 +97,16 @@ class DepositAccountController extends Controller
         return Validator::make($data, $rules,$msgs);
         
 
+    public function postInterestByUser(Request $request){
+        
+        $validator = Validator::make($request->all(),
+            [
+                'deposit_account_id'=>['required','exists:deposit_accounts,id']
+            ]
+        );
+
+        if($validator->passes()){
+            return DepositAccount::find($request->deposit_account_id)->postInterestByUser(auth()->user()->id);
+        }
     }
 }

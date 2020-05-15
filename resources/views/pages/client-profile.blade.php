@@ -33,7 +33,7 @@
 				            </div>
 				            <div class="p-details mt-4">
 			            		<p class="title text-lg">Civil Status</p>
-				                <p class="text-muted text-lg">{{$client->education}}</p>
+				                <p class="text-muted text-lg">{{$client->civil_status}}</p>
 				            </div>
 				            <div class="p-details mt-4">
 			            		<p class="title text-lg">Educational Attainment</p>
@@ -138,7 +138,7 @@
 				</div>
 		        <div class="p-details mt-8 p-4">
 		        	<p class="title text-2xl mb-2">Notes</p>
-		        	<textarea value="notes" rows="3" cols="40" class="form-control">{{$client->notes}}</textarea>
+		        	<p>{{$client->notes}}</p>
 		        </div>
 		      </div>
 		    </div>

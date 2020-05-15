@@ -13,9 +13,7 @@ class CreateDepositAccountsTable extends Migration
      */
     public function up()
     {
-        generateStucture();
-        createAdminAccount();
-        createDeposits();
+
         Schema::create('deposit_accounts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('client_id');

@@ -54,15 +54,14 @@ Vue.component('payment-methods', require('./components/PaymentMethodComponent.vu
 Vue.component('product-component', require('./components/ProductSelectComponent.vue').default);
 Vue.component('bulk-deposit-transaction', require('./components/BulkDepositTransactionComponent.vue').default);
 Vue.component('amount-input', require('./components/AmountInputComponent.vue').default);
+Vue.component('multi-search', require('./components/MultiSearchComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
 const app = new Vue({
     el: '#app',
 });
-
 

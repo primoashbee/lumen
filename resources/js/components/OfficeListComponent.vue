@@ -1,4 +1,5 @@
  <template>
+ 
         <div class="row">
             <div class="col-lg-6 float-left d-flex">
                 <label for="" style="color:white" class="lead mr-2">Search:</label>
