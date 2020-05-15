@@ -66,7 +66,7 @@
 								<div class="collapse" id="bulk-deposit">
 									<ul class="sub-collapse">
 										<li class="second-sub-list">
-											<a class="second-sub-nav" href="/deposit/bulk">
+											<a class="second-sub-nav" href="">
 												<i class="">W</i>
 												<p>Withdrawal</p>
 											</a>
@@ -78,7 +78,7 @@
 											</a>
 										</li>
 										<li class="second-sub-list">
-											<a class="second-sub-nav" href="/deposit/bulk">
+											<a class="second-sub-nav" href="{{route('bulk.deposit.deposit')}}">
 												<i class="">D</i>
 												<p>Deposit</p>
 											</a>

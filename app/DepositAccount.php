@@ -32,6 +32,8 @@ class DepositAccount extends Model
     public function getBalanceAttribute($value){
         return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
     }
+    
+    protected $appends = ['amount'];
 
     public function deposit(array $data){
         
@@ -190,6 +192,9 @@ class DepositAccount extends Model
     
     public function getStatusAttribute($value){
         return ucwords($value);
+    }
+    public function getAmountAttribute(){
+        return 0;
     }
 
     

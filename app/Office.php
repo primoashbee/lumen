@@ -211,4 +211,22 @@ class Office extends Model
         }
     }
 
+    public function getClients(){
+        $ids = $this->getLowerOfficeIDS();
+        return Client::whereIn('office_id',$ids)->orderBy('lastname')->get();
+    }
+
+    public static function depositAccounts($office_id, $deposit_id=null){ 
+        
+        if($deposit_id!=null){
+                    
+                $client_ids = Office::find($office_id)->getClients()->pluck('client_id');
+                return DepositAccount::with('type','client.office')->whereIn('client_id',$client_ids)->where(function($query) use ($deposit_id){
+                    $query->where('deposit_id',$deposit_id);
+                });
+        }
+        
+        $client_ids = Office::find($office_id)->getClients()->pluck('client_id');
+        return DepositAccount::with('type','client.office')->whereIn('client_id',$client_ids);
+    }
 }

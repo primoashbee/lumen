@@ -1,5 +1,6 @@
 <?php
 
+use App\User;
 use App\Client;
 use App\Office;
 use App\Deposit;
@@ -107,13 +108,18 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('client/{client_id}/deposit/{deposit_account_id}', 'ClientController@depositAccount')->name('client.deposit'); 
 
-    Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit');
+    Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit'); //make deposit transaction individually
     Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
 
-    Route::get('/deposit/bulk', function(){
+    Route::get('/bulk/deposit', function(){
         return view('pages.deposit-bulk-transactions');
-    });
+    })->name('bulk.deposit.deposit');
+    
 
+    Route::post('/bulk/deposit', 'DepositAccountController@bulkDeposit')->name('bulk.deposit.deposit.post');
+    
+    Route::get('/deposits','DepositAccountController@showList');
+    Route::get('/product','ProductController@getItems');
 });
 
 Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

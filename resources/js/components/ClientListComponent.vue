@@ -106,6 +106,7 @@ export default {
             return false
         },
         fetch(page){
+            
             this.isLoading =true
             if(page==undefined){
                 axios.get(this.queryString)

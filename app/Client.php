@@ -65,6 +65,10 @@ class Client extends Model
         'sss'
     ];
 
+    protected $appends = ['full_name'];
+
+
+
     
 
     public static function boot(){
@@ -176,6 +180,8 @@ class Client extends Model
         return Carbon::parse($value)->format('F d, Y');
     }
 
-
+    public function getFullNameAttribute(){
+        return $this->firstname. ' '.$this->lastname;
+    }
     
 }
