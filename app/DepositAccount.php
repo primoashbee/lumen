@@ -34,7 +34,6 @@ class DepositAccount extends Model
         return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
     }
     
-    protected $appends = ['amount'];
 
     public function deposit(array $data){
         

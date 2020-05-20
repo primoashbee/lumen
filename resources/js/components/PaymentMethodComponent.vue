@@ -46,7 +46,6 @@ export default {
   methods: {
     emitToParent(){
       if(this.value!=null){
-        console.log(this.value)
         this.$emit('paymentSelected', this.value);
       }
     }

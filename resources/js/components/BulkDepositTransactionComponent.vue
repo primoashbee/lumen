@@ -1,4 +1,4 @@
-<template>
+	<template>
     <div>
         <div class="row">
             <div class="col-lg-5">
@@ -44,8 +44,16 @@
 						<!-- <td>{{item.balance}} acco</td> -->
 						<td> Account ID : {{item.id}} </td>
 						
-						<td><amount-input @amountEncoded="amountEncoded" :account_info="item" :tabindex="key+1" ></amount-input></td>
-						
+						<td>
+							<div class="form-group">
+								<amount-input @amountEncoded="amountEncoded" :add_class="errorAddClass(item.id)"  :account_info="item" :tabindex="key+1" ></amount-input>
+								<div class="text-danger" v-if="hasInputError(item.id)">
+									{{inputErrorMessage(item.id)}}
+								
+								</div>
+								</div>
+						</td>
+							
 						<td>{{item.client.office.name}}</td>
 					</tr>
 				</tbody>
@@ -65,7 +73,7 @@
 		    <form>
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">Branch</label>
-                    <v2-select @officeSelected="assignOffice" list_level="" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
+                    <v2-select @officeSelected="assignOffice" list_level="" :default_value="this.office_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
                     <div class="invalid-feedback" v-if="officeHasError">
                         {{ errors.office_id[0]}}
                     </div>
@@ -139,7 +147,7 @@ export default {
 			office_id: "",
 			
 			lists: [],
-			errors: [],
+			errors: {},
             hasRecords: false,
             isLoading:false,
             query:"",
@@ -169,10 +177,47 @@ export default {
         ProductComponent,
     },	
     methods : {
+		errorAddClass(account_id){
+			if(this.hasInputError(account_id)){
+				return 'is-invalid'
+			}
+			return '';
+		},
+		inputErrorMessage(account_id){
+		
+			var index = this.getKeyOfSelectedID(account_id)
+			console.clear()
+			var str = 'accounts.' + index +'.amount'
+			if(this.errors[str] == undefined){
+				return;
+			}
+			return this.errors[str]
+		},
+		getKeyOfSelectedID(account_id){
+		
+			return this.account_ids.indexOf(account_id)
+
+		},
+		hasInputError(account_id){
+			
+			if(this.getKeyOfSelectedID(account_id) > -1 ){
+				var index = this.account_ids.indexOf(account_id)
+				console.log('index: '+index + ' account_id: '+account_id)
+				var str = 'accounts.' + index +'.amount'
+				if(this.errors[str] != undefined){
+					return true	
+				}
+			}
+			return false
+		},
 		depositAll(){
 			axios.post('/bulk/deposit',this.form)
 			.then(res=>{
 
+			})
+			.catch(err => {
+				this.isLoading = false
+				this.errors = err.response.data.errors				
 			})
 		},
 		cancelModal(){
@@ -182,23 +227,31 @@ export default {
 			return '₱ ' + numeral(value).format('0,0.00')
 		},
 		checked(account,event){
+			
 			this.removeFromArray(this.form.accounts, account.id)
+			this.account_ids = []
 			if(event.target.checked){
-				return this.form.accounts.push(account)
+				this.form.accounts.push(account)
+				this.form.accounts.map(x=>{
+					this.account_ids.push(x.id)
+				})
+				
 			}
 
 		},
 		removeFromArray(obj, id){
-			var res = obj.filter(item=>{
-				return item.id != id;
-			})
-			this.form.accounts = res
-		
+			
+			if(obj !== undefined){
+				var res = obj.filter(item=>{
+					return item.id != id;
+				})
+				this.form.accounts = res
+			}	
 		},
 		isInFormAccounts(id){
 			
 			var res = this.form.accounts.filter(item=>{
-				console.log(item)
+				
 				if(item.id == id){
 					return item
 				}
@@ -219,7 +272,7 @@ export default {
 			if(!this.isInFormAccounts(value.id)){
 				return false;
 			}else{
-				console.log('hitttt')
+				
 				var res = this.form.accounts.filter(x=>{ 
 						if(x.id !== value.id){
 							return x
@@ -234,7 +287,7 @@ export default {
 			return this.form.accounts.filter(x => { return x.id == id }).length > 0
 		},
         isReadOnly(client_id){
-			if(this.account_ids == []){
+			if(this.account_ids == undefined){
 				return true;
 			}
 			if(this.account_ids.includes(client_id)){
@@ -264,7 +317,8 @@ export default {
             this.fetch()
         },
         assignOffice(value){
-            this.office_id = value['id']
+			this.office_id = value['id']
+			this.form.office_id = value['id']
             
         },
         checkIfHasRecords(){
@@ -325,7 +379,7 @@ export default {
 				this.account_ids.push(item.id)
 				this.form.accounts.push({id:item.id, amount: 0})
 			});
-			console.log()
+			
 			
 		}
         

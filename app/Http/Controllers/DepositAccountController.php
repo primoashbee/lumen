@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Office;
 use App\DepositAccount;
+use App\Http\Requests\SampleRequest;
+use App\Rules\AmountDepositBelowMinimum;
 use App\Rules\OfficeID;
 use App\Rules\PreventLaterThanLastTransactionDate;
 use Illuminate\Http\Request;
@@ -32,10 +34,7 @@ class DepositAccountController extends Controller
     public function validator(array $data){
         
         $acc = DepositAccount::find($data['deposit_account_id']);
-        $minimum = 0;
-        if($acc !== null){
-            $minimum = $acc->type->minimum_deposit_per_transaction;
-        } 
+        
         if($data['type']=="withdraw"){
             $rules = [
                 'office_id' =>['required', new OfficeID()],
@@ -48,7 +47,7 @@ class DepositAccountController extends Controller
         }elseif($data['type']=="deposit"){
             $rules = [
                 'office_id' =>['required', new OfficeID()],
-                'amount'=>['required','gte:'.$minimum,'numeric'],
+                'amount'=>['required','numeric',new AmountDepositBelowMinimum($acc)],
                 'payment_method'=>['required', new PaymentMethod()],
                 'deposit_account_id'=>['required','exists:deposit_accounts,id'],
                 'repayment_date'=>['required','date', new PreventFutureDate(), new PreventLaterThanLastTransactionDate($data['deposit_account_id'])],
@@ -71,6 +70,7 @@ class DepositAccountController extends Controller
     }
 
     public function bulkDeposit(Request $request){
+
         $this->validateBulk($request->all(),'deposit')->validate();
     }
 
@@ -78,25 +78,41 @@ class DepositAccountController extends Controller
         $data = $data;
         $rules = [];
         $msgs = [];
-        
-        if ($type=='deposit') {
+
+        // if ($type=='deposit') {
+        // foreach($data as $account){
+            
+        // }
+        //     $rules = [
+        //         'office_id' =>['required', new OfficeID()],
+        //         'repayment_date'=>['required','date', new PreventFutureDate()],
+        //         'payment_method'=>['required', new PaymentMethodList()],
+        //         'type'=>['required', new TransactionType()],
+
+        //         'accounts.*.deposit_id'=> ['required',new AmountDepositBelowMinimum(),'exists:deposit_accounts,id'],
+        //         'accounts.*.amount'=> ['required','exists:deposit_accounts,id'],
+        // ];
+        //     $msgs = [
+        //         'accounts.*.amount.required'=> 'Amount :input is not enough'
+        //     ];
+        // }
+
+        $errors = [];
+        if($type=='deposit'){
             $rules = [
-                'office_id' =>['required', new OfficeID()],
-                'repayment_date'=>['required','date', new PreventFutureDate()],
-                'payment_method'=>['required', new PaymentMethodList()],
-                'type'=>['required', new TransactionType()],
-                'accounts.*.deposit_id'=> ['required','exists:deposit_accounts,id'],
-                'accounts.*.amount'=> ['required','exists:deposit_accounts,id'],
-            ];
-
-            $msgs = [
-                'accounts.*.amount.required'=> ['Amount is not enough']
-            ];
-        }
-
-        return Validator::make($data, $rules,$msgs);
+                        'office_id' =>['required', new OfficeID()],
+                        'repayment_date'=>['required','date', new PreventFutureDate()],
+                        'payment_method'=>['required', new PaymentMethodList()],
+                        'type'=>['required', new TransactionType()],
         
+                        'accounts.*.deposit_id'=> ['required','exists:deposit_accounts,id'],
+                        'accounts.*.amount'=> ['required', 'cbu_deposit:accounts.*.amount'],
+                ];
 
+            $messages = [];
+        }
+        return Validator::make($data, $rules,$messages);
+    }
     public function postInterestByUser(Request $request){
         
         $validator = Validator::make($request->all(),
