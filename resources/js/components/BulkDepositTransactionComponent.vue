@@ -1,4 +1,4 @@
-	<template>
+<template>
     <div>
         <div class="row">
             <div class="col-lg-5">
@@ -24,44 +24,73 @@
 		<div class="w-100 px-3 mt-6" >
 			<table class="table" >
 				<thead>
-					<tr>
+					<tr v-if="forInterestPosting">
 						<td><p class="title"><input type="checkbox" v-model="check_all" v-show="viewableRecords > 0"></p></td>
 						<td><p class="title">Deposit Account</p></td>
 						<td><p class="title">Client ID</p></td>
 						<td><p class="title">Name</p></td>
 						<td><p class="title">Balance</p></td>
-						<td><p class="title">Amount</p></td>
-						<td><p class="title">Linked To</p></td>
+						<td><p class="title">Accrued Interest</p></td>
+						<td style="padding-left:50px"><p class="title">Linked To</p></td>
 					</tr>
+					
+					<tr v-else>
+						<td><p class="title"><input type="checkbox" v-model="check_all" v-show="viewableRecords > 0"></p></td>
+						<td><p class="title">Deposit Account</p></td>
+						<td><p class="title">Client ID</p></td>
+						<td><p class="title">Name</p></td>
+						<td><p class="title">Balance</p></td>
+						<td style="width:150px"><p class="title">Amount</p></td>
+						<td style="padding-left:50px"><p class="title">Linked To</p></td>
+					</tr>
+
 				</thead>
-				<tbody v-if="hasRecords">
-					<tr v-for="(item, key) in lists.data" :key="item.id">
-						<td><input type="checkbox" :id="item.id" :value="item.id" @change="checked(item,$event)"></td>
+				<tbody v-if="hasRecords && forInterestPosting">
+					<tr  v-for="(item, key) in lists.data" :key="item.id">
+						
+						<td><input type="checkbox" :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
+						
 						<td><label :for="item.id">{{item.type.name}}</label></td>
 						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
 						
 						<td>{{item.client.firstname + ' ' + item.client.lastname}}</td>
-						<!-- <td>{{item.balance}} acco</td> -->
-						<td> Account ID : {{item.id}} </td>
+						<td>{{item.balance}} </td>
+						<!-- <td> Account ID : {{item.id}} </td> -->
+						
+						<td>{{item.accrued_interest}}</td>
+							
+						<td style="padding-left:50px">{{item.client.office.name}}</td>
+					</tr>
+				</tbody>
+				<tbody v-else>
+					<tr  v-for="(item, key) in lists.data" :key="item.id">
+						
+						<td><input type="checkbox" :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
+						
+						<td><label :for="item.id">{{item.type.name}}</label></td>
+						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
+						
+						<td>{{item.client.firstname + ' ' + item.client.lastname}}</td>
+						<td>{{item.balance}} </td>
+						<!-- <td> Account ID : {{item.id}} </td> -->
 						
 						<td>
 							<div class="form-group">
 								<amount-input @amountEncoded="amountEncoded" :add_class="errorAddClass(item.id)"  :account_info="item" :tabindex="key+1" ></amount-input>
 								<div class="text-danger" v-if="hasInputError(item.id)">
 									{{inputErrorMessage(item.id)}}
-								
 								</div>
-								</div>
+							</div>
 						</td>
 							
-						<td>{{item.client.office.name}}</td>
+						<td style="padding-left:50px">{{item.client.office.name}}</td>
 					</tr>
 				</tbody>
 				
 			</table>
 			<p class="lead float-left text-right" style="color:white">Showing Records {{lists.from}} - {{lists.to}} of {{totalRecords}} </p>
 			<p class="lead float-right text-right" style="color:white">Total Records: {{totalRecords}} </p>
-			<button type="button" class="btn btn-primary" @click="showModal('Bulk Deposit')" v-if="hasRecords"> Deposit </button>
+			<button type="button" class="btn btn-primary" @click="showModal()" v-if="hasRecords"> {{transactionTypeDisplay}} </button>
 			<div class="clearfix"></div>
 			<paginator :dataset="lists" @updated="fetch"></paginator>
 		</div>
@@ -102,7 +131,21 @@
 							<td><p class="title">Amount</p></td>
 						</tr>
 					</thead>
-					<tbody v-if="form.accounts.length > 0"  style="color:white">
+					<tbody v-if="forInterestPosting"  style="color:white">
+						<tr v-for="account in form.accounts"  :key="account.id">
+							<td>{{account.type.name}}</td>
+							<td>{{account.client.client_id }}</td>
+							<td>{{account.client.firstname + ' ' + account.client.lastname}}</td>
+							<td>{{format(account.accrued_interest)}}</td>							
+						</tr>
+						<tr style="border:none">
+							<td></td>
+							<td></td>
+							<td class="text-right" style="mr-5">Total: </td>
+							<td> {{totalAmount()}} </td>
+						</tr>
+					</tbody>
+					<tbody v-else style="color:white">
 						<tr v-for="account in form.accounts"  :key="account.id">
 							<td>{{account.type.name}}</td>
 							<td>{{account.client.client_id }}</td>
@@ -113,7 +156,7 @@
 							<td></td>
 							<td></td>
 							<td class="text-right" style="mr-5">Total: </td>
-							<td> {{totalAmount}} </td>
+							<td> {{totalAmount()}} </td>
 						</tr>
 					</tbody>
 				</table> 
@@ -142,10 +185,10 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
+	props: ['transaction'],
     data(){
         return {
 			office_id: "",
-			
 			lists: [],
 			errors: {},
             hasRecords: false,
@@ -184,14 +227,14 @@ export default {
 			return '';
 		},
 		inputErrorMessage(account_id){
-		
-			var index = this.getKeyOfSelectedID(account_id)
-			console.clear()
-			var str = 'accounts.' + index +'.amount'
-			if(this.errors[str] == undefined){
-				return;
+			var index = this.form.accounts.findIndex(x=> {return x.id ==account_id})
+			if(index < 0) {	
+				return '';
 			}
-			return this.errors[str]
+			if(this.errors['accounts.'+index+'.amount']!=undefined){
+				return this.errors['accounts.'+index+'.amount'][0];
+			}
+
 		},
 		getKeyOfSelectedID(account_id){
 		
@@ -200,20 +243,55 @@ export default {
 		},
 		hasInputError(account_id){
 			
-			if(this.getKeyOfSelectedID(account_id) > -1 ){
-				var index = this.account_ids.indexOf(account_id)
-				console.log('index: '+index + ' account_id: '+account_id)
-				var str = 'accounts.' + index +'.amount'
-				if(this.errors[str] != undefined){
-					return true	
-				}
+			var index = this.form.accounts.findIndex(x=> {return x.id ==account_id})
+			if(index < 0) {	
+				return false;
 			}
-			return false
+			if(this.errors['accounts.'+index+'.amount']!=undefined){
+				return true
+			}
+
+			return false;
 		},
 		depositAll(){
-			axios.post('/bulk/deposit',this.form)
+			axios.post(this.postUrl,this.form)
 			.then(res=>{
-
+				this.errors = [];
+					Swal.fire({
+                        icon: 'success',
+                        title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Transaction Successful</span> ',
+                        html: 
+						`
+						<table class="table table-condensed">
+						<tbody>
+						<thead>
+							<th class="text-right" style="width:50%;font-weight:900" >Particulars</th>
+							<th class="text-left" style="width:50%;font-weight:900">Value</th>
+						</thead>
+						<tr>
+							<td class="text-right pr-2" >Office: </td>
+							<td class="text-left" style="font-weight:900">`+res.data[0].office+`</td>
+						</tr>
+						<tr>
+							<td class="text-right pr-2 " >Payment Method: </td>
+							<td class="text-left" style="font-weight:900">`+res.data[0].payment_method+`</td>
+						</tr>
+						<tr>
+							<td class="text-right pr-2 " ># of Accounts: </td>
+							<td class="text-left" style="font-weight:900">`+res.data[0].accounts_total+`</td>
+						</tr>
+						<tr style="border:none">
+							<td class="text-right pr-2" > Total Amount: </td>
+							<td class="text-left" style="font-weight:900"> `+res.data[0].total_amount+`</td>
+						</tr>
+						</tbody>
+						</table>
+						`,
+                        confirmButtonText: 'OK'
+					}).then(res=>{
+						location.reload()
+					})
+					
 			})
 			.catch(err => {
 				this.isLoading = false
@@ -227,9 +305,8 @@ export default {
 			return '₱ ' + numeral(value).format('0,0.00')
 		},
 		checked(account,event){
-			
 			this.removeFromArray(this.form.accounts, account.id)
-			this.account_ids = []
+			// this.account_ids = []
 			if(event.target.checked){
 				this.form.accounts.push(account)
 				this.form.accounts.map(x=>{
@@ -259,29 +336,24 @@ export default {
 			
 			return res.length > 0
 		},
-		showModal(transaction){
-			this.modal.modalState = true
-			this.modal.modal_title=transaction
-			this.form.type="deposit"
+		showModal(){
+			this.modal.modalState =true
+			this.modal.modal_title= 'Bulk - '+this.transactionTypeDisplay
 			
 		},
 		paymentSelected(value){
 				this.form.payment_method = value['id']
 		},
 		amountEncoded(value){
-			if(!this.isInFormAccounts(value.id)){
-				return false;
-			}else{
-				
-				var res = this.form.accounts.filter(x=>{ 
-						if(x.id !== value.id){
-							return x
-						}
-				})
-				this.form.accounts = []
-				this.form.accounts = res
-				this.form.accounts.push(value)
+			
+			var amount = value['amount'];
+			var account_id = value['id'];
+	
+			if(this.isInFormAccounts(account_id)){
+				var index = this.form.accounts.findIndex(x=> {return x.id ==account_id} )
+				this.form.accounts[index].amount = amount
 			}
+
 		},
 		accountOnList(id){
 			return this.form.accounts.filter(x => { return x.id == id }).length > 0
@@ -338,13 +410,18 @@ export default {
 			this.product_id = value['id'];
 		},
 		submit(){
+			if(this.office_id=="" || this.product_id == ""){
+				
+				return;
+			}
 			this.fetch()
 		},
         fetch(page){
-			
+			this.checkedAccounts = [];
 			if(!this.checkForm()){
 				return;
 			}
+			this.account_ids = []
 			this.form.accounts = []
 			
             this.isLoading =true
@@ -381,18 +458,58 @@ export default {
 			});
 			
 			
-		}
+		},
+		totalAmount(){
+			var total = 0;
+			
+			// if(this.form.accounts.length > 0 ){
+			// 	if(this.forInterestPosting){
+			// 		this.form.accounts.forEach((x)=>{
+			// 			total = total + (x.accrued_interest)	
+			// 			// total = total + (x.accrued_interest)
+			// 		})
+			// 	}else{
+			// 		this.form.accounts.forEach((x)=>{
+			// 			total = total + (x.amount)
+			// 			// total = total + (x.amount)
+			// 		})
+					
+					
+			// 	}
+			// }
+			var arr = []
+			if(this.form.accounts.length > 0){
+				if(this.forInterestPosting){
+					this.form.accounts.map(x =>{
+						total = total + parseFloat(x.accrued_interest)
+					})
+				}else{
+					this.form.accounts.forEach(x=>{
+						total = total + parseFloat(x.amount)
+					})
+
+				}
+			}
+
+			return this.format(total);
+		},
         
     },
     computed : {
-		totalAmount(){
-			var total = 0;
-			if(this.form.accounts.length > 0 ){
-				
-				this.form.accounts.map(x=>{  total += parseFloat(x.amount) })
-				return this.format(total)
+		transactionType(){
+			return (this.transaction.split('.'))[this.transaction.split('.').length-1]
+		},
+		forInterestPosting(){
+			if(this.transactionType == "post_interest"){
+				return true
 			}
-			return total;
+			return false
+		},
+		transactionTypeDisplay(){
+			return this.transactionType.replace("_"," ").toUpperCase()
+		},
+		postUrl(){
+			return '/bulk/'+this.transactionType
 		},
         queryString(){
             var str ="?"
@@ -475,6 +592,9 @@ export default {
 				this.form.accounts = []
 			}
 		}
+	},
+	mounted(){
+		this.form.type = this.transactionType
 	}
 }
 </script>

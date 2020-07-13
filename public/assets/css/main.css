@@ -713,7 +713,7 @@ body.dark-mode .card .table>tbody>tr>td,
 body.dark-mode .table tr a,body.dark-mode .form-group p.title,
 body.dark-mode label.entries,
 body.dark-mode .row p.title{
-    color: hsla(0,0%,100%,.8)!important;
+    color: hsla(0,0%,100%,.8);
 }
 
 /*FORMS STYLE DARK MODE*/
@@ -1256,10 +1256,10 @@ button.btn-primary:hover{
 
 .file-input-profile,.file-input-signature {
     width: 100%;
-    height: 160px;
+    height: 220x;
     margin: 0 auto;
     max-width: 220px;
-    /*max-height: 160px;*/
+    max-height: 220px;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;

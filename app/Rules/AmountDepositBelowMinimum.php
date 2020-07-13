@@ -14,9 +14,11 @@ class AmountDepositBelowMinimum implements Rule
      * @return void
      */
     public $deposit;
-    public function __construct()
+    
+    public function __construct($deposit)
     {
-        // $acc == null ? $this->deposit = $acc->type;
+        
+        $this->deposit =$deposit;
     }
 
     /**
@@ -28,14 +30,19 @@ class AmountDepositBelowMinimum implements Rule
      */
     public function passes($attribute, $value)
     {
-        $index = explode('.', $attribute)[1];
         
-        $id = request()->input('accounts')[$index]['type']['id'];
-        $this->deposit = Deposit::find($id);
-        if($value < $this->deposit->minimum_deposit_per_transaction){
+        if($value < $this->deposit->type->minimum_deposit_per_transaction){
             return false;
         }
         return true;
+        // $index = explode('.', $attribute)[1];
+        
+        // $id = request()->input('accounts')[$index]['type']['id'];
+        // $this->deposit = Deposit::find($id);
+        // if($value < $this->deposit->minimum_deposit_per_transaction){
+        //     return false;
+        // }
+        // return true;
     }
 
     /**
@@ -45,6 +52,6 @@ class AmountDepositBelowMinimum implements Rule
      */
     public function message()
     {
-        return 'Minimum deposit amount is : ' . $this->deposit->minimum_deposit_per_transaction;
+        return 'Minimum deposit amount is : ' . $this->deposit->type->minimum_deposit_per_transaction;
     }
 }

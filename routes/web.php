@@ -82,19 +82,24 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit'); //make deposit transaction individually
     Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
 
-    Route::get('/bulk/deposit', function(){
-        return view('pages.deposit-bulk-transactions');
-    })->name('bulk.deposit.deposit');
     
-
+    Route::get('/bulk/deposit', 'DepositAccountController@showBulkView')->name('bulk.deposit.deposit');
+    Route::get('/bulk/withdraw', 'DepositAccountController@showBulkView')->name('bulk.deposit.withdraw');
+    Route::get('/bulk/post_interest', 'DepositAccountController@showBulkView')->name('bulk.deposit.post_interest');
+    
     Route::post('/bulk/deposit', 'DepositAccountController@bulkDeposit')->name('bulk.deposit.deposit.post');
+    Route::post('/bulk/withdraw', 'DepositAccountController@bulkWithdraw')->name('bulk.deposit.withdraw.post');
+    Route::post('/bulk/post_interest', 'DepositAccountController@bulkPostInterest')->name('bulk.deposit.interst_post.post');
+    
+   
+    
     
     Route::get('/deposits','DepositAccountController@showList');
     Route::get('/product','ProductController@getItems');
     Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit');
     Route::post('/deposit/account/post/interest','DepositAccountController@postInterestByUser')->name('deposit.account.post.interest');
 
-    Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
+    // Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
 
     Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');
 

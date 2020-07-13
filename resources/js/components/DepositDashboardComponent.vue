@@ -95,10 +95,16 @@
 				                        	<p class="title">{{item.transaction_type}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.amount}}</p>
+				                        	<p class="title">
+												<span class="badge badge-pill" v-bind:class="rowClass(item)">{{item.amount}}</span>
+											</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.balance}}</p>
+				                        	<p class="title">
+												<span class="badge badge-pill badge-primary">
+													{{item.balance}}
+												</span>
+											</p>
 				                        </td>
 				                        <td>
 				                        	<p class="title">{{item.payment_method.name}}</p>
@@ -179,6 +185,9 @@
 	.btn-danger{
 		margin-right:20px;
 	}
+	.badge {
+		font-size:100%;
+	}
     
 </style>
 <script type="text/javascript">
@@ -211,6 +220,16 @@ import Swal from 'sweetalert2';
 			this.fields.deposit_account_id = this.account_info.id
 		},
 		methods:{
+			rowClass(item){
+				if(item.transaction_type=="Withdraw"){
+					return 'badge-danger';
+				}else if(item.transaction_type=="Deposit"){
+					return 'badge-success';
+				}else{
+					return 'badge-info';
+				}
+				
+			},
 			postInterest(){
 			
 				var vm = this;

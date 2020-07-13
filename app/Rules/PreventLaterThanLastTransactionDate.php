@@ -28,7 +28,11 @@ class PreventLaterThanLastTransactionDate implements Rule
      */
     public function passes($attribute, $value)
     {
+        if($this->deposit->lastTransaction() == null){
+            return true;
+        }
         $last_transaction_date = Carbon::parse($this->deposit->lastTransaction()->repayment_date);
+        
         if(Carbon::parse($value) < $last_transaction_date){
             return false;
         }

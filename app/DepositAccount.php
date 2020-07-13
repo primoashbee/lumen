@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class DepositAccount extends Model
 {
     //
-    protected $appends = ['new_balance','new_balance_formatted'];
+    protected $appends = ['new_balance','new_balance_formatted','raw_balance'];
     protected $fillable = [
         'client_id',
         'deposit_id',
@@ -31,7 +31,9 @@ class DepositAccount extends Model
     }
 
     public function getBalanceAttribute($value){
-        return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
+        // return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
+        return env('CURRENCY_SIGN').' '.numberFormat($value);
+        // }
     }
     
 
@@ -52,7 +54,7 @@ class DepositAccount extends Model
         
         $this->balance = $new_balance;
         return $this->save();
-        
+
     }
 
     public function withdraw(array $data){
@@ -132,7 +134,7 @@ class DepositAccount extends Model
                 }
                 $interest_rate = $this->type->getRawOriginal('interest_rate') / 100;
                 $daily_interest_rate = $interest_rate / 365;
-                $accrued_interest_today = $daily_interest_rate * $this->getRawOriginal('balance');
+                $accrued_interest_today = round($daily_interest_rate * $this->getRawOriginal('balance'),2);
                 $accrued_interest = $this->getRawOriginal('accrued_interest');
                 $accumulated_accrued_interest =  $accrued_interest + $accrued_interest_today;
                 $this->accrued_interest = $accumulated_accrued_interest;
@@ -186,7 +188,7 @@ class DepositAccount extends Model
         }
         return $this->save();
     }
-    public function postInterestByUser($user_id){
+    public function postInterestByUser($user_id, $info=false){
         $current_balance = $this->getRawOriginal('balance');
         $accrued_interest = $this->getRawOriginal('accrued_interest');
         $new_balance = $current_balance + $accrued_interest;
@@ -194,15 +196,27 @@ class DepositAccount extends Model
         $this->balance = $new_balance;
 
         if ($accrued_interest > 0) {
-            $this->transactions()->create([
-                'transaction_id' => uniqid(),
-                'transaction_type'=>'Interest Posting',
-                'amount'=>$accrued_interest,
-                'payment_method'=>$this->branch()->defaultPaymentMethods()['for_deposit'],
-                'repayment_date'=>Carbon::now(),
-                'user_id'=> auth()->user()->id,
-                'balance' => $new_balance
-            ]);
+            if ($info==false) {
+                $this->transactions()->create([
+                    'transaction_id' => uniqid(),
+                    'transaction_type'=>'Interest Posting',
+                    'amount'=>$accrued_interest,
+                    'payment_method'=>$this->branch()->defaultPaymentMethods()['for_deposit'],
+                    'repayment_date'=>Carbon::now(),
+                    'user_id'=> auth()->user()->id,
+                    'balance' => $new_balance
+                ]);
+            }else{
+                $this->transactions()->create([
+                    'transaction_id' => uniqid(),
+                    'transaction_type'=>'Interest Posting',
+                    'amount'=>$accrued_interest,
+                    'payment_method'=>$info['payment_method'],
+                    'repayment_date'=>Carbon::now(),
+                    'user_id'=> auth()->user()->id,
+                    'balance' => $new_balance
+                ]); 
+            }
         }else{
             return false;
         }
@@ -230,6 +244,9 @@ class DepositAccount extends Model
     }
     public function getNewBalanceFormattedAttribute(){
         return env('CURRENCY_SIGN')." ".round(($this->getRawOriginal('balance') + $this->getRawOriginal('accrued_interest')),4);
+    }
+    public function getRawBalanceAttribute(){
+        return $this->getRawOriginal('balance');
     }
 
     public function lastTransaction(){

@@ -411,6 +411,10 @@ use Maatwebsite\Excel\Facades\Excel;
     function pad($number, $character, $padder='0'){
         return str_pad($number, $character, $padder, STR_PAD_LEFT);
     }
+    function numberFormat($number, $decimals = 2, $sep = ".", $k = ","){
+        $number = bcdiv($number, 1, $decimals); // Truncate decimals without rounding
+        return number_format($number, $decimals, $sep, $k); // Format the number
+    }
 
     function generateClientID($count=100){
         $branch = "010ANG";
@@ -461,6 +465,7 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
     function breadcrumbize($string){
-        return str_replace('/',' / ',$string);
+        $str = str_replace('/',' / ',$string);
+        return str_replace('_',' ',$str);
     }
 ?>

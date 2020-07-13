@@ -56,6 +56,14 @@ Vue.component('bulk-deposit-transaction', require('./components/BulkDepositTrans
 Vue.component('amount-input', require('./components/AmountInputComponent.vue').default);
 Vue.component('multi-search', require('./components/MultiSearchComponent.vue').default);
 
+
+Vue.component('chart-par-movement', require('./components/Dashboard/ParMovementComponent.vue').default);
+Vue.component('chart-repayment-trend', require('./components/Dashboard/RepaymentTrendComponent.vue').default);
+Vue.component('chart-disbursement-trend', require('./components/Dashboard/DisbursementTrendComponent.vue').default);
+Vue.component('chart-client-loans-trend', require('./components/Dashboard/ClientLoansTrendComponent.vue').default);
+Vue.component('chart-clients', require('./components/Dashboard/ClientsComponent.vue').default);
+Vue.component('chart-summary', require('./components/Dashboard/SummaryTableComponent.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

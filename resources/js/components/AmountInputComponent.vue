@@ -1,6 +1,6 @@
 <template>
   <div>
-      <input type="text" :class="lastClass" v-model="value" @keypress="isNumber($event)" :disabled="readonly" v-debounce:200ms="emitToParent" :tabindex="tabindex">
+      <input type="text"  :class="lastClass" v-model="value" @keypress="isNumber($event)" :disabled="readonly" v-debounce:200ms="emitToParent" :tabindex="tabindex">
   </div>
 </template>
 

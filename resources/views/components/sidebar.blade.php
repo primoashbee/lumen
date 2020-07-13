@@ -2,7 +2,7 @@
 	<div class="sidebar-wrapper px-3">
 		<div class="logo py-2">
 			
-			<a href="">
+			<a href="{{route('dashboard')}}">
 				<i class="fas fa-2x fa-lightbulb py-2"></i>
 				<p class="text-lg">Lumen</p>
 			</a>
@@ -66,13 +66,13 @@
 								<div class="collapse" id="bulk-deposit">
 									<ul class="sub-collapse">
 										<li class="second-sub-list">
-											<a class="second-sub-nav" href="">
+											<a class="second-sub-nav" href="{{route('bulk.deposit.withdraw')}}">
 												<i class="">W</i>
 												<p>Withdrawal</p>
 											</a>
 										</li>
 										<li class="second-sub-list">
-											<a class="second-sub-nav" href="/deposit/bulk">
+											<a class="second-sub-nav" href="{{route('bulk.deposit.post_interest')}}">
 												<i class="">IP</i>
 												<p>Interest Posting</p>
 											</a>
