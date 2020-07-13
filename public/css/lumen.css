@@ -5140,7 +5140,7 @@ body.dark-mode .card{
     margin-bottom: 30px;
 }
 
-body.dark-mode a.l-text,.sidebar-nav ul.main-nav li:not(.sub-list):hover a:not(.sub-nav),
+body.dark-mode a.l-text,.sidebar-nav ul.main-nav li:not(.sub-list):hover a:not(.sub-nav):not(.second-sub-nav),
 .sidebar-nav ul.main-nav li.active a:not(.sub-nav),
 body.dark-mode h1,
 body.dark-mode h2,
@@ -5151,7 +5151,7 @@ body.dark-mode h6,
 body.dark-mode input[type=text].form-control:not(.search_text){
 	color: #fff;
 }
-a[aria-expanded="true"] p,a[aria-expanded="true"] i,.sub-list:hover a.sub-nav{
+a[aria-expanded="true"] p,a[aria-expanded="true"] i,.sub-list:hover a.sub-nav,.second-sub-list:hover a.second-sub-nav{
     color: #fff!important;
 }
 option:selected { background-color: transparent; }
@@ -5184,7 +5184,7 @@ body.dark-mode .card .table>tbody>tr>td,
 body.dark-mode .table tr a,body.dark-mode .form-group p.title,
 body.dark-mode label.entries,
 body.dark-mode .row p.title{
-    color: hsla(0,0%,100%,.8)!important;
+    color: hsla(0,0%,100%,.8);
 }
 
 /*FORMS STYLE DARK MODE*/
@@ -5727,10 +5727,10 @@ button.btn-primary:hover{
 
 .file-input-profile,.file-input-signature {
     width: 100%;
-    height: 160px;
+    height: 220x;
     margin: 0 auto;
     max-width: 220px;
-    /*max-height: 160px;*/
+    max-height: 220px;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;

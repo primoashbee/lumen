@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -18,5 +19,9 @@ class UserController extends Controller
 
     public function branches(Request $request){
         return auth()->user()->scopesBranch($request->level);
+    }
+
+    public function get(Request $request, User $user){
+        return $user;
     }
 }

@@ -34,5 +34,7 @@ class Deposit extends Model
         return ($val/100 ).'%';
     }
 
+    
+
   
 }

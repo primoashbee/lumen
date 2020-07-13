@@ -254,7 +254,7 @@
                     <div class="form-group col-md-4 col-md-offset-8">
                         <label for="spouse_birthday">Spouse Birthday</label>
                     
-                        <date-picker v-bind:class="houseTypeHasError ? 'is-invalid' : ''" v-bind:has-error="birthdayHasError ? 'is-invalid' : ''"  v-model="fields.spouse_birthday" name="spouse_birthday" id="spouse_birthday"  @datePicked="getDate($event, 'spouse_birthday')"></date-picker>
+                        <date-picker v-bind:class="spouseBirthdayHasError ? 'is-invalid' : ''" v-bind:has-error="spouseBirthdayHasError ? 'is-invalid' : ''"  v-model="fields.spouse_birthday" name="spouse_birthday" id="spouse_birthday"  @datePicked="getDate($event, 'spouse_birthday')"></date-picker>
                         <div class="invalid-feedback" v-if="spouseBirthdayHasError">
                             {{ errors.spouse_birthday[0]}}
                         </div>
@@ -478,7 +478,7 @@
 
         <div class="card-body">
             <div  class="file-input-profile d-block text-center position-relative mb-4">
-                <img :src="fields.profile_picture_path_preview" class="img-thumbnail" v-bind:class="profilePhotoHasError ? 'is-invalid' : ''"  alt="Cinque Terre" style="height:100% !importante" > 
+                <img :src="fields.profile_picture_path_preview" class="img-responsive" v-bind:class="profilePhotoHasError ? 'is-invalid' : ''"  alt="Cinque Terre"  style=""> 
                 <div class="file-input text-center">
                     <span class="position-relative btn btn-rose btn-round btn-file">
                         <span class="fileinput-new">Image</span>
@@ -572,7 +572,7 @@ export default {
                 'house_type':"",
                 'spouse_name':"",
                 'spouse_contact_number':"",
-                'spouse_birthday':null,
+                'spouse_birthday':"",
                 'tin':"",
                 'sss':"",
                 'umid':"",
@@ -604,7 +604,7 @@ export default {
 
                 'notes':"",
 
-                'profile_picture_path_preview':location.origin + '/assets/img/anime3.png',
+                'profile_picture_path_preview':location.origin + '/assets/img/2x2.jpg',
                 'signature_path_preview': location.origin + '/assets/img/signature.png',
 
 
@@ -815,7 +815,7 @@ export default {
                         confirmButtonText: 'OK'
                     })
                     .then(res=>{
-                        // location.reload();
+                        location.reload();
                     })
                 })
                 .catch(error=>{

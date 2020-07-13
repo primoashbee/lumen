@@ -1,8 +1,9 @@
 <?php
 
 namespace App;
-use Illuminate\Database\Eloquent\Builder;
+use App\DefaultPaymentMethod;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Office extends Model
 {
@@ -210,5 +211,48 @@ class Office extends Model
             return $office;
         }
     }
+    public function defaultPaymentMethod(){
+        if($this->isChildOf('area',$this->level)){
+            $level = $this->getTopOffice('branch');
+            return $level->hasOne(DefaultPaymentMethod::class);
+        }
+            return $this->hasOne(DefaultPaymentMethod::class);
+        
+    }
 
+    public function getClients(){
+        $ids = $this->getLowerOfficeIDS();
+        return Client::whereIn('office_id',$ids)->orderBy('lastname')->get();
+    }
+
+    public static function depositAccounts($office_id, $deposit_id=null){
+        if ($deposit_id!=null) {
+            $client_ids = Office::find($office_id)->getClients()->pluck('client_id');
+            return DepositAccount::with('type', 'client.office')->whereIn('client_id', $client_ids)->where(function ($query) use ($deposit_id) {
+                $query->where('deposit_id', $deposit_id);
+            });
+        }
+        
+        $client_ids = Office::find($office_id)->getClients()->pluck('client_id');
+        return DepositAccount::with('type', 'client.office')->whereIn('client_id', $client_ids);
+    }
+    public function defaultPaymentMethods(){
+        
+        $pm = $this->defaultPaymentMethod;
+        
+        if($pm==null){
+            $res['for_disbursement'] = null;
+            $res['for_repayment'] = null;
+            $res['for_deposit'] = null;
+            $res['for_withdrawal'] = null;
+            $res['for_recovery'] = null;
+            return $res;
+        }
+        $res['for_disbursement'] = $pm->disbursement_payment_method_id;
+        $res['for_repayment'] = $pm->repayment_payment_method_id;
+        $res['for_deposit'] = $pm->deposit_payment_method_id;
+        $res['for_withdrawal'] = $pm->withdrawal_payment_method_id;
+        $res['for_recovery'] = $pm->recovery_payment_method_id;
+        return $res;
+    }
 }

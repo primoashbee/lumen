@@ -2,7 +2,7 @@
 	<div class="sidebar-wrapper px-3">
 		<div class="logo py-2">
 			
-			<a href="">
+			<a href="{{route('dashboard')}}">
 				<i class="fas fa-2x fa-lightbulb py-2"></i>
 				<p class="text-lg">Lumen</p>
 			</a>
@@ -51,6 +51,51 @@
 						<p>Clusters</p>
 					</a>
 				</li>
+				<li class="py-2 {{ request()->is('bulk') ? 'active' : '' }}">
+					<a data-toggle="collapse" href="#bulk" role="button" aria-expanded="false" aria-controls="create" class="has-sub">
+						<i class="fas fa-2x fa-layer-group"></i>
+						<p>Bulk<b class="caret"></b></p>
+					</a>
+					<div class="collapse" id="bulk">
+						  <ul class="sub-collapse">
+							<li class="sub-list">
+								<a class="sub-nav" data-toggle="collapse" href="#bulk-deposit" role="button" aria-expanded="false" aria-controls="create" class="has-sub">
+									<i class="">D</i>
+									<p>Deposit<b class="caret"></b></p>
+								</a>
+								<div class="collapse" id="bulk-deposit">
+									<ul class="sub-collapse">
+										<li class="second-sub-list">
+											<a class="second-sub-nav" href="{{route('bulk.deposit.withdraw')}}">
+												<i class="">W</i>
+												<p>Withdrawal</p>
+											</a>
+										</li>
+										<li class="second-sub-list">
+											<a class="second-sub-nav" href="{{route('bulk.deposit.post_interest')}}">
+												<i class="">IP</i>
+												<p>Interest Posting</p>
+											</a>
+										</li>
+										<li class="second-sub-list">
+											<a class="second-sub-nav" href="{{route('bulk.deposit.deposit')}}">
+												<i class="">D</i>
+												<p>Deposit</p>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="sub-list">
+								<a class="sub-nav" href="/create/office/cluster">
+									<i class="">L</i>
+									<p>Loans<b class="caret"></b></p>
+								</a>
+							</li>
+						</ul>
+					 </div>
+				</li>
+				
 				<li class="py-2 {{ request()->is('accounting') ? 'active' : '' }}">
 					<a href="">
 						<i class="far fa-2x fa-money-bill-alt"></i>

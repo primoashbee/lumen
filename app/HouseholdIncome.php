@@ -58,4 +58,11 @@ class HouseholdIncome extends Model
         }
         return substr($str,0,-1);
     }
+
+    public function getServiceTypeAttribute($value){
+        if($value==null){
+            return 'NONE';
+        }
+        return $value;
+    }
 }

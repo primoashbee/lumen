@@ -39,7 +39,7 @@ class CalculateAccruedInterestCommand extends Command
         
 
         
-        DepositAccount::postInterestAll();
+        DepositAccount::accrueInterestAll();
 
         $time_end = microtime(true);
         $runtime = $time_end - $time_start;

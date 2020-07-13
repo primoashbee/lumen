@@ -12,8 +12,7 @@
                 <div>
             </div>  
         </div>
-       
-          
+ 
         <div class="w-100 px-3 mt-6" >
             <table class="table" >
                 <thead>
@@ -106,6 +105,7 @@ export default {
             return false
         },
         fetch(page){
+            
             this.isLoading =true
             if(page==undefined){
                 axios.get(this.queryString)

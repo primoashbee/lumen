@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class DepositTransaction extends Model
@@ -16,5 +17,11 @@ class DepositTransaction extends Model
     }
     public function getBalanceAttribute($value){
         return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
+    }
+    public function paymentMethod(){
+        return $this->hasOne(PaymentMethod::class,'id','payment_method');
+    }
+    public function postedBy(){
+        return $this->belongsTo(User::class,'user_id');
     }
 }

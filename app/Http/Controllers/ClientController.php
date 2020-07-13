@@ -32,8 +32,7 @@ class ClientController extends Controller
     //create client using post
     public function create(Request $request){
         
-
-        
+        // var_dump($request->spouse_name);
         $request->is_self_employed =  filter_var($request->is_self_employed, FILTER_VALIDATE_BOOLEAN);
         $request->is_employed =  filter_var($request->is_employed, FILTER_VALIDATE_BOOLEAN);
         $request->spouse_is_self_employed =  filter_var($request->spouse_is_self_employed, FILTER_VALIDATE_BOOLEAN);
@@ -43,14 +42,16 @@ class ClientController extends Controller
         
 
 
-
         
-        $this->validator($request->all())->validate();
-        $client_id = makeClientID($request->office_id);
         $req = Client::clientExists($request);
+        
         if($req['exists']){
+            
             return response()->json($req,422);
         }
+        $this->validator($request->all())->validate();
+        $client_id = makeClientID($request->office_id);
+        
 
         $client_id = makeClientID($request->office_id);
         $filename = $client_id.'.jpeg';
@@ -149,7 +150,7 @@ class ClientController extends Controller
                 $image = $request->file('profile_picture_path');
                 // $filename = $image->getClientOriginalName();   
                 $image_resize = Image::make($image->getRealPath());
-                // $image_resize->resize(600, 600);
+                $image_resize->resize(600, 600);
                 $image_resize->save(public_path($this->profile_path . $filename), 50);
                 ini_set('memory_limit','128M');
             }
@@ -158,7 +159,7 @@ class ClientController extends Controller
                 $image = $request->file('signature_path');
                 // $filename = $image->getClientOriginalName();   
                 $image_resize = Image::make($image->getRealPath());
-                // $image_resize->resize(600, 600);
+                $image_resize->resize(600, 300);
                 $image_resize->save(public_path($this->signature_path . $filename),50);
                 ini_set('memory_limit','128M');
             }
@@ -219,9 +220,9 @@ class ClientController extends Controller
                     'household_size'=>'required|integer|gt:0',
                     'years_of_stay_on_house'=>'required|integer|gt:0',
                     'house_type'=>['required', new HouseType],
-                    'spouse_name' => 'required',
-                    'spouse_contact_number' => 'required',
-                    'spouse_birthday' => 'required|date',
+                    'spouse_name' => 'sometimes',
+                    'spouse_contact_number' => 'sometimes',
+                    'spouse_birthday' => 'sometimes|date',
                     'tin'=>'required',
                     'sss'=>'required',
                     'umid'=>'required',
@@ -256,9 +257,9 @@ class ClientController extends Controller
                 'household_size'=>'required|integer|gt:0',
                 'years_of_stay_on_house'=>'required|integer|gt:0',
                 'house_type'=>['required', new HouseType],
-                'spouse_name' => 'required',
-                'spouse_contact_number' => 'required',
-                'spouse_birthday' => 'required|date',
+                'spouse_name' => 'sometimes',
+                'spouse_contact_number' => 'sometimes',
+                'spouse_birthday' => 'sometimes',
                 'tin'=>'required',
                 'sss'=>'required',
                 'umid'=>'required',
@@ -513,7 +514,7 @@ class ClientController extends Controller
             $image = $request->file('profile_picture_path');
             // $filename = $image->getClientOriginalName();   
             $image_resize = Image::make($image->getRealPath());
-            // $image_resize->resize(600, 600);
+            $image_resize->resize(600, 600);
             $image_resize->save(public_path($this->profile_path . $filename),50);
             ini_set('memory_limit','128M');
         }
@@ -522,7 +523,7 @@ class ClientController extends Controller
             $image = $request->file('signature_path');
             // $filename = $image->getClientOriginalName();   
             $image_resize = Image::make($image->getRealPath());
-            $image_resize->resize(600, 600);
+            $image_resize->resize(600, 300);
             $image_resize->save(public_path($this->signature_path . $filename));
             ini_set('memory_limit','128M');
         }
@@ -543,7 +544,7 @@ class ClientController extends Controller
         return $request;
     }
     public function depositAccount($client_id,$deposit_id){
-        $account = DepositAccount::find($deposit_id)->load(['type','transactions','client.office']);
+        $account = DepositAccount::find($deposit_id)->load(['type','transactions.paymentMethod','transactions.postedBy','client.office']);
         return view('pages.deposit-dashboard',compact('account'));
     }
 }

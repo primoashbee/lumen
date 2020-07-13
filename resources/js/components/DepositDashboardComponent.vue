@@ -17,6 +17,7 @@
 					</div>
 				</div>
 				<div class="col-lg-6 text-right">
+					<b-button class="btn btn-primary mr-2" @click="postInterest" v-if="this.account_info.accrued_interest > 0">Post Interest</b-button>
 					<b-button class="btn btn-primary mr-2" @click="showModal('deposit')">Enter Deposit</b-button>
 					<b-button class="btn btn-primary" @click="showModal('withdraw')">Enter Withdrawal</b-button>
 				</div>
@@ -67,10 +68,13 @@
 				                    <tr>
 				                        <td><p class="title">#</p></td>
 				                        <td><p class="title">ID</p></td>
+				                        <td><p class="title">Repayment Date</p></td>
 				                        <td><p class="title">Transaction Date</p></td>
 				                        <td><p class="title">Type</p></td>
 				                        <td><p class="title">Amount</p></td>
 				                        <td><p class="title">Balance</p></td>
+				                        <td><p class="title">Payment Method</p></td>
+				                        <td><p class="title">Posted By</p></td>
 				                    </tr>
 				                </thead>
 				                <tbody>
@@ -82,16 +86,31 @@
 				                        	<p class="title">{{item.transaction_id}}</p>
 				                        </td>
 				                        <td>
+				                        	<p class="title">{{item.repayment_date}}</p>
+				                        </td>
+				                        <td>
 				                        	<p class="title">{{item.created_at}}</p>
 				                        </td>
 				                        <td>
 				                        	<p class="title">{{item.transaction_type}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.amount}}</p>
+				                        	<p class="title">
+												<span class="badge badge-pill" v-bind:class="rowClass(item)">{{item.amount}}</span>
+											</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.balance}}</p>
+				                        	<p class="title">
+												<span class="badge badge-pill badge-primary">
+													{{item.balance}}
+												</span>
+											</p>
+				                        </td>
+				                        <td>
+				                        	<p class="title">{{item.payment_method.name}}</p>
+				                        </td>
+				                        <td>
+				                        	<p class="title">{{item.posted_by.fullname}}</p>
 				                        </td>
 
 				                    </tr>
@@ -114,7 +133,7 @@
 		        </div>
 		        <div class="form-group">
 		        	<label class="text-lg">Payment Method</label>
-					<payment-methods payment_type="for_deposit" @paymentSelected="paymentSelected" v-bind:class="paymentMethodHasError ? 'is-invalid' : ''" ></payment-methods>
+					<payment-methods :payment_type="payment_type" @paymentSelected="paymentSelected" v-bind:class="paymentMethodHasError ? 'is-invalid' : ''" ></payment-methods>
 					<div class="invalid-feedback" v-if="paymentMethodHasError">
                         {{ errors.payment_method[0]}}
                     </div>
@@ -163,16 +182,24 @@
       background: transparent!important;
       
     }
+	.btn-danger{
+		margin-right:20px;
+	}
+	.badge {
+		font-size:100%;
+	}
     
 </style>
 <script type="text/javascript">
 import Swal from 'sweetalert2';
 	export default{
-		props:['list_level','deposit_id','account_info'],
+		props:['deposit_id','account_info'],
 		data(){
 			return{
 				variants: ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
 				background:'dark',
+				payment_type: null,
+				list_level:'branch',
                 modal:{
 					modalState:false,
 					modal_title:null,
@@ -193,14 +220,99 @@ import Swal from 'sweetalert2';
 			this.fields.deposit_account_id = this.account_info.id
 		},
 		methods:{
+			rowClass(item){
+				if(item.transaction_type=="Withdraw"){
+					return 'badge-danger';
+				}else if(item.transaction_type=="Deposit"){
+					return 'badge-success';
+				}else{
+					return 'badge-info';
+				}
+				
+			},
+			postInterest(){
+			
+				var vm = this;
+				const swalWithBootstrapButtons = Swal.mixin({
+					customClass: {
+						confirmButton: 'btn btn-success',
+						cancelButton: 'btn btn-danger'
+					},
+					
+					buttonsStyling: true,
+					
+					})
+
+					swalWithBootstrapButtons.fire({
+					html: 
+						`
+						<table class="table table-condensed">
+						<tbody>
+						<thead>
+							<th class="text-right" style="width:50%;font-weight:900" >Particulars</th>
+							<th class="text-left" style="width:50%;font-weight:900">Amount</th>
+						</thead>
+						<tr>
+							<td class="text-right pr-2">Current Balance: </td>
+							<td class="text-left">`+vm.account_info.balance+`</td>
+						</tr>
+						<tr>
+							<td class="text-right pr-2">Accrued Interest: </td>
+							<td class="text-left">`+vm.currency +" "+vm.account_info.accrued_interest+`</td>
+						</tr>
+						<tr style="border:none">
+							<td class="text-right pr-2" style="font-weight:900">Balance after Posting: </td>
+							<td class="text-left" style="font-weight:900">`+vm.account_info.new_balance_formatted+`</td>
+						</tr>
+						</tbody>
+						</table>
+						`,
+						
+					title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Are you sure you want to post interest? (Can\'t revert this)</span> ',
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonText: 'Yes',
+					cancelButtonText: 'No',
+					
+					reverseButtons: true
+					}).then((result) => {
+					if (result.value) {
+						axios.post('/deposit/account/post/interest',{
+							'deposit_account_id':vm.account_info.id
+							}
+						)
+						.catch(err=>{
+							console.log(err)
+						})
+						.then(res=>{
+							swalWithBootstrapButtons.fire(
+							'<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Posted!</span>',
+							'Accrued Interest Posted',
+							'success'
+							)
+						})
+					} else if (
+						/* Read more about handling dismissals below */
+						result.dismiss === Swal.DismissReason.cancel
+					) {
+						swalWithBootstrapButtons.fire(
+						'<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Cancelled</span>',
+						'Transaction cancelled',
+						'error'
+						)
+					}
+				})
+			},
 			showModal(transaction){
 				this.modal.modalState = true
 				if(transaction=="deposit"){
 					this.modal.modal_title="Enter Deposit"
 					this.fields.type="deposit"
+					this.payment_type="for_deposit"
 				}else{
 					this.modal.modal_title="Enter Withdrawal"
 					this.fields.type="withdraw"
+					this.payment_type="for_withdrawal"
 				}
 
 			},
@@ -249,6 +361,9 @@ import Swal from 'sweetalert2';
             },
             clientLink(){
 				return '/client/'+this.account_info.client_id
+			},
+			currency(){
+				return this.account_info.balance.substr(0,1)
 			}
 		},
 		watch: {
@@ -259,7 +374,6 @@ import Swal from 'sweetalert2';
 					this.fields.type=null,
 					this.fields.payment_method = null,
 					this.fields.amount = null,
-					this.fields.deposit_account_id = null,
 					this.fields.repayment_date = null
 				}
 			}

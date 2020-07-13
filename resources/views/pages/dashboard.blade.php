@@ -3,56 +3,69 @@
 @section('content')
 <div class="content pl-32 pr-8 mt-4" id="content-full">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="card chart-container">
                 <div class="card-header">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="chart-header">Total Shipments</h5>
-                            <h2 class="chart-title">Performance</h2>
-                            <payment-methods></payment-methods>
+                    
+                        <div class="col-md-6" style="max-height: 200px">
+                            <h5 class="chart-header">{{ \Carbon\Carbon::now()->format('F d, Y')}}</h5>
+                            <h2 class="chart-title">Par Movement</h2>
+                    
                         </div>
-                        <div class="col-md-6">
-                            <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
-                                <label class="btn btn-sm btn-primary btn-simple active" id="0">
-                                    <input type="radio" name="options" checked="">
-                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Accounts</span>
-                                </label>
-                                <label class="btn btn-sm btn-primary btn-simple" id="1">
-                                    <input type="radio" name="options" checked="">
-                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Purchases</span>
-                                </label>
-                                <label class="btn btn-sm btn-primary btn-simple" id="1">
-                                    <input type="radio" name="options" checked="">
-                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Sessions</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="card-body">
-                    <div class="chart-area">
-                        
-                    </div>
+                    <chart-par-movement></chart-par-movement>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card chart-container">
+                <div class="card-header">
+                        <div class="col-md-6" style="max-height: 200px">
+                            <h5 class="chart-header">{{ \Carbon\Carbon::now()->format('F d, Y')}}</h5>
+                            <h2 class="chart-title">Repayment Trend</h2>
+                        </div>
+                    
+                </div>
+                <div class="card-body">
+                    <chart-repayment-trend></chart-repayment-trend>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <div class="card chart-container">
+        <div class="col-md-12">
+            <div class="card chart-container" style="height: 450px">
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-12">
-                            <h5 class="chart-header">Total Shipments</h5>
-                            <h2 class="chart-title">Performance</h2>
+                            <h5 class="chart-header">{{ \Carbon\Carbon::now()->format('F d, Y')}}</h5>
+                            <h2 class="chart-title">Disbursement Trend</h2>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
-                        
+                        <chart-disbursement-trend></chart-disbursement-trend>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card chart-container" style="height: 550px">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 class="chart-header">{{ \Carbon\Carbon::now()->format('F d, Y')}}</h5>
+                            <h2 class="chart-title">Resigned Vs New Loans</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <chart-client-loans-trend></chart-client-loans-trend>
                     </div>
                 </div>
             </div>
@@ -62,37 +75,37 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-12">
-                            <h5 class="chart-header">Total Shipments</h5>
-                            <h2 class="chart-title">Performance</h2>
+                            <h5 class="chart-header">{{ \Carbon\Carbon::now()->format('F d, Y')}}</h5>
+                            <h2 class="chart-title">Clients</h2>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="chart-area">
-                        
+                    <div class="chart-area" style="height:400px">
+                        <chart-clients></chart-clients>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-8">
             <div class="card chart-container">
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-12">
-                            <h5 class="chart-header">Total Shipments</h5>
-                            <h2 class="chart-title">Performance</h2>
+                            <h5 class="chart-header">{{ \Carbon\Carbon::now()->format('F d, Y')}}</h5>
+                            <h2 class="chart-title">Summary</h2>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="chart-area">
-                        
+                    <div class="chart-area" style="height:400px">
+                        <chart-summary></chart-summary>
                     </div>
                 </div>
             </div>
         </div>
     </div>	
-
+{{-- 
     <div class="row">
         <div class="col-md-5">
             <div class="card">
@@ -126,5 +139,5 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 @endsection

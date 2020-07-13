@@ -25,7 +25,7 @@ class TransactionType implements Rule
      */
     public function passes($attribute, $value)
     {
-        $type = ['deposit','withdraw', 'CTLP','interest_posting'];
+        $type = ['deposit','withdraw', 'CTLP','Interest Posting','post_interest'];
         return in_array($value,$type) ?  true : false;
     }
 
