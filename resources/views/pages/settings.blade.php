@@ -151,16 +151,16 @@
 						
 						
 					</li>
+					<li class="settings-item">
+						<a class="nav-link" id="home-tab" href="/payment/methods">
+							<i class="fas fa-3x fa-hand-holding-usd"></i>
+							<p class="title text-center mt-2">Payment Method</p>
+						</a>	
+					</li>
 				</ul>
 
 			</div>
 		</div>
-		<div class="row tab-wrapper">
-			<div class="col-lg-12">
-				<div class="tab-content" id="myTabContent">
-				  <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab"><p class="title">Sample</p></div>
-				</div>
-			</div>
-		</div>
+
 	</div>
 @endsection

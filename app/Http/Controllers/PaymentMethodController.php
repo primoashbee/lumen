@@ -30,5 +30,7 @@ class PaymentMethodController extends Controller
         
             return $res;
         }
+
+        return view('pages.payment-method');
     }
 }

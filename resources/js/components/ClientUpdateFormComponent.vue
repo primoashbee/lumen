@@ -15,7 +15,7 @@
           </div>
           <div class="card-body">
             <form @submit.prevent="submit">
-                <h3 class="px-3">Basic Information</h3>
+                <h3 class="text-2xl my-3 px-3 title">Basic Information</h3>
                 <div class="row px-3">
                 <div class="form-group col-md-6 col-lg-3">
                     <label for="client_id">Linked To</label>
@@ -144,7 +144,7 @@
                         </div>  
                     </div>
                 </div>
-                <h3 class="px-3 my-4 h3">Address Information</h3>
+                <h3 class="px-3 my-4 title text-2xl">Address Information</h3>
                 <div class="row px-3">
                     <div class="form-group px-3 col-md-9">
                         <label for="street_address">Street Address</label>
@@ -187,7 +187,7 @@
                         </div>
                     </div>
                 </div>
-                <h3 class="px-3 my-3 h3">Family Information</h3>	
+                <h3 class="px-3 my-3 title text-2xl">Family Information</h3>	
                 <div class="row px-3"> 
                     <div class="form-group col-md-12">
                         <label for="business_address">Full Business Address</label>
@@ -262,7 +262,7 @@
                     </div>
                 </div>
             
-                <h3 class="px-3 my-4 h3">Statutories</h3>
+                <h3 class="title text-2xl px-3 my-4">Statutories</h3>
             
                 <div class="row px-3">
                     <div class="form-group col-md-4">
@@ -295,11 +295,11 @@
                     </div>
                 </div>
             
-                <h3 class="px-3 my-4 h3">Employment Income</h3>
+                <h3 class="px-3 my-4 title text-2xl">Employment Income</h3>
             
                 <div class="row px-3">
-                    <h3 class="col-md-6 px-3 my-2 h3">Personal</h3>
-                    <h3 class="col-md-6 h3">Spouse</h3>
+                    <h3 class="col-md-6 px-3 my-2 title text-2xl">Personal</h3>
+                    <h3 class="col-md-6 my-2 title text-2xl">Spouse</h3>
                     <div class="form-group col-md-3">
                         <div class="p0 form-check">
                             <label class="form-check-label" for="is_self_employed">
@@ -413,7 +413,7 @@
                     </div>
                 </div>
             
-                <h3 class="px-3 my-4 h3">Other Income</h3>	
+                <h3 class="px-3 my-4 text-2xl title">Other Income</h3>	
                 <div class="row px-3">
                     <div class="form-group col-md-3">
                         <div class="form-check p0">
@@ -458,7 +458,7 @@
                     </div>
                 </div>
             
-                <h4 class="my-2 px-3 h3">Notes</h4>
+                <h4 class="my-2 px-3 text-2xl title">Notes</h4>
                 <div class="row px-3">
                     <div class="form-group col-md-12">
                         <textarea value="notes" rows="3" cols="40" v-model="fields.notes" class="form-control"></textarea>
