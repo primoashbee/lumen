@@ -99,7 +99,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit');
     Route::post('/deposit/account/post/interest','DepositAccountController@postInterestByUser')->name('deposit.account.post.interest');
 
-    // Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
 
     Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');
 
