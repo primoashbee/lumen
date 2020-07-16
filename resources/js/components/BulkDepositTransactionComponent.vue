@@ -50,16 +50,16 @@
 						
 						<td><input type="checkbox" :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
 						
-						<td><label :for="item.id">{{item.type.name}}</label></td>
-						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
+						<td><label class="text-base" :for="item.id">{{item.type.name}}</label></td>
+						<td><a class="text-base" :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
 						
-						<td>{{item.client.firstname + ' ' + item.client.lastname}}</td>
-						<td>{{item.balance}} </td>
+						<td class="text-base">{{item.client.firstname + ' ' + item.client.lastname}}</td>
+						<td class="text-base">{{item.balance}} </td>
 						<!-- <td> Account ID : {{item.id}} </td> -->
 						
-						<td>{{item.accrued_interest}}</td>
+						<td class="text-base">{{item.accrued_interest}}</td>
 							
-						<td style="padding-left:50px">{{item.client.office.name}}</td>
+						<td class="text-base" style="padding-left:50px">{{item.client.office.name}}</td>
 					</tr>
 				</tbody>
 				<tbody v-else>
@@ -67,11 +67,11 @@
 						
 						<td><input type="checkbox" :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
 						
-						<td><label :for="item.id">{{item.type.name}}</label></td>
-						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
+						<td><label class="text-base" :for="item.id">{{item.type.name}}</label></td>
+						<td><a class="text-base" :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
 						
-						<td>{{item.client.firstname + ' ' + item.client.lastname}}</td>
-						<td>{{item.balance}} </td>
+						<td class="text-base">{{item.client.firstname + ' ' + item.client.lastname}}</td>
+						<td class="text-base">{{item.balance}} </td>
 						<!-- <td> Account ID : {{item.id}} </td> -->
 						
 						<td>
@@ -88,11 +88,15 @@
 				</tbody>
 				
 			</table>
-			<p class="lead float-left text-right" style="color:white">Showing Records {{lists.from}} - {{lists.to}} of {{totalRecords}} </p>
-			<p class="lead float-right text-right" style="color:white">Total Records: {{totalRecords}} </p>
-			<button type="button" class="btn btn-primary" @click="showModal()" v-if="hasRecords"> {{transactionTypeDisplay}} </button>
+			<div class="clearfix">
+				<p class="lead float-left text-right" style="color:white">Showing Records {{lists.from}} - {{lists.to}} of {{totalRecords}} </p>
+				<p class="lead float-right text-right" style="color:white">Total Records: {{totalRecords}} </p>
+			</div>
+			<div class="clearfix">
 			<div class="clearfix"></div>
-			<paginator :dataset="lists" @updated="fetch"></paginator>
+				<paginator class="float-left"  :dataset="lists" @updated="fetch"></paginator>
+				<button type="button" class="btn btn-primary float-right" @click="showModal()" v-if="hasRecords"> {{transactionTypeDisplay}} </button>
+			</div>
 		</div>
 		
         </div>

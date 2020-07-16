@@ -1,14 +1,14 @@
 <nav id="navbar" class="navbar">
   <div class="sidebar-toggle">
-    <button class="btn ml-3" id="sidebar-toggle">
+    <button class="btn ml-3 active" id="sidebar-toggle">
       <i class="fas fa-list visible-on-sidebar-regular" id="regular"></i>
       <i class="fas fa-align-center" id="mini"></i>
     </button>
     
-    <div class="logo-container">
+    <div class="logo-container full-nav">
     <img src="{{ asset('assets/img/logo.png')}}">
     </div>
-    <a class="navbar-brand l-text float-left" href="#">{{ucwords(breadcrumbize(request()->path()))}}</a>
+    <a class="navbar-brand l-text text-2xl" href="#">{{ucwords(breadcrumbize(request()->path()))}}</a>
 
   </div>
   <div>

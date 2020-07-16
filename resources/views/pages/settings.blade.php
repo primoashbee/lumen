@@ -1,6 +1,6 @@
 @extends('layouts.user')
 @section('content')
-	<div class="content content pl-32 pr-2 mt-4" id="content-full">
+	<div class="content content pl-32 pl-64 pr-2 mt-4" id="content-full">
 		<div class="row setting-wrapper">
 			<div class="col-lg-9 pr-0 setting-container">
 				<div class="row">

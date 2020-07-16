@@ -2,7 +2,7 @@
 
 @section('content')
 <form action="{{ url()->current()}}" method="GET">
-<div class="content pl-32 pr-8 mt-4" id="content-full">
+<div class="content pl-32 pl-64 pr-8 mt-4" id="content-full">
 	<form class="row">
 		<div class="col-lg-12">
 			<div class="card">

@@ -4911,6 +4911,10 @@ margin-left: 1px;}
 .text-6xl{	font-size: 4rem;}
 
 
+div.form-group label, table tbody tr td{
+    font-size: 1rem;
+}
+
 /*Classes Sidebar*/
 
 ul li{
@@ -5148,7 +5152,8 @@ body.dark-mode h3,
 body.dark-mode h4,
 body.dark-mode h5,
 body.dark-mode h6,
-body.dark-mode input[type=text].form-control:not(.search_text){
+body.dark-mode input[type=text].form-control:not(.search_text),
+.multiselect__input{
 	color: #fff;
 }
 a[aria-expanded="true"] p,a[aria-expanded="true"] i,.sub-list:hover a.sub-nav,.second-sub-list:hover a.second-sub-nav{
@@ -5393,8 +5398,6 @@ body div.navbar, body div.navbar ul li{
 .navbar-brand.l-text{
     font-weight: 300;
     padding: 0;
-    margin-left: 0rem;
-    margin-left: .5rem;
     margin-top: 8px;
     transition: all ease 0.5s;
     
@@ -5402,7 +5405,6 @@ body div.navbar, body div.navbar ul li{
 
 a.navbar-brand.full-nav{
     display: inline-block;
-    margin-left: 2.5rem;
     margin-top: 8px;
     /*margin-left: 6rem;*/
     /*transition: all ease 1s;*/
@@ -5413,6 +5415,7 @@ a.navbar-brand.full-nav{
     height: 50px;
     /*transform: */
     margin-left: 0rem;
+    margin-right: 1.5rem;
     visibility: hidden;
     opacity: 0;
     transform: translateX(-200px);
@@ -5428,6 +5431,7 @@ a.navbar-brand.full-nav{
     visibility: visible;
     transform: translateX(0);
     margin-left: 6rem;
+    margin-right: 3.5rem;
 }
 
 
@@ -5583,6 +5587,8 @@ a.dropdown-toggle.l-text+.dropdown-menu {
 
 
 /*FORMS*/
+
+
 button[data-dismiss='modal']{
     outline: none;
 }

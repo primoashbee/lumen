@@ -1,4 +1,4 @@
-<div class="sidebar" id="sidebar">
+<div class="sidebar sidebar-full" id="sidebar">
 	<div class="sidebar-wrapper px-3">
 		<div class="logo py-2">
 			
