@@ -16,6 +16,7 @@ class CreatePaymentMethodsTable extends Migration
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->boolean('is_disabled')->default(false);
             $table->boolean('for_disbursement');
             $table->boolean('for_repayment');
             $table->boolean('for_deposit');

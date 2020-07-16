@@ -25,7 +25,7 @@
 			<table class="table" >
 				<thead>
 					<tr v-if="forInterestPosting">
-						<td><p class="title"><input type="checkbox" v-model="check_all" v-show="viewableRecords > 0"></p></td>
+						<td><p class="title"><input type="checkbox" @click="checkAll($event)" v-show="viewableRecords > 0"></p></td>
 						<td><p class="title">Deposit Account</p></td>
 						<td><p class="title">Client ID</p></td>
 						<td><p class="title">Name</p></td>
@@ -35,7 +35,7 @@
 					</tr>
 					
 					<tr v-else>
-						<td><p class="title"><input type="checkbox" v-model="check_all" v-show="viewableRecords > 0"></p></td>
+						<td><p class="title"><input type="checkbox" @click="checkAll($event)" v-show="viewableRecords > 0"></p></td>
 						<td><p class="title">Deposit Account</p></td>
 						<td><p class="title">Client ID</p></td>
 						<td><p class="title">Name</p></td>
@@ -48,7 +48,7 @@
 				<tbody v-if="hasRecords && forInterestPosting">
 					<tr  v-for="(item, key) in lists.data" :key="item.id">
 						
-						<td><input type="checkbox" :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
+						<td><input type="checkbox" class="item_checkbox" :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
 						
 						<td><label :for="item.id">{{item.type.name}}</label></td>
 						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
@@ -65,7 +65,7 @@
 				<tbody v-else>
 					<tr  v-for="(item, key) in lists.data" :key="item.id">
 						
-						<td><input type="checkbox" :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
+						<td><input type="checkbox" class="item_checkbox"  :id="item.id" @change="checked(item,$event)" :checked="accountOnList(item.id)"></td>
 						
 						<td><label :for="item.id">{{item.type.name}}</label></td>
 						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
@@ -309,10 +309,6 @@ export default {
 			// this.account_ids = []
 			if(event.target.checked){
 				this.form.accounts.push(account)
-				this.form.accounts.map(x=>{
-					this.account_ids.push(x.id)
-				})
-				
 			}
 
 		},
@@ -451,12 +447,20 @@ export default {
 			}
 			return false;
 		},
-		checkAll(){
-			this.lists.data.forEach((item,index)=>{
-				this.account_ids.push(item.id)
-				this.form.accounts.push({id:item.id, amount: 0})
-			});
-			
+		checkAll($event){
+			if($event.target.checked){
+				$('.item_checkbox').each(function(){
+					if(!$(this).prop('checked')){
+						$(this).click()
+					}
+				})
+			}else{
+				$('.item_checkbox').each(function(){
+					if($(this).prop('checked')){
+						$(this).click()
+					}
+				})
+			}
 			
 		},
 		totalAmount(){
@@ -581,17 +585,6 @@ export default {
 		},
 
 
-	},
-	watch: {
-		'check_all' : function(nV,oV){
-			if(this.check_all){
-				this.checkAll()
-				
-			}else{
-				this.account_ids = []
-				this.form.accounts = []
-			}
-		}
 	},
 	mounted(){
 		this.form.type = this.transactionType

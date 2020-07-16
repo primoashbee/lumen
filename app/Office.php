@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use App\PaymentMethod;
 use App\DefaultPaymentMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,6 +19,12 @@ class Office extends Model
         $me = new static;
         return $me->where('level',$level)->count();
     }
+    
+    public static function getLevelList($level){
+        $me = new static;
+        return $me->where('level',$level)->get();
+    }
+
     public function parent(){
         return $this->belongsTo(static::class, 'parent_id');
     }

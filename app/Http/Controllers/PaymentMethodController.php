@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Office;
 use App\PaymentMethod;
 use Illuminate\Http\Request;
+use App\DefaultPaymentMethod;
 use Illuminate\Support\Facades\Schema;
 
 class PaymentMethodController extends Controller
@@ -29,6 +31,10 @@ class PaymentMethodController extends Controller
             $res['default_payment'] = array('id'=>$pm->id,'name'=>$pm->name);
         
             return $res;
+        }
+        if($request->has('list')){
+            $list = PaymentMethod::orderBy('name','asc')->get();
+            return $list;
         }
 
         return view('pages.payment-method');

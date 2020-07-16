@@ -45,35 +45,24 @@
 			                    </tr>
 			                </thead>
 			                <tbody>
-			                    <tr>
+			                    <tr v-for="(item,key) in lists" :key="key">
 			                    	<td>
 			                        	<div class="form-group">
 			                        		<div class="form-check">
-					                        	<label for="status">
-					                                <input class="form-check-input cb-type" v-model="selectAll" @click="selectAllTransactions" id="status" type="checkbox">
+					                        	<label :for="item.id">
+					                                <input class="form-check-input cb-type" :id="item.id" type="checkbox" :checked="!item.is_disabled">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
 				                            </div>
 			                            </div>
 			                        </td>
-			                        <td><p class="title text-lg">CASH IN BANK - BDO</p></td>
+			                        <td><p class="title text-lg">{{item.name}}</p></td>
 			                        <td>
 			                        	<div class="form-group">
 			                        		<div class="form-check">
-					                        	<label for="disbursement">
-					                                <input class="form-check-input cb-type" v-model="transactions.disbursement" id="disbursement" type="checkbox">
-					                                <span class="form-check-sign">
-					                                </span>
-					                            </label>
-				                            </div>
-			                            </div>
-			                        </td>
-			                        <td>
-			                        	<div class="form-group">
-			                        		<div class="form-check">
-					                        	<label for="repayment">
-					                                <input class="form-check-input cb-type" v-model="transactions.repayment" id="repayment" type="checkbox">
+					                        	<label :for="labelFor('for_disbursement',item.id)">
+					                                <input class="form-check-input cb-type" :id="labelFor('for_disbursement',item.id)" @click="checked('for_disbursement',item.id,$event)" type="checkbox" :checked="item.for_disbursement">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -83,8 +72,8 @@
 			                        <td>
 			                        	<div class="form-group">
 			                        		<div class="form-check">
-					                        	<label for="recovery">
-					                                <input class="form-check-input cb-type" v-model="transactions.recovery" id="recovery" type="checkbox">
+					                        	<label :for="labelFor('for_repayment',item.id)">
+					                                <input class="form-check-input cb-type" :id="labelFor('for_repayment',item.id)" type="checkbox" :checked="item.for_repayment">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -94,8 +83,8 @@
 			                        <td>
 			                        	<div class="form-group">
 			                        		<div class="form-check">
-					                        	<label for="deposit">
-					                                <input class="form-check-input cb-type" v-model="transactions.deposit" id="deposit" type="checkbox">
+					                        	<label :for="labelFor('for_recovery',item.id)">
+					                                <input class="form-check-input cb-type" :id="labelFor('for_recovery',item.id)" type="checkbox" :checked="item.for_recovery">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -105,8 +94,19 @@
 			                        <td>
 			                        	<div class="form-group">
 			                        		<div class="form-check">
-					                        	<label for="withdrawal">
-					                                <input class="form-check-input cb-type" v-model="transactions.withdrawal" id="withdrawal" type="checkbox">
+					                        	<label :for="labelFor('for_deposit',item.id)">
+					                                <input class="form-check-input cb-type" :id="labelFor('for_deposit',item.id)" type="checkbox" :checked="item.for_deposit">
+					                                <span class="form-check-sign">
+					                                </span>
+					                            </label>
+				                            </div>
+			                            </div>
+			                        </td>
+			                        <td>
+			                        	<div class="form-group">
+			                        		<div class="form-check">
+					                        	<label :for="labelFor('for_withdrawal',item.id)">
+					                                <input class="form-check-input cb-type" :id="labelFor('for_withdrawal',item.id)" type="checkbox" :checked="item.for_withdrawal">
 					                                <span class="form-check-sign">
 					                                </span>
 					                            </label>
@@ -121,6 +121,7 @@
 			                    </tr>
 			                </tbody>
 			            </table>  
+						<button class="mt-2 float-right btn btn-primary" @click="savePaymentMethods">Save</button>
 		            </form>  
                 </div>
                 <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -255,6 +256,8 @@
 					withdrawal:false,
 					recovery:false
 				},
+				lists: [],
+				for_update:[],
 				selectAll:false,
 				showBranchPaymentMethod:false,
 				variants: ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'],
@@ -263,6 +266,17 @@
 			}
 		},
 		methods:{
+			checked(type,id,event){
+					var update ={
+						id: id,
+						type: event.target.checked
+					}
+					this.for_update.push(update)
+					console.log('YES')
+			},
+			savePaymentMethods(){
+				alert()
+			},
 			showModal(){
 				this.show= true
 			},
@@ -278,12 +292,25 @@
 				$.each(this.transactions, function(k, v){
 					vm[k] = bool
 				})
-			}
+			},
+
+			labelFor(string,key){
+				return string +'-' + key
+			},
+			getList(){
+				axios.get('/payment/methods?list=true')
+				.then(res=>{
+					this.lists = res.data
+				})
+			},
 		},
 		computed:{
 			paymentMethodHasError(){
 				return this.errors.hasOwnProperty('payment_method')
 			}
+		},
+		mounted(){
+			this.getList()
 		}
 	}
 </script>
