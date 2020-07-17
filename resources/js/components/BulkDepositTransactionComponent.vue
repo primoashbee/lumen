@@ -25,7 +25,7 @@
 			<table class="table" >
 				<thead>
 					<tr v-if="forInterestPosting">
-						<td><p class="title"><input type="checkbox" @click="checkAll($event)" v-show="viewableRecords > 0"></p></td>
+						<td><p class="title"><input type="checkbox" id="check_all" @click="checkAll($event)" v-show="viewableRecords > 0"></p></td>
 						<td><p class="title">Deposit Account</p></td>
 						<td><p class="title">Client ID</p></td>
 						<td><p class="title">Name</p></td>
@@ -35,7 +35,7 @@
 					</tr>
 					
 					<tr v-else>
-						<td><p class="title"><input type="checkbox" @click="checkAll($event)" v-show="viewableRecords > 0"></p></td>
+						<td><p class="title"><input type="checkbox" id="check_all" @click="checkAll($event)" v-show="viewableRecords > 0"></p></td>
 						<td><p class="title">Deposit Account</p></td>
 						<td><p class="title">Client ID</p></td>
 						<td><p class="title">Name</p></td>
@@ -414,6 +414,11 @@ export default {
 		},
         fetch(page){
 			this.checkedAccounts = [];
+
+			if($('#check_all').prop('checked')){
+				$('#check_all').click()
+			}
+			
 			if(!this.checkForm()){
 				return;
 			}
