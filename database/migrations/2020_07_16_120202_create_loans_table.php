@@ -28,23 +28,17 @@ class CreateLoansTable extends Migration
             $table->integer('maximum_installment');
 
             $table->integer('installment_length'); 
-            $table->integer('installment_method');
+            $table->string('installment_method');
             
             $table->string('interest_interval');
             $table->string('interest_rate');
 
             $table->integer('loan_minimum_amount');
-            $table->integer('loan_maximum_amount');
 
-            $table->integer('grace_period');
+            $table->string('grace_period');
 
             $table->boolean('has_tranches')->default(false);
-
-            $table->integer('tranch_1_amount')->nullable();
-            $table->integer('tranch_2_amount')->nullable();
-            $table->integer('tranch_3_amount')->nullable();
-            $table->integer('tranch_4_amount')->nullable();
-            $table->integer('tranch_5_amount')->nullable();
+            $table->integer('number_of_tranches')->nullable();
 
 
             $table->unsignedInteger('loan_portfolio_active');

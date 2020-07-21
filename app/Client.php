@@ -201,4 +201,12 @@ class Client extends Model
         return $this->firstname. ' '.$this->lastname;
     }
     
+
+    // public function createLoanAcount($loan_id){
+    //     $loan = Loan::find($loan_id);
+
+    // }
+    public function loans(){
+        return $this->hasMany(LoanAccount::class, 'client_id','client_id');
+    }
 }
