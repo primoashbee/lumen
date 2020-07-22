@@ -236,7 +236,7 @@
 	tr td .form-check-sign{
 		position: absolute;
 	}
-	tr td .form-check-sign,.form-check .form-check-sign::before,.form-check .form-check-sign::after{
+	tr td .form-check-sign,.form-check:not(.tranch) .form-check-sign::before,.form-check .form-check-sign::after{
 		top: 5px;
 	}
 

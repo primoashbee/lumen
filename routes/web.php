@@ -48,6 +48,9 @@ Route::get('/z',function(){
 
 });
 
+Route::get('/create/loan', function(){
+    return view('pages.create-loan');
+});
 
 
 Auth::routes(); 

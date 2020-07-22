@@ -59,6 +59,7 @@ td,tr{
 }
 
 /*Color Utilities*/
+
 .t-white{
     color: #fff!important;
 }
@@ -440,6 +441,77 @@ margin-left: 1px;}
 .text-6xl{	font-size: 4rem;}
 
 
+.w-1{
+    width: 10%!important;
+}
+.w-2{
+    width: 20%!important;
+}
+.w-3{
+    width: 30%!important;
+}
+.w-4{
+    width: 40%!important;
+}
+.w-5{
+    width: 50%!important;
+}
+.w-6{
+    width: 60%!important;
+}
+.w-7{
+    width: 70%!important;
+}
+.w-8{
+    width: 80%!important;
+}
+.w-9{
+    width: 90%!important;
+}
+
+.w-100{
+    width: 100%!important;
+}
+
+.mx-w1{
+    max-width: 10%!important;
+}
+
+.mx-w2{
+    max-width: 20%!important;
+}
+
+.mx-w3{
+    max-width: 30%!important;
+}
+
+.mx-w4{
+    max-width: 40%!important;
+}
+
+.mx-w5{
+    max-width: 50%!important;
+}
+
+.mx-w6{
+    max-width: 60%!important;
+}
+
+.mx-w7{
+    max-width: 70%!important;
+}
+
+.mx-w8{
+    max-width: 80%!important;
+}
+
+.mx-w9{
+    max-width: 90%!important;
+}
+
+.mx-w10{
+    max-width: 100%!important;
+}
 /*Classes Sidebar*/
 
 ul li{
@@ -1218,6 +1290,9 @@ div.hi.active{
     top: 0;
     border: 1px solid #818181;
     transition: opacity 0.3s linear;
+ }
+ .form-check.tranch .form-check-sign::before,.form-check.tranch .form-check-sign::after{
+    top: 1px!important;
  }
 .form-check input[type="checkbox"].disabled+.form-check-sign::after
 {
