@@ -43,11 +43,11 @@ class CreateLoansTable extends Migration
 
             $table->unsignedInteger('loan_portfolio_active');
             $table->unsignedInteger('loan_portfolio_in_arrears');
-            $table->unsignedInteger('loan_portfolio_in_matured');
+            $table->unsignedInteger('loan_portfolio_matured');
 
             $table->unsignedInteger('loan_interest_income_active');
             $table->unsignedInteger('loan_interest_income_in_arrears');
-            $table->unsignedInteger('loan_interest_income_in_matured');
+            $table->unsignedInteger('loan_interest_income_matured');
 
             $table->unsignedInteger('loan_write_off');
             $table->unsignedInteger('loan_write_recovery');

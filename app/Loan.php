@@ -33,11 +33,11 @@ class Loan extends Model
         
         'loan_portfolio_active',
         'loan_portfolio_in_arrears',
-        'loan_portfolio_in_matured',
+        'loan_portfolio_matured',
 
         'loan_interest_income_active',
         'loan_interest_income_in_arrears',
-        'loan_interest_income_in_matured',
+        'loan_interest_income_matured',
 
         'loan_write_off',
         'loan_write_recovery',
@@ -71,11 +71,11 @@ class Loan extends Model
 
             'loan_portfolio_active'=>22,
             'loan_portfolio_in_arrears'=>25,
-            'loan_portfolio_in_matured'=>26,
+            'loan_portfolio_matured'=>26,
 
             'loan_interest_income_active'=>98,
             'loan_interest_income_in_arrears'=>92,
-            'loan_interest_income_in_matured'=>94,
+            'loan_interest_income_matured'=>94,
 
             'loan_write_off'=>56,
             'loan_write_recovery'=>53,

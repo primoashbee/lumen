@@ -15,14 +15,14 @@ class CreateLoanAccountsTable extends Migration
     {
         Schema::create('loan_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('client_id');
-            $table->unsignedInteger('loan_id');
+            $table->string('client_id'); 
+            $table->unsignedInteger('loan_id'); //dropdown
 
-            $table->integer('interest_calculation_method_id');
-            $table->integer('installment');
+            $table->integer('interest_calculation_method_id'); //dropdown
+            $table->integer('installment'); //number
 
-            $table->integer('loan_amount')->nullable();
-            $table->double('interest')->nullable();
+            $table->integer('loan_amount'); 
+            $table->double('interest');
 
             $table->string('status')->default('pending');
 
