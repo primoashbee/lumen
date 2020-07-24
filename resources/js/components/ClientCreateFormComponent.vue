@@ -14,10 +14,10 @@
           </div>
           <div class="card-body">
             <form @submit.prevent="submit">
-                <h3 class="px-3 my-3 text-2xl title">Basic Information</h3>
+                <h3 class="px-3 my-3 text-2xl">Basic Information</h3>
                 <div class="row px-3">
                 <div class="form-group col-md-6 col-lg-3">
-                    <label for="client_id">Linked To</label>
+                    <label for="client_id" class="text-lg">Linked To</label>
                     <v2-select @officeSelected="assignOffice" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
                     <div class="invalid-feedback" v-if="officeHasError">
                         {{ errors.office_id[0]}}
@@ -25,21 +25,21 @@
             
                 </div>
                 <div class="form-group col-md-3 col-lg-3">
-                    <label for="firstname">First Name</label>
+                    <label for="firstname" class="text-lg">First Name</label>
                     <input value="" type="text" id="firstname" v-model="fields.firstname" class="form-control"  v-bind:class="firstNameHasError ? 'is-invalid' : ''" z>
                     <div class="invalid-feedback" v-if="firstNameHasError">
                         {{ errors.firstname[0]}}
                     </div>
                 </div>
                 <div class="form-group col-md-3">
-                    <label for="middlename">Middle name</label>
+                    <label for="middlename" class="title text-lg">Middle name</label>
                     <input value="" type="text" id="middlename" v-model="fields.middlename" class="form-control" v-bind:class="middleNameHasError ? 'is-invalid' : ''">
                     <div class="invalid-feedback" v-if="middleNameHasError">
                         {{ errors.middlename[0]}}
                     </div>
                 </div>
                 <div class="form-group col-md-3">
-                    <label for="lastname">Last name</label>
+                    <label for="lastname" class="text-lg">Last name</label>
                     <input value="" id="lastname" type="text" v-model="fields.lastname" class="form-control" v-bind:class="lastNameHasError ? 'is-invalid' : ''" z>
                     <div class="invalid-feedback" v-if="lastNameHasError">
                         {{ errors.lastname[0]}}

@@ -4528,7 +4528,9 @@ td,tr{
     font-family: 'Open Sans', sans-serif!important;
     font-weight: 300;
 }
-
+hr{
+    background-color: #fff;
+}
 /*Color Utilities*/
 .t-white{
     color: #fff!important;
@@ -4897,20 +4899,44 @@ margin-left: 1px;}
 .ml-auto	{margin-left: auto;}
 .ml-px{	margin-left: 1px;}
 
-/*Font Size*/
-
-.text-xs	{font-size: .75rem;}
-.text-sm	{font-size: .875rem;}
-.text-base{	font-size: 1rem;}
-.text-lg	{font-size: 1.125rem;}
-.text-xl	{font-size: 1.25rem;}
-.text-2xl{	font-size: 1.5rem;}
-.text-3xl{	font-size: 1.875rem;}
-.text-4xl{	font-size: 2.25rem;}
-.text-5xl{	font-size: 3rem;}
-.text-6xl{	font-size: 4rem;}
-
-
+.mx-w1{
+    max-width: 10%;
+}
+.mx-w2{
+    max-width: 20%;
+}
+.mx-w3{
+    max-width: 30%;
+}
+.mx-w4{
+    max-width: 40%;
+}
+.mx-w5{
+    max-width: 50%;
+}
+.mx-w6{
+    max-width: 60%;
+}
+}
+.mx-w7{
+    max-width: 70%;
+}
+.mx-w8{
+    max-width: 80%;
+}
+.mx-w9{
+    max-width: 90%;
+}
+.w-1{ width:10%; }
+.w-2{ width:20%; }
+.w-3{ width:30%; }
+.w-4{ width:40%; }
+.w-5{ width:50%; }
+.w-6{ width:60%; }
+.w-7{ width:70%; }
+.w-8{ width:80%; }
+.w-9{ width:90%; }
+.w-full{ width:100%; }
 /*Classes Sidebar*/
 
 ul li{
@@ -5205,7 +5231,9 @@ body.light-mode input[type=number].form-control {
   background: transparent;
   background-image: none;
 }
-
+body.dark-mode select,.multiselect__tags{
+    border: 1px solid #b1b1b1!important;
+}
  body.dark-mode ul.nav.nav-pills li ul li:nth-child(2) {
     padding: .5rem .7rem;
     background: transparent;
@@ -5606,12 +5634,15 @@ textarea.form-control{
     color: hsla(0,0%,100%,.8);
     background-color: transparent;
     background-clip: padding-box;
-    border: 1px solid #cad1d7;
-    border-color: #2b3553;
+    border: 1px solid #b1b1b1;
+    border-color: #b1b1b1;
     border-radius: .4285rem;
     font-size: 1rem;
     outline: none;
     transition: color .3s ease-in-out,border-color .3s ease-in-out,background-color .3s ease-in-out;
+}
+input[type=number].form-control:focus{
+    color: #fff;
 }
 input[type=text].form-control:focus,input[type=text].form-control:hover,
 select.form-control:hover,select.form-control:focus,
@@ -5625,10 +5656,12 @@ textarea.form-control:hover{
     border-color: #fdad7d!important;
     background-color: transparent;
     box-shadow: none;
+
 }
 div.form-group label{
-    color: hsla(0,0%,100%,.6);
+    color: #dddddd;
     font-weight: 300;
+    font-size: 1.125rem!important;
 }
 .search_text{
     border: none;
@@ -6038,4 +6071,20 @@ ol {
     border-radius:15px;
     border:1px solid green;
     position: relative;
+}
+
+.form-group .multiselect__input::placeholder,.d-inline-block .multiselect__input::placeholder,
+.form-group .multiselect__placeholder, .d-inline-block .multiselect__placeholder{
+    color:#fff;
+}
+
+.form-group .multiselect__input,.d-inline-block .multiselect__input{
+    background: transparent!important;
+    border-color: #fff!important;
+    color: #fff;
+}
+.form-group .multiselect__tags,.d-inline-block .multiselect__tags{
+    background: transparent!important;
+    border-color: #fff!important;
+    color: #fff;
 }
