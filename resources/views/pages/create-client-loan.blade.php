@@ -16,7 +16,7 @@
 		<div class="card-body">
 
 			<form class="row">
-				<div class="col-lg-8">
+				<div class="col-lg-12">
 					<h1 class="text-2xl title">New Loan Account</h1>
 					<div class="row mt-4">
 						<div class="col-lg-6">
@@ -27,11 +27,9 @@
 								</select>
 							</div>
 							<div class="form-group">
-								<label for="application_date">Application Date</label>
-                        		<date-picker id="application_date"></date-picker>
 							</div>
 						</div>
-						<div class="col-lg-6">
+						<div class="col-lg-2">
 							<div class="form-group">
 								<label for="disbursement_date">Disbursement Date</label>
                         		<date-picker id="disbursement_date"></date-picker>
@@ -48,13 +46,6 @@
 					<div class="row pb-4">
 						
 						<div class="d-table-row px-3 mt-4">
-							<div class="d-table-cell form-group">
-								<label for="interest_calc_methods" class="title text-xl">Interest Calculation Methods</label>
-								<select id="interest_calc_methods" class="form-control">
-									<option value="">Declining Balance</option>
-									<option value="">Declining Balance with Equal Installment</option>
-								</select>
-							</div>
 
 							<div class="form-group d-table-cell pl-4">
 								<label for="loan_amount" class="title text-xl">Loan Amount</label>
