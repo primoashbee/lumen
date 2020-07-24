@@ -48,14 +48,13 @@ Route::get('/z',function(){
 
 });
 
-Route::get('/create/loan', function(){
-    return view('pages.create-loan');
-});
-
 
 Auth::routes(); 
 
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/create/loan', function(){
+        return view('pages.create-loan');
+    });    
     Route::get('/dashboard','DashboardController@index')->name('dashboard');
     Route::group(['middleware' => []], function () { 
         Route::get('/create/client','ClientController@index')->name('precreate.client');
@@ -130,6 +129,8 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('administration');
 
     Route::get('/user/{user}','UserController@get');
+
+    Route::post('/create/loan','LoanController@create');
 });
 
 

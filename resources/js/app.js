@@ -65,6 +65,8 @@ Vue.component('chart-client-loans-trend', require('./components/Dashboard/Client
 Vue.component('chart-clients', require('./components/Dashboard/ClientsComponent.vue').default);
 Vue.component('chart-summary', require('./components/Dashboard/SummaryTableComponent.vue').default);
 
+Vue.component('create-loan-product', require('./components/CreateLoanProductComponent.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
