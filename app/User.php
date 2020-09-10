@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'firstname','lastname','middlename','gender','birthday','notes','email', 'password','created_by',
+        'firstname','lastname','middlename','gender','birthday','notes','email', 'password','created_by','send_to'
    ]; 
 
     /**
@@ -196,6 +196,10 @@ class User extends Authenticatable
         });
         
         return $users->get();
+    }
+
+    public function offices(){
+        return $this->hasMany(OfficeUser::class);
     }
 
 

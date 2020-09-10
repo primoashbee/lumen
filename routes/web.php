@@ -50,11 +50,8 @@ Route::get('/z',function(){
 
 
 Auth::routes(); 
-
+Route::get('/fees','FeeController@getList');
 Route::group(['middleware' => ['auth']], function () {
-    Route::get('/create/loan', function(){
-        return view('pages.create-loan');
-    });    
     Route::get('/dashboard','DashboardController@index')->name('dashboard');
     Route::group(['middleware' => []], function () { 
         Route::get('/create/client','ClientController@index')->name('precreate.client');
@@ -102,25 +99,31 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/deposit/account/post/interest','DepositAccountController@postInterestByUser')->name('deposit.account.post.interest');
 
 
+    Route::post('/loans/list','LoanController@postInterestByUser')->name('deposit.account.post.interest');
+
+
+
+    Route::get('/settings/loan','LoanController@index')->name('settings.loan-products');
+    Route::get('/settings/api/get/loans','LoanController@loanProducts')->name('settings.loan-list');
     Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');
 
 
-    Route::get('/create/role', function(){
+    Route::get('/settings/create/role', function(){
         return view('pages.create-role');
     });
-    Route::get('/create/user', function(){
+    Route::get('/settings/create/user', function(){
         return view('pages.create-user');
     });
 
-    Route::get('/create/fee', function(){
+    Route::get('/settings/create/fee', function(){
         return view('pages.create-fees');
     });
 
-    Route::get('/create/penalty', function(){
+    Route::get('/settings/create/penalty', function(){
         return view('pages.create-penalty');
     });
 
-    Route::get('/create/office/{level}', 'OfficeController@createLevel')->name('create.office');
+    Route::get('/settings/create/office/{level}', 'OfficeController@createLevel')->name('create.office');
 
     Route::post('/search','SearchController@search');
 
@@ -129,8 +132,19 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('administration');
 
     Route::get('/user/{user}','UserController@get');
+    Route::get('/settings/create/loan', function(){
+        return view('pages.create-loan');
+    });
 
-    Route::post('/create/loan','LoanController@create');
+    Route::get('/settings/loan/edit/{loan}','LoanController@updateLoan'); //render view
+    Route::get('/settings/loan/product/edit/{id}','LoanController@loanProduct'); //get product via id
+
+    Route::post('/settings/loan/edit/{id}','LoanController@updateLoanProduct'); //post view
+    
+    Route::get('/settings/loan/view/{loan}','LoanController@viewLoan');
+    
+    Route::post('/settings/create/loan','LoanController@create');
+    
 });
 
 

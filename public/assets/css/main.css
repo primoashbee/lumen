@@ -1308,8 +1308,8 @@ div.hi.active{
 button.btn-primary{
     background: #ef823f!important;
     background-image: linear-gradient(0deg, #ef823f 0%, #fdad7d 100%)!important;
-    padding: 7px 40px;
-        transition: all 0.15s ease;
+    /* padding: 7px 40px; */
+    transition: all 0.15s ease;
 }
 button.btn-primary{
     color: #fff;
@@ -1318,7 +1318,6 @@ button.btn-primary{
 button.btn-primary:hover{
     transform: translateY(-1.4px);
 }
-
 
 /*END BUTTONS*/
 /*FILES*/

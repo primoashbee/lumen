@@ -84,7 +84,7 @@
 						
 					</li>
 					<li class="settings-item loans">
-						<a class="nav-link" id="home-tab" href="">
+						<a class="nav-link" id="home-tab" href="{{route('settings.loan-products')}}">
 							<i class="fas fa-3x fa-sign-out-alt"></i>
 							<p class="title text-center mt-2">Loan</p>
 						</a>

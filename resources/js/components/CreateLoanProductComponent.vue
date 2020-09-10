@@ -135,7 +135,7 @@
 								<option value="">Please select</option>
 								<option value="Daily">Daily</option>
 								<option value="Weekly">Weekly</option>
-								<option value="Montly">Montly</option>
+								<option value="Monthly">Monthly</option>
 								<option value="Annually">Annually</option>
 								<option value="1 Installment Length">1 Installment Length</option>
 							</select>
@@ -147,8 +147,9 @@
 							<label class="title text-xl" for="interest_calculation_method_id">Interest Calculation Method</label>
 							<select name="interest_calculation_method_id" id="interest_calculation_method_id" class="form-control" :class="{'is-invalid': hasError('interest_calculation_method_id') }" v-model="form.interest_calculation_method_id">
 								<option value="">Please select</option>
-								<option value="101">Declining Balance</option>
-								<option value="201">Declining Balance with Equal Installments</option>
+								<option value="101">Flat</option>
+								<option value="102">Declining Balance</option>
+								<option value="103">Declining Balance with Equal Installments</option>
 							</select>
                             <div class="text-danger" v-if="hasError('interest_calculation_method_id')">
                                 {{errorMessage('interest_calculation_method_id')}}
@@ -182,6 +183,18 @@
                             </div>
 		                    </div>
 	                    </div>
+					</div>
+					<h1 class="text-2xl title">Fees</h1>
+	
+					<div class="col-lg-12 px-3">
+						<div class="col-lg-12 mt-8">
+							<div class="form-group w-100">
+								<multi-select :multiple="true" :class="{'is-invalid': hasError('fees') }" track_by="id" label="name" list="fees" @changed="changed"></multi-select>
+                                <div class="text-danger" v-if="hasError('fees.fees')">
+                                    {{errorMessage('fees.fees')}}
+                                </div>
+							</div>
+						</div>
 					</div>
 					<h1 class="text-2xl title">General Ledger Accounts</h1>
 	
@@ -330,12 +343,16 @@ export default {
 
 				loan_write_off:"",
 				loan_recovery:"",
+				fees: []
                 
             },
             errors : [],
         }
     },
     methods: {
+		changed(value){
+			this.form.fees = value
+		},
         datePicked(value){
             this.form.valid_until = value
         },
@@ -382,7 +399,7 @@ export default {
     },
     computed : {
         postUrl(){
-            return '/create/loan'
+            return '/settings/create/loan'
         }
     }
 }

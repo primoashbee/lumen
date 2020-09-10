@@ -1,5 +1,11 @@
 <template>
-    <datepicker @input="emitToParent" v-model="date" :input-class="inputClass"  :format="customFormatter"></datepicker>
+    <datepicker @input="emitToParent" 
+        v-model="date" 
+        :input-class="inputClass"  
+        :format="customFormatter" 
+        :clear-button="true"
+    >
+    </datepicker>
 
 </template>
 

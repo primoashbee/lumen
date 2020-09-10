@@ -36,8 +36,8 @@ class CreateLoansTable extends Migration
             $table->string('interest_rate');
             
 
-            $table->integer('loan_minimum_amount');
-            $table->integer('loan_maximum_amount');
+            $table->double('loan_minimum_amount');
+            $table->double('loan_maximum_amount');
 
             $table->string('grace_period');
             // $table->integer('grace_period');
@@ -58,7 +58,7 @@ class CreateLoansTable extends Migration
             $table->unsignedInteger('loan_recovery');
 
             $table->unsignedInteger('created_by');
-
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

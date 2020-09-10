@@ -2,11 +2,14 @@
 
 namespace App;
 
+
+use App\Fee;
 use Illuminate\Database\Eloquent\Model;
 
 class Loan extends Model
 {
     //
+    protected $hidden = array('pivot');
     protected $fillable = [
         "name",
         "code",
@@ -43,7 +46,14 @@ class Loan extends Model
 
         "loan_write_off",
         "loan_recovery",
-        "created_by"
+        "created_by",
+        "status"
         
     ];
+
+    public function fees(){
+        return $this->belongsToMany(Fee::class,'loan_fee')->withTimestamps();
+    }
+
 }
+

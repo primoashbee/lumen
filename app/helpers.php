@@ -1,21 +1,25 @@
 <?php 
 
+use App\Fee;
+use App\Loan;
 use App\User;
 use App\Client;
 use App\Office;
 use App\Cluster;
-use App\DefaultPaymentMethod;
 use App\Deposit;
 use Carbon\Carbon;
+
 use App\OfficeUser;
 
-use Illuminate\Support\Str;
-
-use App\Imports\OfficeImport;
 use App\PaymentMethod;
+use Illuminate\Support\Str;
+use App\DefaultPaymentMethod;
+use App\Imports\OfficeImport;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
-  
+    function carbon(){
+        return new \Carbon\Carbon();
+    }
     function structure(){
         $struc = [
             "level"=>'main_office',
@@ -127,8 +131,176 @@ use Maatwebsite\Excel\Facades\Excel;
             'deposit_interest_expense' => 0,
         ]);
     }
+    function generateFees(){
+        Fee::create([
+            'name'=>'MI FEE',
+            'automated'=>true,
+            'calculation_type'=>'fixed',
+            'gl_account'=>523
+        ]);
+        Fee::create([
+            'name'=>'Processing Fee 3%',
+            'automated'=>true,
+            'calculation_type'=>'percentage',
+            'percentage' => 0.03,
+            'gl_account'=>523,
+        ]);
+        Fee::create([
+            'name'=>'Processing Fee 5%',
+            'automated'=>true,
+            'calculation_type'=>'percentage',
+            'percentage' => 0.05,
+            'gl_account'=>523,
+        ]);
+        Fee::create([
+            'name'=>'CGLI Fee',
+            'automated'=>true,
+            'calculation_type'=>'matrix',
+            
+            'gl_account'=>526,
+        ]);
+        Fee::create([
+            'name'=>'MI Premium',
+            'automated'=>true,
+            'calculation_type'=>'matrix',
+            'gl_account'=>526,
+        ]);
+        Fee::create([
+            'name'=>'PHIC Premium',
+            'automated'=>true,
+            'calculation_type'=>'matrix',
+            'gl_account'=>526,
+        ]);
+      
+    }
+    function generateLoanProducts(){
+        $id = Loan::create([
+            "name"=>'MULTI-PURPOSE LOAN',
+            "code"=>'MPL',
+            "description"=>"Multi-Purpose Loan is a flexible Microfinance Loan for growth and expansion of business, for education, housing, asset acquisitions and farm needs amounting to 4k-99k and must qualify based on credit limit and loan performance criteria. Payable in 6 or 12 months only on a weekly cash basis. This is an individual yet CLUSTERED loan with minimum of 20 PARTNER CLIENTS. Pre-termination is allowed if 50% of loan is paid and with either the following reason: (1) Resigning from the program; (2) Transferring to another product",
+            "account_per_client"=>2,
+            "interest_calculation_method_id"=>103,
+
+            "minimum_installment"=>12,
+            "default_installment"=>22,
+            "maximum_installment"=>24,
+
+            "installment_length"=>1,
+            "installment_method"=>'weeks',
+
+            "interest_interval"=>'Monthly',
+            "interest_rate"=>5.475225,
+            
+
+            "loan_minimum_amount"=>2000,
+            "loan_maximum_amount"=>99000,
+
+            "grace_period"=>'NO GRACE PERIOD',
+            "has_tranches"=>false,
+        
+            "loan_portfolio_active"=>26,
+            "loan_portfolio_in_arrears"=>26,
+            "loan_portfolio_matured"=>26,
+
+            "loan_interest_income_active"=>26,
+            "loan_interest_income_in_arrears"=>26,
+            "loan_interest_income_matured"=>26,
+
+            "loan_write_off"=>26,
+            "loan_recovery"=>26,
+            "created_by"=>2,
+            "status"=>1
+        ])->id;
+        Loan::find($id)->fees()->attach([Fee::find(1)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(2)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(4)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(5)->id]);
+        $id = Loan::create([
+            "code"=>'AGL',
+            "name"=>'AGRICULTURAL LOAN',
+            "description"=>"An individual agricultural production loan of 5k-150k for income rice farming households intended for production inputs and/or labor expenditures only. Loan term is from 3-6 months with monthly payment of interest and balloon payment of principal upon harvest and within maturity date. Pre-termination is allowed if 50% of loan is paid when yield happens in advance of the scheduled harvest but within the loan term applied.",
+            
+            "account_per_client"=>1,
+            "interest_calculation_method_id"=>101,
+
+            "minimum_installment"=>1,
+            "default_installment"=>1,
+            "maximum_installment"=>1,
+
+            "installment_length"=>4,
+            "installment_method"=>'weeks',
+
+            "interest_interval"=>'Monthly',
+            "interest_rate"=>2.5,
+
+            "loan_minimum_amount"=>5000,
+            "loan_maximum_amount"=>150000,
+
+            "grace_period"=>'NO GRACE PERIOD',
+            "has_tranches"=>true,
+            "number_of_tranches"=>2,
+
+            "loan_portfolio_active"=>26,
+            "loan_portfolio_in_arrears"=>26,
+            "loan_portfolio_matured"=>26,
+
+            "loan_interest_income_active"=>26,
+            "loan_interest_income_in_arrears"=>26,
+            "loan_interest_income_matured"=>26,
+
+            "loan_write_off"=>26,
+            "loan_recovery"=>26,
+            "created_by"=>2,
+            "status"=>1
+        ])->id;
+        Loan::find($id)->fees()->attach([Fee::find(1)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(3)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(4)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(5)->id]);
+        $id = Loan::create([
+            "code"=>'GML',
+            "name"=>'GROWTH ORIENTED MICROFINANCE ENTERPRISE LOAN',
+            "description"=>"Growth Oriented Microfinance Enterprise Loan or GML is an individual productive loan for the growth and expansion of micro-enterprise sectors with loan amount of 100k-150k and must qualify based on credit limit and loan performance criteria. Payable in 6 or 12 months only on a Bi-monthly basis thru PDC (Loan and CBU). Pre-termination is allowed if 50% of loan is paid and with either of the following reason: (1) Resigning from the program; (2) Business expansion; (3) Transferring to another product.",
+
+            "account_per_client"=>1,
+            "interest_calculation_method_id"=>101,
+
+            "minimum_installment"=>12,
+            "default_installment"=>22,
+            "maximum_installment"=>24,
+
+            "installment_length"=>14,
+            "installment_method"=>'days',
+
+            "interest_interval"=>'Monthly',
+            "interest_rate"=>5.18461,
+
+            "loan_minimum_amount"=>100000,
+            "loan_maximum_amount"=>150000,
+
+            "grace_period"=>'NO GRACE PERIOD',
+            "has_tranches"=>false,
 
 
+            "loan_portfolio_active"=>26,
+            "loan_portfolio_in_arrears"=>26,
+            "loan_portfolio_matured"=>26,
+
+            "loan_interest_income_active"=>26,
+            "loan_interest_income_in_arrears"=>26,
+            "loan_interest_income_matured"=>26,
+
+            "loan_write_off"=>26,
+            "loan_recovery"=>26,
+            "created_by"=>2,
+            "status"=>1
+        ])->id;
+        Loan::find($id)->fees()->attach([Fee::find(1)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(3)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(4)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(5)->id]);
+        
+    }
     function generatePaymentMethods(){
         $methods = array(
             [

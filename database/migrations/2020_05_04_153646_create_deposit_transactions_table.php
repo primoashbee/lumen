@@ -22,7 +22,7 @@ class CreateDepositTransactionsTable extends Migration
             $table->double('balance');
             $table->string('payment_method');
             $table->date('repayment_date');
-            $table->integer('user_id');
+            $table->unsignedInteger('user_id');
             $table->longText('notes')->nullable();
             $table->timestamps();
         });

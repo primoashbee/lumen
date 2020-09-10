@@ -66,6 +66,11 @@ Vue.component('chart-clients', require('./components/Dashboard/ClientsComponent.
 Vue.component('chart-summary', require('./components/Dashboard/SummaryTableComponent.vue').default);
 
 Vue.component('create-loan-product', require('./components/CreateLoanProductComponent.vue').default);
+Vue.component('multi-select', require('./components/MultiSelectComponent.vue').default);
+
+
+Vue.component('loan-products-list', require('./components/Settings/LoanProducts.vue').default);
+Vue.component('loan-product', require('./components/Settings/LoanProduct.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
