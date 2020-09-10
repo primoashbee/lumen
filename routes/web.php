@@ -48,7 +48,9 @@ Route::get('/z',function(){
 
 });
 
-
+Route::get('/create/insurance', function(){
+    return view('pages.create-insurance');
+});
 
 Auth::routes(); 
 

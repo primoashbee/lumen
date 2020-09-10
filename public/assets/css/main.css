@@ -65,6 +65,15 @@ td,tr{
 .b-btm{
     border-bottom: 1px solid #6c757d;
 }
+.w1{width: 10%;}
+.w2{width: 20%;}
+.w3{width: 30%;}
+.w4{width: 40%;}
+.w5{width: 50%;}
+.w6{width: 60%;}
+.w7{width: 70%;}
+.w8{width: 80%;}
+.w9{width: 90%;}
 
 /*Font size utilities*/
 .text-xs    {font-size: .75rem!important;}
@@ -548,8 +557,11 @@ body.dark-mode .btn-primary{
 .table td{
     padding: 0.75rem 0;
 }
+.table>thead>tr>td, table>tbody>tr>td,.table>tbody>tr>td p.title, .table>tbody>tr>td>a{
+    font-size: 1.125rem;
+}
 .table>thead>tr>td p.title{
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 600!important;
 }
 .table td{
@@ -722,7 +734,6 @@ body.dark-mode select:selected, body.dark-mode select{
     color: rgba(255, 255, 255, 0.8);
 }
 
-body.dark-mode select,
 body.light-mode input[type=number].form-control {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -1115,18 +1126,27 @@ a.dropdown-toggle.l-text+.dropdown-menu {
 button[data-dismiss='modal']{
     outline: none;
 }
+.card .multiselect__tags{
+    border-color: #ffffff!important;
+}
 .modal-search .modal-header .close span{
    vertical-align: -webkit-baseline-middle;
 }
 form label{
     margin-bottom: 5px;
 }
+.form-group label,select.form-control:focus,.card .multiselect__input{
+    color: #fff!important;
+}
+.form-group label{
+    font-size: 1.125rem!important;
+}
 textarea.form-control{
     height: 80px;
     line-height: 2;
     resize: none;
 }
-.form-control{
+.form-control,select.form-control{
     display: block;
     width: 100%;
     height: calc(2.25rem + 2px);
@@ -1135,8 +1155,8 @@ textarea.form-control{
     color: hsla(0,0%,100%,.8);
     background-color: transparent;
     background-clip: padding-box;
-    border: 1px solid #cad1d7;
-    border-color: #2b3553;
+    border: 1px solid hsla(0,0%,100%,.6);
+    border-color: hsla(0,0%,100%,.6);
     border-radius: .4285rem;
     font-size: 1rem;
     outline: none;
