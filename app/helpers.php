@@ -133,11 +133,40 @@ use Maatwebsite\Excel\Facades\Excel;
     }
     function generateFees(){
         Fee::create([
-            'name'=>'MI FEE',
+            'name'=>'CGLI Fee',
+            'automated'=>true,
+            'calculation_type'=>'matrix',
+            'gl_account'=>526,
+        ]);
+        Fee::create([
+            'name'=>'CGLI Premium',
+            'automated'=>true,
+            'calculation_type'=>'matrix',
+            
+            'gl_account'=>526,
+        ]);
+
+        Fee::create([
+            'name'=>'MI Fee',
             'automated'=>true,
             'calculation_type'=>'fixed',
+            'fixed_amount'=>90,
             'gl_account'=>523
         ]);
+        Fee::create([
+            'name'=>'MI Premium',
+            'automated'=>true,
+            'calculation_type'=>'matrix',
+            'gl_account'=>526,
+        ]);
+
+        Fee::create([
+            'name'=>'Documentary Stamp Tax',
+            'automated'=>true,
+            'calculation_type'=>'matrix',
+            'gl_account'=>523
+        ]);
+
         Fee::create([
             'name'=>'Processing Fee 3%',
             'automated'=>true,
@@ -152,19 +181,8 @@ use Maatwebsite\Excel\Facades\Excel;
             'percentage' => 0.05,
             'gl_account'=>523,
         ]);
-        Fee::create([
-            'name'=>'CGLI Fee',
-            'automated'=>true,
-            'calculation_type'=>'matrix',
-            
-            'gl_account'=>526,
-        ]);
-        Fee::create([
-            'name'=>'MI Premium',
-            'automated'=>true,
-            'calculation_type'=>'matrix',
-            'gl_account'=>526,
-        ]);
+
+
         Fee::create([
             'name'=>'PHIC Premium',
             'automated'=>true,
@@ -639,5 +657,41 @@ use Maatwebsite\Excel\Facades\Excel;
     function breadcrumbize($string){
         $str = str_replace('/',' / ',$string);
         return str_replace('_',' ',$str);
+    }
+
+    function createLoanAccount(){
+    
+        $acc = Client::first();
+        $product = Loan::first();
+        $fees = $product->fees;
+        $total_deductions = 0;
+
+        $loan_amount = 10000;
+        $number_of_installments = 24;
+        foreach($product->fees as $fee){
+            echo $fee->name."=".$fee->calculateFeeAmount($loan_amount, $number_of_installments,$product). " | ";
+            $total_deductions += $fee->calculateFeeAmount($loan_amount, $number_of_installments,$product);
+        }
+        
+        $disbursed_amount = $loan_amount - $total_deductions;
+        
+        $acc->loans()->create([
+            'loan_id'=>$product->id,
+            'amount'=>$loan_amount,
+            'principal'=>10000,
+            'interest'=>18000,
+            'interest_rate'=>5.14,
+            'number_of_installments'=>$number_of_installments,
+
+            'total_deductions'=>$total_deductions,
+            'disbursed_amount'=>$disbursed_amount, //net disbursement
+            
+            'first_payment'=>Carbon::now(),
+            'last_payment'=>Carbon::now()->addWeeks(24),
+
+            'created_by'=>1,
+        ]);
+        
+        
     }
 ?>

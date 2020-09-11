@@ -200,5 +200,9 @@ class Client extends Model
     public function getFullNameAttribute(){
         return $this->firstname. ' '.$this->lastname;
     }
+
+    public function loans(){
+        return $this->hasMany(LoanAccount::class);
+    }
     
 }
