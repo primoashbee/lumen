@@ -242,7 +242,7 @@
 		          <div class="float-left text-center">
 		          	<h4 class="mt-2 h5">Insurance</h4>
 		          </div>
-		          <a href="/create/insurance" class="float-right btn-create">Create Account</a>
+					<a href="{{route('client.manage.dependents',$client->id)}}" class="float-right btn-create">Manage</a>
 		        </div>
 		        <div class="card-body">
 		          <div class="table-accounts table-full-width table-responsive">
