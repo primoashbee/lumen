@@ -147,14 +147,13 @@
 		      <div class="card">
 		        <div class="card-header">
 		          <div class="float-left text-center">
-		          	<h4 class="mt-2">Loan Accounts</h4>
+		          	<h4 class="mt-2 h5">Loan Accounts</h4>
 		          </div>
 		           <a href="" class="float-right btn-create">Create Account</a>
 		        </div>
 		        <div class="card-body">
 		          <div class="table-accounts table-full-width table-responsive">
 		            <table class="table">
-		                
 		              <tbody>
 		              	<tr>
 		                  <td>
@@ -185,13 +184,13 @@
 		      <div class="card">
 			        <div class="card-header">
 			          <div class="float-left text-center">
-			          	<h4 class="mt-2">Deposit Accounts</h4>
+			          	<h4 class="mt-2 h5">Deposit Accounts</h4>
 			          </div>
 			          <a href="" data-toggle="modal" data-target=".bd-example-modal-lg" class="float-right btn-create">Create Account</a>
 
 			        </div>
 			        <div class="card-body">
-			          <div class="table-accounts table-full-width table-responsive">
+			          <div class="table-accounts table-full-width mb-0 table-responsive">
 			            <table class="table">
 			              <tbody>
 			              	<tr>
@@ -238,6 +237,43 @@
 			        </div>
 		      </div>
 
+		      <div class="card">
+		        <div class="card-header">
+		          <div class="float-left text-center">
+		          	<h4 class="mt-2 h5">Insurance</h4>
+		          </div>
+					<a href="{{route('client.manage.dependents',$client->id)}}" class="float-right btn-create">Manage</a>
+		        </div>
+		        <div class="card-body">
+		          <div class="table-accounts table-full-width table-responsive">
+		            <table class="table">
+		                
+		              <tbody>
+		              	<tr>
+		                  <td>
+		                    <p>Name</p>
+		                  </td>
+		                  <td>
+		                    <p>Relationship</p>
+		                  </td>
+		                </tr>
+		                <tr>
+		                  <td>
+		                    <a href="">
+		                      <p class="title">Nelson Tan</p>
+		                    </a>
+		                  </td>
+		                  <td>
+		                    <span class="active position-relative px-2">
+		                      Brother
+		                    </span>
+		                  </td>
+		                </tr>
+		              </tbody>
+		            </table>
+		          </div>
+		        </div>
+		      </div>
 		    	<!-- <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 				  <div class="modal-dialog modal-lg">
 				    <div class="modal-content">

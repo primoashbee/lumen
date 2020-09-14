@@ -48,6 +48,8 @@ Route::get('/z',function(){
 
 });
 
+Route::get('/client/{client_id}/create/dependents', 'ClientController@toCreateDependents')->name('client.create.dependents');
+Route::get('/client/{client_id}/manage/dependents', 'ClientController@dependents')->name('client.manage.dependents');
 
 Auth::routes(); 
 Route::get('/fees','FeeController@getList');

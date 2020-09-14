@@ -547,6 +547,18 @@ class ClientController extends Controller
         $account = DepositAccount::find($deposit_id)->load(['type','transactions.paymentMethod','transactions.postedBy','client.office']);
         return view('pages.deposit-dashboard',compact('account'));
     }
+
+    public function dependents($client_id){
+        Client::findOrFail($client_id);
+        $id = $client_id;
+        return view('pages.client-dependents',compact('id'));
+    }
+    public function toCreateDependents($client_id){
+        Client::findOrFail($client_id);
+        $id = $client_id;
+        $civil_status = strtolower(Client::find($client_id)->civil_status);
+        return view('pages.create-client-dependents',compact('id','civil_status'));
+    }
 }
 
 

@@ -193,6 +193,10 @@ class Client extends Model
         
     }
 
+    public function dependents(){
+        return $this->hasMany(Dependent::class);
+    }
+
     public function getBirthdayAttribute($value){
         return Carbon::parse($value)->format('F d, Y');
     }
