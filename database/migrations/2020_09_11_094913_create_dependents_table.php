@@ -16,59 +16,59 @@ class CreateDependentsTable extends Migration
         Schema::create('dependents', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('client_id');
-            $table->unsignedInteger('application_number');
+            $table->string('application_number');
             $table->unsignedInteger('unit_of_plan');
 
-            $table->boolean('has_spouse')->default(false);
+            $table->boolean('spouse_exists')->default(false);
             $table->string('spouse_firstname')->nullable();
             $table->string('spouse_middlename')->nullable();;
             $table->string('spouse_lastname')->nullable();;
             $table->date('spouse_birthday')->nullable();;
 
 
-            $table->boolean('has_child_1')->default(false);
+            $table->boolean('child_1_exists')->default(false);
             $table->string('child_1_firstname')->nullable();
             $table->string('child_1_middlename')->nullable();
             $table->string('child_1_lastname')->nullable();
             $table->date('child_1_birthday')->nullable();
 
-            $table->boolean('has_child_2')->default(false);
+            $table->boolean('child_2_exists')->default(false);
             $table->string('child_2_firstname')->nullable();
             $table->string('child_2_middlename')->nullable();
             $table->string('child_2_lastname')->nullable();
             $table->date('child_2_birthday')->nullable();
 
-            $table->boolean('has_child_3')->default(false);
+            $table->boolean('child_3_exists')->default(false);
             $table->string('child_3_firstname')->nullable();
             $table->string('child_3_middlename')->nullable();
             $table->string('child_3_lastname')->nullable();
             $table->date('child_3_birthday')->nullable();
 
-            $table->boolean('has_father')->default(false);
+            $table->boolean('father_exists')->default(false);
             $table->string('father_firstname')->nullable();
             $table->string('father_middlename')->nullable();
             $table->string('father_lastname')->nullable();
             $table->date('father_birthday')->nullable();
 
-            $table->boolean('has_mother')->default(false);
+            $table->boolean('mother_exists')->default(false);
             $table->string('mother_firstname')->nullable();
             $table->string('mother_middlename')->nullable();
             $table->string('mother_lastname')->nullable();
             $table->date('mother_birthday')->nullable();
             
-            $table->boolean('has_sibling_1')->default(false);
+            $table->boolean('sibling_1_exists')->default(false);
             $table->string('sibling_1_firstname')->nullable();
             $table->string('sibling_1_middlename')->nullable();
             $table->string('sibling_1_lastname')->nullable();
             $table->date('sibling_1_birthday')->nullable();
 
-            $table->boolean('has_sibling_2')->default(false);
+            $table->boolean('sibling_2_exists')->default(false);
             $table->string('sibling_2_firstname')->nullable();
             $table->string('sibling_2_middlename')->nullable();
             $table->string('sibling_2_lastname')->nullable();
             $table->date('sibling_2_birthday')->nullable();
 
-            $table->boolean('has_sibling_3')->default(false);
+            $table->boolean('sibling_3_exists')->default(false);
             $table->string('sibling_3_firstname')->nullable();
             $table->string('sibling_3_middlename')->nullable();
             $table->string('sibling_3_lastname')->nullable();
@@ -78,6 +78,7 @@ class CreateDependentsTable extends Migration
             $table->double('commonillness_rate')->nullable();
             
             $table->boolean('active')->default(false);
+            $table->unsignedInteger('created_by');
 
             $table->timestamps();
         });
