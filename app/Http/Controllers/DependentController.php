@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Client;
+use App\Dependent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\DependentCreateRequest;
+use App\Rules\DependentStatus;
 
 class DependentController extends Controller
 {
@@ -32,5 +34,20 @@ class DependentController extends Controller
         $values['created_by']=auth()->user()->id;
         return $values;
         
+    }
+
+    public function updateDependentStatus(Request $request){
+    
+        $types = ['activate','deactivate'];
+        
+        Validator::make($request->all(),[
+            'application_number'=>'required|exists:dependents,application_number',
+            'type'=> [new DependentStatus]
+        ])->validate();
+        Dependent::where('application_number',$request->application_number)->first()->client_id;
+        if($request->type=="activate"){
+            return Dependent::where('application_number',$request->application_number)->update(['active'=>true]);    
+        }
+        return Dependent::where('application_number',$request->application_number)->update(['active'=>false]);
     }
 }

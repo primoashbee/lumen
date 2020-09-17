@@ -1,4 +1,4 @@
-<template>
+clien<template>
 <div>
 	<loading :is-full-page="true" :active.sync="isLoading" ></loading>
 	<div class="card">
@@ -550,6 +550,11 @@ export default {
 					{'id':101,'description':'Single - Parents (Mother / Father or Both)'},
 					{'id':102,'description':'Single - Siblings (Max of 3)'},
 					{'id':103,'description':'Single - Single Parent - Children (Max of 3)'},
+				],
+				divorced: [
+					{'id':101,'description':'Divorced - Parents (Mother / Father or Both)'},
+					{'id':102,'description':'Divorced - Siblings (Max of 3)'},
+					{'id':103,'description':'Divorced - Single Parent - Children (Max of 3)'},
 				],
 				married:[
 					{'id':201,'description':'Married - Spouse'},

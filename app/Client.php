@@ -65,7 +65,7 @@ class Client extends Model
         'sss'
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name','active_dependent'];
 
 
 
@@ -195,6 +195,18 @@ class Client extends Model
 
     public function dependents(){
         return $this->hasMany(Dependent::class);
+    }
+
+    public function activeDependent(){
+        return Dependent::where('client_id',$this->id)->where('active',true)->first();
+    }
+
+    public function hasActiveDependent(){
+        return Dependent::where('client_id',$this->id)->where('active',true)->count() > 0 ;
+    }
+
+    public function getActiveDependentAttribute(){
+        return $this->activeDependent();
     }
 
     public function getBirthdayAttribute($value){

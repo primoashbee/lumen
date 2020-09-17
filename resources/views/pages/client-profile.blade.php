@@ -240,39 +240,38 @@
 		      <div class="card">
 		        <div class="card-header">
 		          <div class="float-left text-center">
-		          	<h4 class="mt-2 h5">Insurance</h4>
+		          	<h4 class="mt-2 h5">Active Dependents</h4>
 		          </div>
 					<a href="{{route('client.manage.dependents',$client->id)}}" class="float-right btn-create">Manage</a>
-		        </div>
+				</div>
+				@if($client->hasActiveDependent())
 		        <div class="card-body">
-		          <div class="table-accounts table-full-width table-responsive">
-		            <table class="table">
-		                
-		              <tbody>
-		              	<tr>
-		                  <td>
-		                    <p>Name</p>
-		                  </td>
-		                  <td>
-		                    <p>Relationship</p>
-		                  </td>
-		                </tr>
-		                <tr>
-		                  <td>
-		                    <a href="">
-		                      <p class="title">Nelson Tan</p>
-		                    </a>
-		                  </td>
-		                  <td>
-		                    <span class="active position-relative px-2">
-		                      Brother
-		                    </span>
-		                  </td>
-		                </tr>
-		              </tbody>
-		            </table>
-		          </div>
-		        </div>
+					<h1> Unit of Plan {{$client->activeDependent->pivotList()->first()->unit_of_plan }}</h1>
+					<div class="table-accounts table-full-width table-responsive">
+					<table class="table">
+						<tr>
+							<td> Name </td>
+							<td> Age </td>
+							<td> Relationship </td>
+						</tr>
+						<tbody>
+							@foreach($client->activeDependent->pivotList() as $dependent)
+							<tr>
+								<td>{{$dependent->name}}</td>
+								<td>{{$dependent->age}}</td>
+								<td>{{$dependent->relationship}}</td>
+							</tr>
+							@endforeach		
+						</tbody>
+					</table>
+					</div>
+				</div>
+				@else
+				<div class="card-body">
+					<h1> No Active Dependent </h1>
+				</div>
+				@endif
+				
 		      </div>
 		    	<!-- <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 				  <div class="modal-dialog modal-lg">

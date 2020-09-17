@@ -6,6 +6,7 @@
 
 require('./bootstrap');
 
+global.$ = global.jQuery = require('jquery');
 
 import { VueMaskDirective } from 'v-mask';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
@@ -72,6 +73,7 @@ Vue.component('multi-select', require('./components/MultiSelectComponent.vue').d
 Vue.component('loan-products-list', require('./components/Settings/LoanProducts.vue').default);
 Vue.component('loan-product', require('./components/Settings/LoanProduct.vue').default);
 Vue.component('create-client-dependents', require('./components/ClientDependentCreateComponent.vue').default);
+Vue.component('client-dependents-list', require('./components/ClientDependentListComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

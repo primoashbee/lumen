@@ -2,8 +2,9 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use stdClass;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class Dependent extends Model
 {
@@ -74,6 +75,7 @@ class Dependent extends Model
         
     ];
     public $fields = ['firstname','middlename','lastname','birthday'];
+    protected $appends =['pivot_list'];
     public function client(){
         return $this->belongsTo(Client::class);
     }
@@ -140,21 +142,39 @@ class Dependent extends Model
     public function pivotList(){
         $relationships = $this->relationship();
         $fields = $this->fields;
-        
+
+        $list  =[];
         foreach($relationships as $relationship){
-            $list[] = [
-                'relationship'=>$relationship,
-                'firstname'=>$this->pluck($relationship.'_firstname'),
-                'middlename'=>$this->pluck($relationship.'_middlename'),
-                'lastname'=>$this->pluck($relationship.'_lastname'),
-                'birthday'=>$this->pluck($relationship.'_birthday'),
-            ];
-        
+            $name =$this->pluck($relationship.'_lastname')->first().', '.$this->pluck($relationship.'_firstname')->first().', '.$this->pluck($relationship.'_middlename')->first()[0].'.';
+            $list[] = (object) array(
+                'application_number'=>$this->application_number,
+                // 'application_number'=>'TAE',
+                'firstname'=>$this->pluck($relationship.'_firstname')->first(),
+                'middlename'=>$this->pluck($relationship.'_middlename')->first(),
+                'mi'=>$this->pluck($relationship.'_middlename')->first()[0],
+                'lastname'=>$this->pluck($relationship.'_lastname')->first(),
+                'birthday'=>$this->pluck($relationship.'_birthday')->first(),  
+                'name'=>$name,
+                'relationship'=>ucfirst(str_replace('_', ' ',$relationship)),
+                'age'=>Carbon::parse($this->pluck($relationship.'_birthday')->first())->age,
+                'unit_of_plan'=>$this->pluck('unit_of_plan')->first(),
+                
+            );
         }
-        
-        return $list;
+       return collect($list);
     }
-    public function matrix(){
-        
-    }   
+
+    public function getPivotListAttribute(){
+        return $this->pivotList();
+    }
+
+    public static function clientHasActiveDependent($client_id=null){
+        $me = new static;
+        return $me::where('client_id',$client_id)->where('active',true)->count() > 0;
+    }
+    
+    public function activeDependent($client_id){
+        $me = new static;
+        return $me->where('client_id',$client_id)->where('active',true)->get();
+    }
 }

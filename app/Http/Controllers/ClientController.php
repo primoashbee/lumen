@@ -550,6 +550,7 @@ class ClientController extends Controller
 
     public function dependents($client_id){
         $client = Client::with('dependents')->findOrFail($client_id);
+        
         return view('pages.client-dependents',compact('client'));
     }
     public function toCreateDependents($client_id){
