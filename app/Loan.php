@@ -55,5 +55,7 @@ class Loan extends Model
         return $this->belongsToMany(Fee::class,'loan_fee')->withTimestamps();
     }
 
+    
+
 }
 

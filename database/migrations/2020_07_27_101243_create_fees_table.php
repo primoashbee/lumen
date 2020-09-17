@@ -18,6 +18,7 @@ class CreateFeesTable extends Migration
             $table->string('name')->unique();
             $table->boolean('automated')->default(false);
             $table->string('calculation_type');
+            $table->double('fixed_amount')->nullable();
             $table->string('percentage')->nullable();
             $table->unsignedInteger('gl_account');
             $table->boolean('disabled')->default(false);
