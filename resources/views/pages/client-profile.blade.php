@@ -217,9 +217,11 @@
 								
 			                  </td>
 			                  <td>
-			                    <span class="active position-relative px-2">
-			                      {{$cbu->status}}
-			                    </span>
+								@if($cbu->status)
+								<span class="badge badge-pill badge-success">{{$cbu->status}}</span></h1>
+								@else
+								<span class="badge badge-pill badge-danger">{{$cbu->status}}</span></h1>
+								@endif
 			                  </td>
 							</tr>
 							@endforeach
@@ -246,7 +248,7 @@
 				</div>
 				@if($client->hasActiveDependent())
 		        <div class="card-body">
-					<h1> Unit of Plan {{$client->activeDependent->pivotList()->first()->unit_of_plan }}</h1>
+					<h1> Unit of Plan {{$client->activeDependent->pivotList()->first()->unit_of_plan}}</h1>
 					<div class="table-accounts table-full-width table-responsive">
 					<table class="table">
 						<tr>
@@ -268,7 +270,7 @@
 				</div>
 				@else
 				<div class="card-body">
-					<h1> No Active Dependent </h1>
+					<h1> <span class="badge badge-pill badge-danger">No Active Dependent</span></h1>
 				</div>
 				@endif
 				

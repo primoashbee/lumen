@@ -199,7 +199,7 @@ class User extends Authenticatable
     }
 
     public function offices(){
-        return $this->hasMany(OfficeUser::class);
+        return $this->belongsToMany(Office::class)->withTimestamps();;
     }
 
 

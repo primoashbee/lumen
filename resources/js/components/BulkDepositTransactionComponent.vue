@@ -76,7 +76,7 @@
 						
 						<td>
 							<div class="form-group">
-								<amount-input @amountEncoded="amountEncoded" :add_class="errorAddClass(item.id)"  :account_info="item" :tabindex="key+1" ></amount-input>
+								<amount-input :disabled="inputDisabled(item.id) "@amountEncoded="amountEncoded" :add_class="errorAddClass(item.id)"  :account_info="item" :tabindex="key+1" ></amount-input>
 								<div class="text-danger" v-if="hasInputError(item.id)">
 									{{inputErrorMessage(item.id)}}
 								</div>
@@ -220,6 +220,9 @@ export default {
         ProductComponent,
     },	
     methods : {
+		inputDisabled(id){
+			return false;
+		},
 		errorAddClass(account_id){
 			if(this.hasInputError(account_id)){
 				return 'is-invalid'
@@ -259,7 +262,7 @@ export default {
 				this.errors = [];
 					Swal.fire({
                         icon: 'success',
-                        title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Transaction Successful</span> ',
+                        title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875em;font-weight:600">Transaction Successful</span> ',
                         html: 
 						`
 						<table class="table table-condensed">
@@ -295,7 +298,12 @@ export default {
 			})
 			.catch(err => {
 				this.isLoading = false
-				this.errors = err.response.data.errors				
+				this.errors = err.response.data.errors
+				Swal.fire(
+					'Error',
+					'Check input errors',
+					'error'
+				)
 			})
 		},
 		cancelModal(){

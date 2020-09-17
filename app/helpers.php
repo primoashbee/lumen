@@ -53,11 +53,20 @@ use Maatwebsite\Excel\Facades\Excel;
             'notes'=>'scheduler account',
             'password' => Hash::make('sv9h4pld')
         ]);
+    
+        $user->offices()->attach(1);
+        $user = User::create([
+            'firstname' => 'BM',
+            'lastname' => 'Dagupan',
+            'middlename' => '-',
+            'gender' => 'Male',
+            'birthday' => \Carbon\Carbon::parse('1994-11-26'),
+            'email' => 'bm.dagupan@light.org',
+            'notes'=>'wala lang',
+            'password' => Hash::make('sv9h4pld')
+        ]);
 
-        OfficeUser::create([
-            'user_id'=>$user->id,
-            'office_id'=>1
-        ]);  
+        
 
         $user = User::create([
             'firstname' => 'Ashbee',
@@ -69,42 +78,33 @@ use Maatwebsite\Excel\Facades\Excel;
             'notes'=>'ajalksdjfdlksafjaldf',
             'password' => Hash::make('sv9h4pld')
         ]);
+        $user->offices()->attach(1);
         
-            OfficeUser::create([
-                'user_id'=>$user->id,
-                'office_id'=>1
-            ]);  
+        $user = User::create([
+            'firstname' => 'Nelson',
+            'lastname' => 'Abilgos',
+            'middlename' => 'Tan',
+            'gender' => 'Male',
+            'birthday' => Carbon::parse('1995-11-28'),
+            'email' => 'nelsontan1128@gmail.com',
+            'notes'=>'ajalksdjfdlksafjaldf',
+            'password' => Hash::make('tannelsona')
+        ]);
+    
+        $user->offices()->attach(1);
 
-            $user = User::create([
-                'firstname' => 'Nelson',
-                'lastname' => 'Abilgos',
-                'middlename' => 'Tan',
-                'gender' => 'Male',
-                'birthday' => Carbon::parse('1995-11-28'),
-                'email' => 'nelsontan1128@gmail.com',
-                'notes'=>'ajalksdjfdlksafjaldf',
-                'password' => Hash::make('tannelsona')
-            ]);
-        
-            OfficeUser::create([
-                'user_id'=>$user->id,
-                'office_id'=>1
-            ]);   
-            $user = User::create([
-                'firstname' => 'Hannah Arien',
-                'lastname' => 'Mangalindan',
-                'middlename' => 'Morgado',
-                'gender' => 'Female',
-                'birthday' => Carbon::parse('1997-05-31'),
-                'email' => 'arien@morgado.com',
-                'notes'=>'ajalksdjfdlksafjaldf',
-                'password' => Hash::make('sv9h4pld')
-            ]);
-        
-            OfficeUser::create([
-                'user_id'=>$user->id,
-                'office_id'=>21
-            ]);   
+        $user = User::create([
+            'firstname' => 'Hannah Arien',
+            'lastname' => 'Mangalindan',
+            'middlename' => 'Morgado',
+            'gender' => 'Female',
+            'birthday' => Carbon::parse('1997-05-31'),
+            'email' => 'arien@morgado.com',
+            'notes'=>'ajalksdjfdlksafjaldf',
+            'password' => Hash::make('sv9h4pld')
+        ]);
+    
+        $user->offices()->attach(1);
     }
 
     function createDeposits(){

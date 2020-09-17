@@ -14,7 +14,7 @@ class Office extends Model
     protected $searchables = [
         'name',
     ];
-
+ 
     public static function levelCount($level){
         $me = new static;
         return $me->where('level',$level)->count();

@@ -24,12 +24,6 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
-Route::get('/zz',function(){
-    echo env('APP_NAME');
-});
-Route::get('/x/{level}',function(Request $request){
-        return auth()->user()->scopesBranch(Office::getParentOfLevel($request->level));
-    });
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -117,7 +111,7 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::get('/settings/create/user', function(){
         return view('pages.create-user');
-    });
+    })->name('create.user');
 
     Route::get('/settings/create/fee', function(){
         return view('pages.create-fees');

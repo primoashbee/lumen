@@ -143,12 +143,11 @@ class Dependent extends Model
         $relationships = $this->relationship();
         $fields = $this->fields;
 
-        $list  =[];
+        $list=[];
         foreach($relationships as $relationship){
             $name =$this->pluck($relationship.'_lastname')->first().', '.$this->pluck($relationship.'_firstname')->first().', '.$this->pluck($relationship.'_middlename')->first()[0].'.';
             $list[] = (object) array(
                 'application_number'=>$this->application_number,
-                // 'application_number'=>'TAE',
                 'firstname'=>$this->pluck($relationship.'_firstname')->first(),
                 'middlename'=>$this->pluck($relationship.'_middlename')->first(),
                 'mi'=>$this->pluck($relationship.'_middlename')->first()[0],
@@ -161,6 +160,7 @@ class Dependent extends Model
                 
             );
         }
+
        return collect($list);
     }
 

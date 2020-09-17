@@ -168,7 +168,7 @@ export default {
     },
     computed: {
         linkCreateDependent(){
-            return '/client/'+this.client_id+'/create/dependents'
+            return '/client/'+this.client.id+'/create/dependents'
         },
         name(){
             return this.client.full_name;
@@ -181,7 +181,7 @@ export default {
         },
         clientLink(){
 			return '/client/'+this.client_id
-		
+
         }
 
     }
