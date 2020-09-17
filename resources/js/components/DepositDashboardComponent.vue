@@ -13,7 +13,7 @@
 					<div class="d-details b-btm">
 						<h1 class="title text-4xl">{{account_info.type.name}}</h1>
 						<h1 class="italic text-2xl">{{account_info.client_id + '-' + account_info.client.firstname + ' ' +account_info.client.lastname}}</h1>
-						<p class="title text-xl mt-4 pb-4">Status: <span class="active text-lg">ACTIVE</span></p>
+						<p class="title text-xl mt-4 pb-4">Status: <span class="badge-pill badge-success">ACTIVE</span></p>
 					</div>
 				</div>
 				<div class="col-lg-6 text-right">
@@ -80,37 +80,37 @@
 				                <tbody>
 				                    <tr v-for="(item, index) in account_info.transactions" :key="item.id" >
 				                        <td>
-				                        	<p class="title">{{account_info.transactions.length - index}}</p>
+				                        	<p class="title text-lg">{{account_info.transactions.length - index}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.transaction_id}}</p>
+				                        	<p class="title text-lg">{{item.transaction_id}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.repayment_date}}</p>
+				                        	<p class="title text-lg">{{item.repayment_date}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.created_at}}</p>
+				                        	<p class="title text-lg">{{item.created_at}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.transaction_type}}</p>
+				                        	<p class="title text-lg">{{item.transaction_type}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">
+				                        	<p class="title text-lg">
 												<span class="badge badge-pill" v-bind:class="rowClass(item)">{{item.amount}}</span>
 											</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">
+				                        	<p class="title text-lg">
 												<span class="badge badge-pill badge-primary">
 													{{item.balance}}
 												</span>
 											</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.payment_method.name}}</p>
+				                        	<p class="title text-lg">{{item.payment_method.name}}</p>
 				                        </td>
 				                        <td>
-				                        	<p class="title">{{item.posted_by.fullname}}</p>
+				                        	<p class="title text-lg">{{item.posted_by.fullname}}</p>
 				                        </td>
 
 				                    </tr>

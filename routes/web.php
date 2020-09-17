@@ -46,6 +46,10 @@ Route::get('/client/{client_id}/create/dependents', 'ClientController@toCreateDe
 Route::post('/client/create/dependent', 'DependentController@createDependents')->name('create.dependents.post');
 Route::get('/client/update/dependent', 'DependentController@updateDependentStatus')->name('create.dependents.activate');
 Route::get('/client/{client_id}/manage/dependents', 'ClientController@dependents')->name('client.manage.dependents');
+Route::get('/create/client/loan', function(){
+    return view('pages.create-client-loan');
+});
+
 
 Auth::routes(); 
 Route::get('/fees','FeeController@getList');
@@ -143,6 +147,6 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::post('/settings/create/loan','LoanController@create');
     
-});
+    });
 
 

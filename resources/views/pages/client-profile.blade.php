@@ -5,7 +5,7 @@
 
 	  <div class="row">
 		    <div class="col-md-8"> 	
-		      <div class="card pb-4">
+		      <div class="card pb-24">
 		      	<nav aria-label="breadcrumb">
 				  <ol class="breadcrumb">
 				    <li class="breadcrumb-item"><a href="/clients">Client List</a></li>
@@ -74,7 +74,7 @@
 									<p class="text-muted text-lg">{{$client->created_at->format('F, j Y')}} - {{$client->created_at->diffForHumans()}}</p>
 								</div>
 								<div class="p-details mt-2">
-									<p class="title text-xl">Status: <span class="active-status text-lg">ACTIVE</span></p>
+									<p class="title text-xl">Status: <span class="badge-pill badge-success text-lg">ACTIVE</span></p>
 								</div>
 							</div>
 						</div>
@@ -147,9 +147,9 @@
 		      <div class="card">
 		        <div class="card-header">
 		          <div class="float-left text-center">
-		          	<h4 class="mt-2 h5">Loan Accounts</h4>
+		          	<h4 class="mt-2 text-2xl">Loan Accounts</h4>
 		          </div>
-		           <a href="" class="float-right btn-create">Create Account</a>
+		           <a href="" class="text-base float-right btn-create">Create Account</a>
 		        </div>
 		        <div class="card-body">
 		          <div class="table-accounts table-full-width table-responsive">
@@ -157,20 +157,20 @@
 		              <tbody>
 		              	<tr>
 		                  <td>
-		                    <p>Account #</p>
+		                    <p class="text-base">Account #</p>
 		                  </td>
 		                  <td>
-		                    <p>Status</p>
+		                    <p class="text-base">Status</p>
 		                  </td>
 		                </tr>
 		                <tr>
 		                  <td>
 		                    <a href="">
-		                      <p class="title">MCBU0001</p>
+		                      <p class="title text-base">MCBU0001</p>
 		                    </a>
 		                  </td>
 		                  <td>
-		                    <span class="active position-relative px-2">
+		                    <span class="active position-relative px-2 text-base">
 		                      Active
 		                    </span>
 		                  </td>
@@ -184,9 +184,9 @@
 		      <div class="card">
 			        <div class="card-header">
 			          <div class="float-left text-center">
-			          	<h4 class="mt-2 h5">Deposit Accounts</h4>
+			          	<h4 class="mt-2 text-2xl">Deposit Accounts</h4>
 			          </div>
-			          <a href="" data-toggle="modal" data-target=".bd-example-modal-lg" class="float-right btn-create">Create Account</a>
+			          <a href="" data-toggle="modal" data-target=".bd-example-modal-lg" class="float-right btn-create text-base">Create Account</a>
 
 			        </div>
 			        <div class="card-body">
@@ -195,13 +195,13 @@
 			              <tbody>
 			              	<tr>
 			                  <td>
-			                    <p>Deposit Type</p>
+			                    <p class="text-base">Deposit Type</p>
 			                  </td>
 			                  <td>
-			                    <p>Balance</p>
+			                    <p class="text-base">Balance</p>
 			                  </td>
 			                  <td>
-			                    <p>Status</p>
+			                    <p class="text-base">Status</p>
 			                  </td>
 							</tr>
 							
@@ -209,7 +209,7 @@
 			                <tr>
 			                  <td>
 							  <a href="{{route('client.deposit',[$cbu->client_id,$cbu->id])}}">
-			                      <p class="title">{{$cbu->type->name}}</p>
+			                      <p class="title text-base">{{$cbu->type->name}}</p>
 			                    </a>
 			                  </td>
 			                  <td>
@@ -226,10 +226,10 @@
 							</tr>
 							@endforeach
 							<tr style="border:none;">
-								<td class="text-right pr-2">
+								<td class="text-right pr-2 text-lg">
 									Total
 								</td>
-								<td class="">
+								<td class="text-lg">
 									{{$client->totalDeposits()}}
 								</td>
 							</tr>

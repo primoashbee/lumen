@@ -236,13 +236,8 @@
 	tr td .form-check-sign{
 		position: absolute;
 	}
-	.table tr td .form-check-sign,.table .form-check .form-check-sign::before
-	{
-		top: 5px!important;
-	}
-	.table .form-check .form-check-sign::after{
-		top: -8px!important;
-		left:2px!important;
+	tr td .form-check-sign,table .form-check .form-check-sign::before,table .form-check .form-check-sign::after{
+		top: 5px;
 	}
 </style>
 <script type="text/javascript">
