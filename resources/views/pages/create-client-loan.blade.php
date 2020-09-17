@@ -4,9 +4,8 @@
 	<div class="card">
 		<nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="">Settings</a></li>
             <li class="breadcrumb-item"><a href="">Client</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Client Loan </li>
+            <li class="breadcrumb-item active" aria-current="page">Create Loan Account</li>
           </ol>
         </nav>
 		<div class="card-header">
