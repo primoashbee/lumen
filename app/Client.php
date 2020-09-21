@@ -194,15 +194,15 @@ class Client extends Model
     }
 
     public function dependents(){
-        return $this->hasMany(Dependent::class);
+        return $this->hasMany(Dependent::class,'client_id','client_id');
     }
 
     public function activeDependent(){
-        return Dependent::where('client_id',$this->id)->where('active',true)->first();
+        return Dependent::where('client_id',$this->client_id)->where('active',true)->first();
     }
 
     public function hasActiveDependent(){
-        return Dependent::where('client_id',$this->id)->where('active',true)->count() > 0 ;
+        return Dependent::where('client_id',$this->client_id)->where('active',true)->count() > 0 ;
     }
 
     public function getActiveDependentAttribute(){

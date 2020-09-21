@@ -29,7 +29,7 @@ class DependentCreateRequest extends FormRequest
         $adult_max_age = Carbon::now()->subYear($this->adult_max_age);
         $young_max_age = Carbon::now()->subYear($this->young_max_age);
         return [
-            "client_id"=>'required|exists:clients,id',
+            "client_id"=>'required|exists:clients,client_id',
             "application_number"=>"required|unique:dependents,application_number",
 
             
@@ -90,26 +90,8 @@ class DependentCreateRequest extends FormRequest
             "spouse.lastname"=>"required_with:spouse.exists|string",
             "spouse.birthday"=>"required_with:spouse.exists|date|after_or_equal:".$adult_max_age,
 
-            #package #5
-            // "child_1.exists"=>"sometimes|boolean",
-            // "child_1.firstname"=>"required_with:child_1.exists|string",
-            // "child_1.middlename"=>"sometimes|required_with:child_1.exists|string",
-            // "child_1.lastname"=>"required_with:child_1.exists|string",
-            // "child_1.birthday"=>"required_with:child_1.exists|date|after_or_equal:".$young_max_age,
-
-            // "child_2.exists"=>"sometimes|boolean",
-            // "child_2.firstname"=>"required_with:child_2.exists|string",
-            // "child_2.middlename"=>"sometimes|required_with:child_2.exists|string",
-            // "child_2.lastname"=>"required_with:child_2.exists|string",
-            // "child_2.birthday"=>"required_with:child_2.exists|date|after_or_equal:".$young_max_age,
-
-            // "child_3.exists"=>"sometimes|boolean",
-            // "child_3.firstname"=>"required_with:child_3.exists|string",
-            // "child_3.middlename"=>"sometimes|required_with:child_3.exists|string",
-            // "child_3.lastname"=>"required_with:child_3.exists|string",
-            // "child_3.birthday"=>"required_with:child_3.exists|date|after_or_equal:".$young_max_age,
-
-            #package 6
+           'unit_of_plan' =>'required|integer|gt:0',
+           'package'=>'required'
             
         ];
     }

@@ -1,10 +1,9 @@
-clien<template>
+<template>
 <div>
 	<loading :is-full-page="true" :active.sync="isLoading" ></loading>
 	<div class="card">
-		
 		<div class="card-header mt-2">
-			<h3 class="h3"><b><a :href="clientLink" style="text-decoration:none;color:white">{{name}}</a></b> - Insurance</h3>
+			<h3 class="h3"><b><a :href="clientLink" style="text-decoration:none;color:white">{{name}}</a> <a :href="dependentList" style="text-decoration:none;color:white"> - Dependents </a> </b> Create Dependent</h3>
 		</div>
 		<div class="card-body">
 			<form @submit.prevent="submit">
@@ -14,26 +13,36 @@ clien<template>
 							<div class="col-lg-12 form-group">
 								<label class="d-inline-block col-form-label" for="application_number">Application Number:</label>
 								<div class="ml-6 d-inline-block w8">
-									<input type="text" id="application_number" class="form-control" v-model="application_number">
+									<input type="text" id="application_number" class="form-control" v-bind:class="hasError('application_number') ? 'is-invalid' : 'suce'" v-model="application_number" >
+									<div class="invalid-feedback" v-if="hasError('application_number')">
+										{{ errors.application_number[0]}}
+									</div>
 								</div>
 							</div>
 						</div>
 						<div class="row form-group">
 							<div class="col-2">
 								<label for="packages">Unit of plan</label>
-								<select name="" id="packages" class="form-control" v-model="unit_of_plan">
+								<select name="" id="packages" class="form-control" v-bind:class="hasError('unit_of_plan') ? 'is-invalid' : ''" v-model="unit_of_plan">
 									<option :value="null"> Please select unit of plan </option>
 									<option value="1">1</option>
 									<option value="2">2</option>
 								</select>
+								<div class="invalid-feedback" v-if="hasError('unit_of_plan')">
+									{{ errors.unit_of_plan[0]}}
+								</div>
+
 							</div>
 							<div class="col-10">
 								<label for="packages">Packages</label>
-								<select name="" id="packages" class="form-control" @change="packageSelected($event)">
+								<select name="" id="packages" class="form-control" v-bind:class="hasError('package') ? 'is-invalid' : ''"  @change="packageSelected($event)">
 									<option :value="null"> Please select package </option>
-									<option  :value="item.id" v-for="item in items[this.civil_status]" :key="item.id">{{item.description}}</option>
-									
+									<option  :value="item.id" v-for="item in items[this.civil_status]" :key="item.id">{{item.description}}</option>									
 								</select>
+								<div class="invalid-feedback" v-if="hasError('package')">
+									{{ errors.package[0]}}
+								</div>
+
 							</div>
 						</div>
 						<div id="s_package_1" v-if="selected==101">
@@ -525,7 +534,7 @@ clien<template>
 						</div>
 					</div>
 				</div>
-				<button type="submit" class="btn btn-primary">Submit</button>
+				<button type="submit" class="btn btn-primary" v-if="showButton">Submit</button>
 			</form>
 		</div>
 	</div>
@@ -541,9 +550,10 @@ export default {
 	components: {
 		Loading 
 	},
-	props:['id','client_id','civil_status','name','type'],
+	props:['client_id','civil_status','name','type'],
 	data(){
 		return {
+			errors: {},
 			isLoading:false,
 			items: {
 				single: [
@@ -581,7 +591,7 @@ export default {
 			let value = event.target.value
 			this.form.package = value
 			this.selected = value
-			this.form.client_id = this.id
+			this.form.client_id = this.client_id
 			if(value==101){
 				this.form.mother = {}
 				this.form.father ={}
@@ -600,6 +610,7 @@ export default {
 			}
 			if(value==201){
 				this.form.spouse = {}
+				this.form.spouse.exists = true
 				return;
 			}
 			if(value==202){
@@ -655,6 +666,10 @@ export default {
 				this.isLoading = false
 				this.errors = error.response.data.errors || {}
 			})
+		},
+
+		hasError(field){
+			return this.errors.hasOwnProperty(field)
 		}
 
 	},
@@ -668,6 +683,15 @@ export default {
 		},
 		clientLink(){
 			return '/client/'+this.client_id
+		},
+		dependentList(){
+			return '/client/'+this.client_id+'/manage/dependents'
+		},
+		showButton(){
+			if(this.form.package == ""){
+				return false
+			}
+			return true
 		}
 	}
 

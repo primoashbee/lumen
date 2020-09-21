@@ -77,7 +77,7 @@ class Dependent extends Model
     public $fields = ['firstname','middlename','lastname','birthday'];
     protected $appends =['pivot_list'];
     public function client(){
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Client::class,'client_id');
     }
 
     public function relationship(){
@@ -113,6 +113,7 @@ class Dependent extends Model
     }
     
     public function formatList(){
+        
         $relationships = $this->relationship();
         $fields = $this->fields;
         $dependents = new stdClass();
@@ -142,21 +143,24 @@ class Dependent extends Model
     public function pivotList(){
         $relationships = $this->relationship();
         $fields = $this->fields;
-
-        $list=[];
+        
+        
         foreach($relationships as $relationship){
-            $name =$this->pluck($relationship.'_lastname')->first().', '.$this->pluck($relationship.'_firstname')->first().', '.$this->pluck($relationship.'_middlename')->first()[0].'.';
+            
+            
+            $name =$this[$relationship.'_lastname'].', '.$this[$relationship.'_firstname'].', '.$this[$relationship.'_middlename'].'.';
             $list[] = (object) array(
                 'application_number'=>$this->application_number,
-                'firstname'=>$this->pluck($relationship.'_firstname')->first(),
-                'middlename'=>$this->pluck($relationship.'_middlename')->first(),
-                'mi'=>$this->pluck($relationship.'_middlename')->first()[0],
-                'lastname'=>$this->pluck($relationship.'_lastname')->first(),
-                'birthday'=>$this->pluck($relationship.'_birthday')->first(),  
+                // 'firstname'=>$this->pluck($relationship.'_firstname')->first(),
+                'firstname'=>$this[$relationship.'_firstname'],
+                'middlename'=>$this[$relationship.'_middlename'],
+                'mi'=>$this[$relationship.'_middlename'][0],
+                'lastname'=>$this[$relationship.'_lastname'],
+                'birthday'=>$this[$relationship.'_birthday'],
                 'name'=>$name,
                 'relationship'=>ucfirst(str_replace('_', ' ',$relationship)),
-                'age'=>Carbon::parse($this->pluck($relationship.'_birthday')->first())->age,
-                'unit_of_plan'=>$this->pluck('unit_of_plan')->first(),
+                'age'=>Carbon::parse($this[$relationship.'_birthday'])->age,
+                'unit_of_plan'=>$this['unit_of_plan']
                 
             );
         }

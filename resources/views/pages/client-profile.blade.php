@@ -244,7 +244,7 @@
 		          <div class="float-left text-center">
 		          	<h4 class="mt-2 h5">Active Dependents</h4>
 		          </div>
-					<a href="{{route('client.manage.dependents',$client->id)}}" class="float-right btn-create">Manage</a>
+					<a href="{{route('client.manage.dependents',$client->client_id)}}" class="float-right btn-create">Manage</a>
 				</div>
 				@if($client->hasActiveDependent())
 		        <div class="card-body">

@@ -1,7 +1,6 @@
 @extends('layouts.user')
 @section('content')
 <div class="content content pl-32 pr-8 mt-4" id="content-full">
-    {{-- {{dd($pivot_list)}} --}}
     <client-dependents-list data="{{$client}}"></client-dependents-list>
 </div>
 @endsection

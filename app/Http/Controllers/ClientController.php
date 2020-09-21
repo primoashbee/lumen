@@ -549,12 +549,11 @@ class ClientController extends Controller
     }
 
     public function dependents($client_id){
-        $client = Client::with('dependents')->findOrFail($client_id);
-        
+        $client = Client::with('dependents')->where('client_id',$client_id)->firstOrFail();
         return view('pages.client-dependents',compact('client'));
     }
     public function toCreateDependents($client_id){
-        $client = Client::select('id','firstname','lastname','civil_status','client_id')->findOrFail($client_id);
+        $client = Client::select('id','firstname','lastname','civil_status','client_id')->where('client_id',$client_id)->firstOrFail();
         $civil_status = strtolower($client->civil_status);
         return view('pages.create-client-dependents',compact('client','civil_status'));
     }

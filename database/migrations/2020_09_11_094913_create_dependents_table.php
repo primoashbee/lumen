@@ -15,7 +15,7 @@ class CreateDependentsTable extends Migration
     {
         Schema::create('dependents', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('client_id');
+            $table->string('client_id');
             $table->string('application_number');
             $table->unsignedInteger('unit_of_plan');
 

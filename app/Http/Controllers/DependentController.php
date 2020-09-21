@@ -12,8 +12,9 @@ use App\Rules\DependentStatus;
 class DependentController extends Controller
 {
     public function createDependents(DependentCreateRequest $request){
+        
         $data=  $this->formatRequest($request->all());
-        if(Client::find($request->client_id)->dependents()->create($data)){
+        if(Client::where('client_id',$request->client_id)->firstOrFail()->dependents()->create($data)){
             return response()->json(['msg'=>'Dependent Created'], 200);
         }
             return response()->json(['msg'=>'Something Went Wrong'], 404);

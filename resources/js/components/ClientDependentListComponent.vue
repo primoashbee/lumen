@@ -3,7 +3,7 @@
       
     <div class="card">
 		<div class="card-header">
-			<h3 class="h3"><b><a :href="clientLink" style="text-decoration:none;color:white">{{name}}</a></b> - Insurance</h3>
+			<h3 class="h3"><b><a :href="clientLink" style="text-decoration:none;color:white">{{name}}</a></b> - Dependents</h3>
 		</div>
 		<div class="card-body">
             <a :href="linkCreateDependent"><button class="btn btn-primary float-right">Create Dependents</button></a>
@@ -34,7 +34,7 @@
                      <tr v-for="item in client.dependents" :key="item.id">
                         <td>{{item.application_number}}</td>
                         <td>{{item.unit_of_plan}}</td>
-                        <td>{{item.dependents}}</td>
+                        <td>{{item.pivot_list.length}}</td>
                         <td>{{item.amount}}</td>
                         <td>
                             <toggle-button :disabled="disabled(item.id)" @change="changeStatus($event,item.application_number)" :value="isActive(item.id)" color="green"  :labels="true"/>
@@ -79,7 +79,6 @@
         </div>
         </div>
     </div>
-
 </div>
 </template>
 
@@ -152,8 +151,6 @@ export default {
         showModal(pivot_list){
             this.selected_pivot_list = pivot_list
             this.viewed_dependent_application_number = pivot_list[0].application_number
-            
-            console.log(pivot_list);
             $('#dependents_modal').modal('show')
         },
         disabled(dependent_id){
@@ -168,7 +165,7 @@ export default {
     },
     computed: {
         linkCreateDependent(){
-            return '/client/'+this.client.id+'/create/dependents'
+            return '/client/'+this.client.client_id+'/create/dependents'
         },
         name(){
             return this.client.full_name;
