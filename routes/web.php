@@ -25,6 +25,55 @@ use Symfony\Component\HttpFoundation\Request;
 */
 
 
+Route::get('/sched',function(Request $request){
+    $amt = $request->amount;
+    createLoanAccount($amt);
+    $scheds = \App\LoanAccount::latest()->first()->schedules();
+    echo '<table border="1">
+    <thead>
+        <th>Installment</th>
+        <th>Principal</th>
+        <th>Interest</th>
+        <th>Amortization</th>
+        <th>Principal Balance</th>
+        <th>Interest Balance</th>
+    </thead>
+    <tbody>';
+    $tp=0;
+    $ti=0;
+    $ta=0;
+    $tpb=0;
+    $tpi=0;
+    foreach($scheds as $sched){
+        $tp += $sched->principal;
+        $ti += $sched->interest;
+        $ta += $sched->amortization;
+        $tpb += $sched->principal_balance;
+        $tpi += $sched->interest_balance;
+        echo '<tr>
+                <td>'.$sched->installment.'</td>
+                <td>'.number_format($sched->principal,2).'</td>
+                <td>'.number_format($sched->interest,2).'</td>
+                <td>'.number_format($sched->amortization,2).'</td>
+                <td>'.number_format($sched->principal_balance,2).'</td>
+                <td>'.number_format($sched->interest_balance,2).'</td>
+            </tr>';
+
+
+    }
+    echo '<tr>
+            <td></td>
+            <td>'.number_format($tp,2).'</td>
+            <td>'.number_format($ti,2).'</td>
+            <td>'.number_format($ta,2).'</td>
+            <td>'.number_format($tpb,2).'</td>
+            <td>'.number_format($tpi,2).'</td>
+        </tr>';
+
+    echo '</tbody>
+    </table>';
+});
+
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });

@@ -149,6 +149,11 @@ class Dependent extends Model
             
             
             $name =$this[$relationship.'_lastname'].', '.$this[$relationship.'_firstname'].', '.$this[$relationship.'_middlename'].'.';
+            if($relationship =="spouse" || $relationship =="father" || $relationship =="mother"){
+                $level="adult";
+            }else{
+                $level="young";
+            }
             $list[] = (object) array(
                 'application_number'=>$this->application_number,
                 // 'firstname'=>$this->pluck($relationship.'_firstname')->first(),
@@ -160,7 +165,8 @@ class Dependent extends Model
                 'name'=>$name,
                 'relationship'=>ucfirst(str_replace('_', ' ',$relationship)),
                 'age'=>Carbon::parse($this[$relationship.'_birthday'])->age,
-                'unit_of_plan'=>$this['unit_of_plan']
+                'unit_of_plan'=>$this['unit_of_plan'],
+                'level'=>$level
                 
             );
         }

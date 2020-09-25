@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use stdClass;
 
 class Fee extends Model
 {
@@ -17,12 +18,13 @@ class Fee extends Model
         'fixed_amount'
     ];
 
+
     
     public function loan(){
         return $this->belongsToMany(Loan::class,'loan_fee');
     }
 
-    public function calculateFeeAmount($loan_amount,$installment,$loan_product){
+    public function calculateFeeAmount($loan_amount,$installment,$loan_product,$dependent=null){
         
         //cgli premium ok
         //cgli fee ok
@@ -32,7 +34,7 @@ class Fee extends Model
             $weeks = $loan_product->installment_length * $installment;
         }
         if($loan_product->installment_method=="weeks"){
-            
+            $weeks = $installment;
         }
         
         
@@ -50,11 +52,13 @@ class Fee extends Model
                 
             }
             if($this->name=="MI Premium"){
-                return 0;
+                $months = $this->weekToMonth($weeks);
+                $amount = $this->calculateMiPremiumAmount($months,$dependent);
+                return $amount;
             }
             if($this->name=="CGLI Fee"){
                 $months = $this->weekToMonth($weeks);
-                $monthly_rate = $this->cgliRateFromMonths($months);
+                $monthly_rate = $this->cgliRates($months);
                 $cgli_premium_remittance = $loan_amount / 1000 * $monthly_rate;
                 $cgli_premium_payable = $loan_amount * 0.005;
                 $cgli_fee = $cgli_premium_payable - $cgli_premium_remittance ;
@@ -63,7 +67,7 @@ class Fee extends Model
             }
             if($this->name=="CGLI Premium"){
                 $months = $this->weekToMonth($weeks);
-                $monthly_rate = $this->cgliRateFromMonths($months);
+                $monthly_rate = $this->cgliRates($months);
                 $cgli_premium_remittance = $loan_amount / 1000 * $monthly_rate;
                 $cgli_premium_payable = $loan_amount * 0.005;
                 return $cgli_premium_remittance;
@@ -87,7 +91,7 @@ class Fee extends Model
         }
         return $months * 30;
     }
-    public function cgliRateFromMonths($months){
+    public function cgliRates($months){
         if($months == 8){
             return 3.65;
         }
@@ -104,6 +108,88 @@ class Fee extends Model
             return 4.85;
         }
         return 0.45;
+    }
+
+    public static function miPremiumRates(){
+        
+        $rates[] = (object) array(
+            'months'=>3,
+            'member'=>125,
+            'adult'=>115,
+            'young'=>15
+        );
+        $rates[] = (object) array(
+            'months'=>4,
+            'member'=>185,
+            'adult'=>170,
+            'young'=>19
+        );
+        $rates[] = (object) array(
+            'months'=>5,
+            'member'=>230,
+            'adult'=>211,
+            'young'=>22
+        );
+        $rates[] = (object) array(
+            'months'=>6,
+            'member'=>240,
+            'adult'=>218,
+            'young'=>23
+        );
+        $rates[] = (object) array(
+            'months'=>7,
+            'member'=>275,
+            'adult'=>253,
+            'young'=>27
+        );
+        $rates[] = (object) array(
+            'months'=>8,
+            'member'=>320,
+            'adult'=>295,
+            'young'=>31
+        );
+        $rates[] = (object) array(
+            'months'=>9,
+            'member'=>365,
+            'adult'=>335,
+            'young'=>35
+        );
+        $rates[] = (object) array(
+            'months'=>10,
+            'member'=>410,
+            'adult'=>378,
+            'young'=>38
+        );
+        $rates[] = (object) array(
+            'months'=>11,
+            'member'=>434,
+            'adult'=>417,
+            'young'=>40
+        );
+        $rates[] = (object) array(
+            'months'=>12,
+            'member'=>454,
+            'adult'=>417,
+            'young'=>43
+        );
+       
+    return collect($rates);
+    }
+
+    public function calculateMiPremiumAmount($term,$dependent){
+        $rates = $this->miPremiumRates();
+        $rate = $rates->where('months',$term)->first();
+        $amount = 0;
+        
+        foreach($dependent as $item){
+            $level = $item->level;
+            $amount += $rate->$level;
+            
+        }   
+        
+        return $amount;
+
+        
     }
     
 

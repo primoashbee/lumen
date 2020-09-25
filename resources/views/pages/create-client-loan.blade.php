@@ -20,7 +20,7 @@
 					<div class="row mt-4">
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label for="loan_products" class="title text-xl">Product Code</label>
+								<label for="loan_products" class="title text-xl">Product</label>
 								<select id="loan_products" class="form-control">
 									<option value="">Please Select Product</option>
 								</select>

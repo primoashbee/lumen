@@ -659,18 +659,20 @@ use Maatwebsite\Excel\Facades\Excel;
         return str_replace('_',' ',$str);
     }
 
-    function createLoanAccount(){
+    function createLoanAccount($amt=10000){
     
         $acc = Client::first();
         $product = Loan::first();
         $fees = $product->fees;
         $total_deductions = 0;
 
-        $loan_amount = 10000;
+        $loan_amount = $amt;
         $number_of_installments = 24;
-        foreach($product->fees as $fee){
-            echo $fee->name."=".$fee->calculateFeeAmount($loan_amount, $number_of_installments,$product). " | ";
-            $total_deductions += $fee->calculateFeeAmount($loan_amount, $number_of_installments,$product);
+        if(!$acc->hasActiveDependent()){
+            return 'la dependent';
+        }
+        foreach($product->fees as $fee){// echo $fee->name."=".$fee->calculateFeeAmount($loan_amount, $number_of_installments,$product,$acc->activeDependent->pivotList()). " | ";
+            $total_deductions += $fee->calculateFeeAmount($loan_amount, $number_of_installments,$product,$acc->activeDependent->pivotList());
         }
         
         $disbursed_amount = $loan_amount - $total_deductions;
@@ -680,7 +682,7 @@ use Maatwebsite\Excel\Facades\Excel;
             'amount'=>$loan_amount,
             'principal'=>10000,
             'interest'=>18000,
-            'interest_rate'=>5.14,
+            'interest_rate'=>5.475225,
             'number_of_installments'=>$number_of_installments,
 
             'total_deductions'=>$total_deductions,
