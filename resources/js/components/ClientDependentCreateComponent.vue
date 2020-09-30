@@ -11,7 +11,7 @@
 					<div class="col-lg-8">
 						<div class="form-group row">
 							<div class="col-lg-12 form-group">
-								<label class="d-inline-block col-form-label" for="application_number">Application Number:</label>
+								<label class="align-top d-inline-block col-form-label" for="application_number">Application Number:</label>
 								<div class="ml-6 d-inline-block w8">
 									<input type="text" id="application_number" class="form-control" v-bind:class="hasError('application_number') ? 'is-invalid' : 'suce'" v-model="application_number" >
 									<div class="invalid-feedback" v-if="hasError('application_number')">
@@ -63,7 +63,10 @@
 								<h5 class="h5 col-lg-12">Mothers Information</h5>
 								<div class="form-group col-lg-4">
 									<label for="mother_firstname">First Name</label>
-									<input type="text" class="form-control" id="mother_firstname" v-model="form.mother.firstname">
+									<input type="text" class="form-control" id="mother_firstname" v-bind:class="hasError('mother.firstname') ? 'is-invalid' : ''" v-model="form.mother.firstname">
+									<div class="invalid-feedback" v-if="hasError('mother.firstname')">
+										{{ errors['mother.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="mother_middlename">Middle Name</label>
@@ -71,11 +74,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="mother_lastname">Last Name</label>
-									<input type="text" class="form-control" id="mother_lastname" v-model="form.mother.lastname">
+									<input type="text" class="form-control" id="mother_lastname" v-bind:class="hasError('mother.lastname') ? 'is-invalid' : ''" v-model="form.mother.lastname">
+									<div class="invalid-feedback" v-if="hasError('mother.lastname')">
+										{{ errors['mother.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="mother_birthday">Birthday</label>
-									<input type="date" class="form-control" id="mother_birthday" v-model="form.mother.birthday">
+									<input type="date" class="form-control" id="mother_birthday" v-bind:class="hasError('mother.birthday') ? 'is-invalid' : ''" v-model="form.mother.birthday">
+									<div class="invalid-feedback" v-if="hasError('mother.birthday')">
+										{{ errors['mother.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							<div class="row py-4">
@@ -96,7 +105,10 @@
 								<h5 class="h5 col-lg-12">Fathers Information</h5>
 								<div class="form-group col-lg-4">
 									<label for="father_firstname">First Name</label>
-									<input type="text" class="form-control" id="father_firstname" v-model="form.father.firstname">
+									<input type="text" class="form-control" id="father_firstname" v-bind:class="hasError('father.firstname') ? 'is-invalid' : ''" v-model="form.father.firstname">
+									<div class="invalid-feedback" v-if="hasError('father.firstname')">
+										{{ errors['father.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="father_middlename">Middle Name</label>
@@ -104,11 +116,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="father_lastname">Last Name</label>
-									<input type="text" class="form-control" id="father_lastname" v-model="form.father.lastname">
+									<input type="text" class="form-control" id="father_lastname" v-bind:class="hasError('father.lastname') ? 'is-invalid' : ''" v-model="form.father.lastname">
+									<div class="invalid-feedback" v-if="hasError('father.lastname')">
+										{{ errors['father.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="father_birthday">Birthday</label>
-									<input type="date" class="form-control" id="father_birthday" v-model="form.father.birthday">
+									<input type="date" class="form-control" id="father_birthday" v-bind:class="hasError('father.birthday') ? 'is-invalid' : ''" v-model="form.father.birthday">
+									<div class="invalid-feedback" v-if="hasError('father.birthday')">
+										{{ errors['father.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 						</div>
@@ -130,7 +148,10 @@
 								<div class="col-lg-12 row"  v-if="showForm('sibling_1')">
 									<div class="form-group col-lg-4">
 										<label for="sibling1_firstname">First Name</label>
-										<input type="text" class="form-control" id="sibling1_firstname" v-model="form.sibling_1.firstname">
+										<input type="text" class="form-control" id="sibling1_firstname" v-bind:class="hasError('sibling_1.firstname') ? 'is-invalid' : ''" v-model="form.sibling_1.firstname">
+										<div class="invalid-feedback" v-if="hasError('sibling_1.firstname')">
+											{{ errors['sibling_1.firstname'][0]}}
+										</div>
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_middlename">Middle Name</label>
@@ -138,11 +159,17 @@
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_lastname">Last Name</label>
-										<input type="text" class="form-control" id="sibling1_lastname" v-model="form.sibling_1.lastname">
+										<input type="text" class="form-control" id="sibling1_lastname" v-bind:class="hasError('sibling_1.lastname') ? 'is-invalid' : ''" v-model="form.sibling_1.lastname">
+										<div class="invalid-feedback" v-if="hasError('sibling_1.lastname')">
+											{{ errors['sibling_1.lastname'][0]}}
+										</div>
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_birthday">Birthday</label>
-										<input type="date" class="form-control" id="sibling1_birthday" v-model="form.sibling_1.birthday">
+										<input type="date" class="form-control" id="sibling1_birthday" v-bind:class="hasError('sibling_1.birthday') ? 'is-invalid' : ''" v-model="form.sibling_1.birthday">
+										<div class="invalid-feedback" v-if="hasError('sibling_1.birthday')">
+											{{ errors['sibling_1.birthday'][0]}}
+										</div>
 									</div>
 								</div>
 							</div>
@@ -162,7 +189,10 @@
 								<div class="col-lg-12 row"  v-if="showForm('sibling_2')">
 									<div class="form-group col-lg-4">
 										<label for="sibling1_firstname">First Name</label>
-										<input type="text" class="form-control" id="sibling1_firstname" v-model="form.sibling_2.firstname">
+										<input type="text" class="form-control" id="sibling1_firstname" v-bind:class="hasError('sibling_2.firstname') ? 'is-invalid' : ''" v-model="form.sibling_2.firstname">
+										<div class="invalid-feedback" v-if="hasError('sibling_2.firstname')">
+											{{ errors['sibling_2.firstname'][0]}}
+										</div>
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_middlename">Middle Name</label>
@@ -170,11 +200,17 @@
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_lastname">Last Name</label>
-										<input type="text" class="form-control" id="sibling1_lastname" v-model="form.sibling_2.lastname">
+										<input type="text" class="form-control" id="sibling1_lastname" v-bind:class="hasError('sibling_2.lastname') ? 'is-invalid' : ''" v-model="form.sibling_2.lastname">
+										<div class="invalid-feedback" v-if="hasError('sibling_2.lastname')">
+											{{ errors['sibling_2.lastname'][0]}}
+										</div>
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_birthday">Birthday</label>
-										<input type="date" class="form-control" id="sibling1_birthday" v-model="form.sibling_2.birthday">
+										<input type="date" class="form-control" id="sibling1_birthday" v-bind:class="hasError('sibling_2.birthday') ? 'is-invalid' : ''" v-model="form.sibling_2.birthday">
+										<div class="invalid-feedback" v-if="hasError('sibling_2.birthday')">
+											{{ errors['sibling_2.birthday'][0]}}
+										</div>
 									</div>
 								</div>
 							</div>
@@ -194,7 +230,10 @@
 								<div class="col-lg-12 row"  v-if="showForm('sibling_3')">
 									<div class="form-group col-lg-4">
 										<label for="sibling1_firstname">First Name</label>
-										<input type="text" class="form-control" id="sibling1_firstname" v-model="form.sibling_3.firstname">
+										<input type="text" class="form-control" id="sibling3_firstname" v-bind:class="hasError('sibling_3.firstname') ? 'is-invalid' : ''" v-model="form.sibling_3.firstname">
+										<div class="invalid-feedback" v-if="hasError('sibling_3.firstname')">
+											{{ errors['sibling_3.firstname'][0]}}
+										</div>
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_middlename">Middle Name</label>
@@ -202,11 +241,17 @@
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_lastname">Last Name</label>
-										<input type="text" class="form-control" id="sibling1_lastname" v-model="form.sibling_3.lastname">
+										<input type="text" class="form-control" id="sibling1_lastname" v-bind:class="hasError('sibling_3.lastname') ? 'is-invalid' : ''" v-model="form.sibling_3.lastname">
+										<div class="invalid-feedback" v-if="hasError('sibling_3.lastname')">
+											{{ errors['sibling_3.lastname'][0]}}
+										</div>
 									</div>
 									<div class="form-group col-lg-4">
 										<label for="sibling1_birthday">Birthday</label>
-										<input type="date" class="form-control" id="sibling1_birthday" v-model="form.sibling_3.birthday">
+										<input type="date" class="form-control" id="sibling1_birthday" v-bind:class="hasError('sibling_3.birthday') ? 'is-invalid' : ''" v-model="form.sibling_3.birthday">
+										<div class="invalid-feedback" v-if="hasError('sibling_3.birthday')">
+											{{ errors['sibling_3.birthday'][0]}}
+										</div>
 									</div>
 								</div>
 							</div>
@@ -231,7 +276,10 @@
 							<div class="col-lg-12 row"  v-if="showForm('child_1')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child_1_firstname" v-model="form.child_1.firstname">
+									<input type="text" class="form-control" id="child_1_firstname" v-bind:class="hasError('child_1.firstname') ? 'is-invalid' : ''" v-model="form.child_1.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_1.firstname')">
+										{{ errors['child_1.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -239,11 +287,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child_1_lastname" v-model="form.child_1.lastname">
+									<input type="text" class="form-control" id="child_1_lastname" v-bind:class="hasError('child_1.lastname') ? 'is-invalid' : ''" v-model="form.child_1.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_1.lastname')">
+										{{ errors['child_1.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child_1_birthday" v-model="form.child_1.birthday">
+									<input type="date" class="form-control" id="child_1_birthday" v-bind:class="hasError('child_1.birthday') ? 'is-invalid' : ''" v-model="form.child_1.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_1.birthday')">
+										{{ errors['child_1.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							<div class="row py-4" v-if="form.child_1.exists">
@@ -262,7 +316,10 @@
 							<div class="col-lg-12 row"  v-if="showForm('child_2')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child_2_firstname" v-model="form.child_2.firstname">
+									<input type="text" class="form-control" id="child_2_firstname" v-bind:class="hasError('child_2.firstname') ? 'is-invalid' : ''" v-model="form.child_2.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_2.firstname')">
+										{{ errors['child_2.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -270,11 +327,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child_2_lastname" v-model="form.child_2.lastname">
+									<input type="text" class="form-control" id="child_2_lastname" v-bind:class="hasError('child_2.lastname') ? 'is-invalid' : ''" v-model="form.child_2.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_2.lastname')">
+										{{ errors['child_2.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child_2_birthday" v-model="form.child_2.birthday">
+									<input type="date" class="form-control" id="child_2_birthday" v-bind:class="hasError('child_2.birthday') ? 'is-invalid' : ''" v-model="form.child_2.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_2.birthday')">
+										{{ errors['child_2.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							<div class="row py-4" v-if="form.child_2.exists">
@@ -293,7 +356,10 @@
 							<div class="col-lg-12 row"  v-if="showForm('child_2')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child_3_firstname" v-model="form.child_3.firstname">
+									<input type="text" class="form-control" id="child_3_firstname" v-bind:class="hasError('child_3.firstname') ? 'is-invalid' : ''" v-model="form.child_3.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_3.firstname')">
+										{{ errors['child_3.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -301,11 +367,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child_3_lastname" v-model="form.child_3.lastname">
+									<input type="text" class="form-control" id="child_3_lastname" v-bind:class="hasError('child_3.lastname') ? 'is-invalid' : ''" v-model="form.child_3.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_3.lastname')">
+										{{ errors['child_3.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child_3_birthday" v-model="form.child_3.birthday">
+									<input type="date" class="form-control" id="child_3_birthday" v-bind:class="hasError('child_3.birthday') ? 'is-invalid' : ''" v-model="form.child_3.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_3.birthday')">
+										{{ errors['child_3.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 
@@ -316,7 +388,10 @@
 								<h5 class="h5 col-lg-12">Spouse Information</h5>
 								<div class="form-group col-lg-4">
 									<label for="spouse_firstname">First Name</label>
-									<input type="text" class="form-control" id="spouse_firstname" v-model="form.spouse.firstname">
+									<input type="text" class="form-control" id="spouse_firstname" v-bind:class="hasError('spouse.firstname') ? 'is-invalid' : ''" v-model="form.spouse.firstname">
+									<div class="invalid-feedback" v-if="hasError('spouse.firstname')">
+										{{ errors['spouse.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="spouse_middlename">Middle Name</label>
@@ -324,11 +399,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="spouse_lastname">Last Name</label>
-									<input type="text" class="form-control" id="spouse_lastname" v-model="form.spouse.lastname">
+									<input type="text" class="form-control" id="spouse_lastname" v-bind:class="hasError('spouse.lastname') ? 'is-invalid' : ''" v-model="form.spouse.lastname">
+									<div class="invalid-feedback" v-if="hasError('spouse.lastname')">
+										{{ errors['spouse.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="spouse_birthday">Birthday</label>
-									<input type="date" class="form-control" id="mother_birthday" v-model="form.spouse.birthday">
+									<input type="date" class="form-control" id="mother_birthday" v-bind:class="hasError('spouse.birthday') ? 'is-invalid' : ''" v-model="form.spouse.birthday">
+									<div class="invalid-feedback" v-if="hasError('spouse.birthday')">
+										{{ errors['spouse.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 						</div>
@@ -349,7 +430,10 @@
 							<div class="row " v-if="showForm('child_1')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child1_firstname" v-model="form.child_1.firstname">
+									<input type="text" class="form-control" id="child1_firstname" v-bind:class="hasError('child_1.firstname') ? 'is-invalid' : ''" v-model="form.child_1.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_1.firstname')">
+										{{ errors['child_1.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -357,11 +441,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child1_lastname" v-model="form.child_1.lastname">
+									<input type="text" class="form-control" id="child1_lastname" v-bind:class="hasError('child_1.lastname') ? 'is-invalid' : ''" v-model="form.child_1.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_1.lastname')">
+										{{ errors['child_1.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child1_birthday" v-model="form.child_1.birthday">
+									<input type="date" class="form-control" id="child1_birthday" v-bind:class="hasError('child_1.birthday') ? 'is-invalid' : ''" v-model="form.child_1.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_1.birthday')">
+										{{ errors['child_1.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							
@@ -381,7 +471,10 @@
 							<div class="row " v-if="showForm('child_2')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child1_firstname" v-model="form.child_2.firstname">
+									<input type="text" class="form-control" id="child1_firstname" v-bind:class="hasError('child_2.firstname') ? 'is-invalid' : ''" v-model="form.child_2.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_2.firstname')">
+										{{ errors['child_2.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -389,11 +482,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child1_lastname" v-model="form.child_2.lastname">
+									<input type="text" class="form-control" id="child1_lastname" v-bind:class="hasError('child_2.lastname') ? 'is-invalid' : ''" v-model="form.child_2.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_2.lastname')">
+										{{ errors['child_2.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child1_birthday" v-model="form.child_2.birthday">
+									<input type="date" class="form-control" id="child1_birthday" v-bind:class="hasError('child_2.birthday') ? 'is-invalid' : ''" v-model="form.child_2.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_2.birthday')">
+										{{ errors['child_2.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							<div class="row py-4" v-if="showForm('child_2')">
@@ -412,7 +511,10 @@
 							<div class="row " v-if="showForm('child_3')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child1_firstname" v-model="form.child_3.firstname">
+									<input type="text" class="form-control" v-bind:class="hasError('child_3.firstname') ? 'is-invalid' : ''" id="child1_firstname" v-model="form.child_3.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_3.firstname')">
+										{{ errors['child_3.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -420,11 +522,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child1_lastname" v-model="form.child_3.lastname">
+									<input type="text" class="form-control" id="child1_lastname" v-bind:class="hasError('child_3.lastname') ? 'is-invalid' : ''" v-model="form.child_3.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_3.lastname')">
+										{{ errors['child_3.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child1_birthday" v-model="form.child_3.birthday">
+									<input type="date" class="form-control" id="child1_birthday" v-bind:class="hasError('child_3.birthday') ? 'is-invalid' : ''" v-model="form.child_3.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_3.birthday')">
+										{{ errors['child_3.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 						</div>
@@ -434,7 +542,10 @@
 								<h5 class="h5 col-lg-12">Spouse Information</h5>
 								<div class="form-group col-lg-4">
 									<label for="spouse_firstname">First Name</label>
-									<input type="text" class="form-control" id="spouse_firstname" v-model="form.spouse.firstname">
+									<input type="text" class="form-control" id="spouse_firstname" v-bind:class="hasError('spouse.firstname') ? 'is-invalid' : ''" v-model="form.spouse.firstname">
+									<div class="invalid-feedback" v-if="hasError('spouse.firstname')">
+										{{ errors['spouse.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="spouse_middlename">Middle Name</label>
@@ -442,18 +553,27 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="spouse_lastname">Last Name</label>
-									<input type="text" class="form-control" id="spouse_lastname" v-model="form.spouse.lastname">
+									<input type="text" class="form-control" id="spouse_lastname" v-bind:class="hasError('spouse.lastname') ? 'is-invalid' : ''" v-model="form.spouse.lastname">
+									<div class="invalid-feedback" v-if="hasError('spouse.lastname')">
+										{{ errors['spouse.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="spouse_birthday">Birthday</label>
-									<input type="date" class="form-control" id="mother_birthday" v-model="form.spouse.birthday">
+									<input type="date" class="form-control" id="mother_birthday" v-bind:class="hasError('spouse.birthday') ? 'is-invalid' : ''" v-model="form.spouse.birthday">
+									<div class="invalid-feedback" v-if="hasError('spouse.birthday')">
+										{{ errors['spouse.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							<div class="row py-4">
 								<h5 class="h5 col-lg-12">Child 1 Information</h5>
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child1_firstname" v-model="form.child_1.firstname">
+									<input type="text" class="form-control" id="child1_firstname" v-bind:class="hasError('child_1.firstname') ? 'is-invalid' : ''" v-model="form.child_1.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_1.firstname')">
+										{{ errors['child_1.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -461,11 +581,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child1_lastname" v-model="form.child_1.lastname">
+									<input type="text" class="form-control" id="child1_lastname" v-bind:class="hasError('child_1.lastname') ? 'is-invalid' : ''" v-model="form.child_1.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_1.lastname')">
+										{{ errors['child_1.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child1_birthday" v-model="form.child_1.birthday">
+									<input type="date" class="form-control" id="child1_birthday" v-bind:class="hasError('child_1.birthday') ? 'is-invalid' : ''" v-model="form.child_1.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_1.birthday')">
+										{{ errors['child_1.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							
@@ -485,7 +611,10 @@
 							<div class="row " v-if="showForm('child_2')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child1_firstname" v-model="form.child_2.firstname">
+									<input type="text" class="form-control" id="child1_firstname" v-bind:class="hasError('child_2.firstname') ? 'is-invalid' : ''" v-model="form.child_2.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_2.firstname')">
+										{{ errors['child_2.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -493,11 +622,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child1_lastname" v-model="form.child_2.lastname">
+									<input type="text" class="form-control" id="child1_lastname" v-bind:class="hasError('child_2.lastname') ? 'is-invalid' : ''" v-model="form.child_2.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_2.lastname')">
+										{{ errors['child_2.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child1_birthday" v-model="form.child_2.birthday">
+									<input type="date" class="form-control" id="child1_birthday" v-bind:class="hasError('child_2.birthday') ? 'is-invalid' : ''" v-model="form.child_2.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_2.birthday')">
+										{{ errors['child_2.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 							<div class="row py-4" v-if="showForm('child_2')">
@@ -516,7 +651,10 @@
 							<div class="row " v-if="showForm('child_3')">
 								<div class="form-group col-lg-4">
 									<label for="child1_firstname">First Name</label>
-									<input type="text" class="form-control" id="child1_firstname" v-model="form.child_3.firstname">
+									<input type="text" class="form-control" id="child1_firstname" v-bind:class="hasError('child_3.firstname') ? 'is-invalid' : ''" v-model="form.child_3.firstname">
+									<div class="invalid-feedback" v-if="hasError('child_3.firstname')">
+										{{ errors['child_3.firstname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_middlename">Middle Name</label>
@@ -524,11 +662,17 @@
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_lastname">Last Name</label>
-									<input type="text" class="form-control" id="child1_lastname" v-model="form.child_3.lastname">
+									<input type="text" class="form-control" id="child1_lastname" v-bind:class="hasError('child_3.lastname') ? 'is-invalid' : ''" v-model="form.child_3.lastname">
+									<div class="invalid-feedback" v-if="hasError('child_3.lastname')">
+										{{ errors['child_3.lastname'][0]}}
+									</div>
 								</div>
 								<div class="form-group col-lg-4">
 									<label for="child1_birthday">Birthday</label>
-									<input type="date" class="form-control" id="child1_birthday" v-model="form.child_3.birthday">
+									<input type="date" class="form-control" id="child1_birthday" v-bind:class="hasError('child_3.birthday') ? 'is-invalid' : ''" v-model="form.child_3.birthday">
+									<div class="invalid-feedback" v-if="hasError('child_3.birthday')">
+										{{ errors['child_3.birthday'][0]}}
+									</div>
 								</div>
 							</div>
 						</div>
