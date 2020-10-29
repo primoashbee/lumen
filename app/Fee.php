@@ -30,13 +30,13 @@ class Fee extends Model
         //cgli fee ok
         //dst ok
         $weeks = 0;
-        if($loan_product->installment_method=="weeks"){
-            $weeks = $loan_product->installment_length * $installment;
-        }
+        // if($loan_product->installment_method=="weeks"){
+        //     $weeks = $loan_product->installment_length * $installment;
+        // }
         if($loan_product->installment_method=="weeks"){
             $weeks = $installment;
         }
-        
+
         
         if($this->calculation_type=="fixed"){
            return $this->fixed_amount;
@@ -48,21 +48,24 @@ class Fee extends Model
             if($this->name=="Documentary Stamp Tax"){
                 $months = $this->weekToMonth($weeks);
                 $days = $this->monthToDays($months);
+                
                 return round(($loan_amount/200) * ($days / 365) * 1.5, 2);
                 
             }
             if($this->name=="MI Premium"){
                 $months = $this->weekToMonth($weeks);
                 $amount = $this->calculateMiPremiumAmount($months,$dependent);
-                return $amount;
+                return round($amount,2);
             }
             if($this->name=="CGLI Fee"){
                 $months = $this->weekToMonth($weeks);
+                
                 $monthly_rate = $this->cgliRates($months);
+                
                 $cgli_premium_remittance = $loan_amount / 1000 * $monthly_rate;
                 $cgli_premium_payable = $loan_amount * 0.005;
                 $cgli_fee = $cgli_premium_payable - $cgli_premium_remittance ;
-                return $cgli_fee;
+                return round($cgli_fee,2);
                 
             }
             if($this->name=="CGLI Premium"){
@@ -70,7 +73,7 @@ class Fee extends Model
                 $monthly_rate = $this->cgliRates($months);
                 $cgli_premium_remittance = $loan_amount / 1000 * $monthly_rate;
                 $cgli_premium_payable = $loan_amount * 0.005;
-                return $cgli_premium_remittance;
+                return round($cgli_premium_remittance,2);
                 
             }
             if($this->name=="PHIC Premium"){
@@ -91,7 +94,7 @@ class Fee extends Model
         }
         return $months * 30;
     }
-    public function cgliRates($months){
+    public function cgliRates($months){   
         if($months == 8){
             return 3.65;
         }
@@ -107,7 +110,7 @@ class Fee extends Model
         if($months == 12){
             return 4.85;
         }
-        return 0.45;
+        return 0.45 * $months;
     }
 
     public static function miPremiumRates(){
@@ -178,16 +181,18 @@ class Fee extends Model
 
     public function calculateMiPremiumAmount($term,$dependent){
         $rates = $this->miPremiumRates();
+        // var_dump($term);
         $rate = $rates->where('months',$term)->first();
-        $amount = 0;
+        $amount = $rate->member;
         
-        foreach($dependent as $item){
-            $level = $item->level;
-            $amount += $rate->$level;
-            
-        }   
+        if ($dependent != null) {
+            foreach ($dependent as $item) {
+                $level = $item->level;
+                $amount += $rate->$level;
+            }
+        }
         
-        return $amount;
+        return $amount;  
 
         
     }

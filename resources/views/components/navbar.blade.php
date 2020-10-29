@@ -8,7 +8,8 @@
     <div class="logo-container">
     <img src="{{ asset('assets/img/logo.png')}}">
     </div>
-    <a class="navbar-brand l-text float-left" href="#">{{ucwords(breadcrumbize(request()->path()))}}</a>
+    {{-- <a class="navbar-brand l-text float-left" href="#">{{ucwords(breadcrumbize(request()->path()))}}</a> --}}
+    <a class="navbar-brand l-text float-left" href="{{route('dashboard')}}">Lumen</a>
 
   </div>
   <div>

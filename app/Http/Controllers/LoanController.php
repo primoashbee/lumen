@@ -143,8 +143,13 @@ class LoanController extends Controller
                 $this->validationMessages($type)
             );
     }
-    public function loanProducts(){
-
+    public function loanProducts(Request $request){
+        if ($request->has('has_page')) {
+            $loans = Loan::with('fees')->get(); 
+            $rates = Loan::rates();
+            $data = array('loans'=>$loans,'rates'=>$rates);
+            return $data;
+        }
         return Loan::paginate(10);
     }
 
@@ -174,5 +179,7 @@ class LoanController extends Controller
         return response()->json(['msg'=>'Loan Sucessfully Updated'],200);
 
     }
+
+    
 }
 

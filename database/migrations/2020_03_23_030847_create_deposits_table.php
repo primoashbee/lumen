@@ -22,7 +22,7 @@ class CreateDepositsTable extends Migration
             $table->date('valid_until')->nullable();
             $table->integer('account_per_client');
             $table->boolean('auto_create_on_new_client')->default(false);
-            $table->double('interest_rate');
+            $table->unsignedDouble('interest_rate');
             $table->unsignedInteger('deposit_portfolio');
             $table->unsignedInteger('deposit_interest_expense');
             $table->boolean('is_active')->default(true);

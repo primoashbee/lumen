@@ -41,12 +41,12 @@ export default {
       }
   },
   watch: {
-      date:{
-          immediate: false,
-          handler(){
-            this.emitToParent()
-          }
-      }
+    //   date:{
+    //       immediate: false,
+    //       handler(){
+    //         this.emitToParent()
+    //       }
+    //   }
   },
   computed : {
       inputClass(){

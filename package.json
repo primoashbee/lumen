@@ -30,7 +30,7 @@
         "chart.js": "^2.9.3",
         "flat": "^5.0.2",
         "js-datepicker": "^5.16.0",
-        "moment": "^2.27.0",
+        "moment": "^2.29.0",
         "numeral": "^2.0.6",
         "sweetalert2": "^9.17.1",
         "v-mask": "^2.2.3",

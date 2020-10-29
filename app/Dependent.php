@@ -141,12 +141,12 @@ class Dependent extends Model
         return $count;
     }
     public function pivotList(){
+        
         $relationships = $this->relationship();
         $fields = $this->fields;
         
         
         foreach($relationships as $relationship){
-            
             
             $name =$this[$relationship.'_lastname'].', '.$this[$relationship.'_firstname'].', '.$this[$relationship.'_middlename'].'.';
             if($relationship =="spouse" || $relationship =="father" || $relationship =="mother"){

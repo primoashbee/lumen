@@ -150,7 +150,7 @@
                         <input value="" type="text" v-model="fields.street_address" id="street_address" class="form-control" v-bind:class="streetHasError ? 'is-invalid' : ''" z>
                         <div class="invalid-feedback" v-if="streetHasError">
                             {{ errors.street_address[0]}}
-                        </div>          
+                        </div>
                     </div>
                     <div class="form-group col-md-3 px-2">
                         <label for="barangay_address">Barangay</label>
@@ -513,7 +513,6 @@
                         <p v-for="list in error" :key="list.id">{{ list }}</p>
                     </li>
                 </ul>
-
      </div>
      
  </div> 

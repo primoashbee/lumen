@@ -15,6 +15,7 @@ use App\PaymentMethod;
 use Illuminate\Support\Str;
 use App\DefaultPaymentMethod;
 use App\Imports\OfficeImport;
+use App\Scheduler;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
     function carbon(){
@@ -104,7 +105,7 @@ use Maatwebsite\Excel\Facades\Excel;
             'password' => Hash::make('sv9h4pld')
         ]);
     
-        $user->offices()->attach(1);
+        $user->offices()->attach(21);
     }
 
     function createDeposits(){
@@ -661,39 +662,62 @@ use Maatwebsite\Excel\Facades\Excel;
 
     function createLoanAccount($amt=10000){
     
-        $acc = Client::first();
-        $product = Loan::first();
-        $fees = $product->fees;
-        $total_deductions = 0;
+        // $acc = Client::whereClientId('049SLU-PC00001')->first();
+        // $product = Loan::first();
+        // $fees = $product->fees;
+        // $total_deductions = 0;
 
-        $loan_amount = $amt;
-        $number_of_installments = 24;
-        if(!$acc->hasActiveDependent()){
-            return 'la dependent';
-        }
-        foreach($product->fees as $fee){// echo $fee->name."=".$fee->calculateFeeAmount($loan_amount, $number_of_installments,$product,$acc->activeDependent->pivotList()). " | ";
-            $total_deductions += $fee->calculateFeeAmount($loan_amount, $number_of_installments,$product,$acc->activeDependent->pivotList());
-        }
+        // $loan_amount = $amt;
+        // $number_of_installments = 24;
+        // $dependents = null;
+        // if($acc->hasActiveDependent()){
+        //     $acc->activeDependent->pivotList();
+        // }
+        // foreach($product->fees as $fee){
+        //     echo $fee->name."=".$fee->calculateFeeAmount($loan_amount, $number_of_installments,$product,$dependents). " | ";
+        //     $total_deductions += $fee->calculateFeeAmount($loan_amount, $number_of_installments,$product,$dependents);
+        // }
         
-        $disbursed_amount = $loan_amount - $total_deductions;
+        // $disbursed_amount = $loan_amount - $total_deductions;
         
-        $acc->loans()->create([
-            'loan_id'=>$product->id,
-            'amount'=>$loan_amount,
-            'principal'=>10000,
-            'interest'=>18000,
-            'interest_rate'=>5.475225,
-            'number_of_installments'=>$number_of_installments,
+        // return $acc->loanAccounts()->create([
+        //     'loan_id'=>$product->id,
+        //     'amount'=>$loan_amount,
+        //     'principal'=>10000,
+        //     'interest'=>18000,
+        //     'interest_rate'=>5.475225,
+        //     'number_of_installments'=>$number_of_installments,
 
-            'total_deductions'=>$total_deductions,
-            'disbursed_amount'=>$disbursed_amount, //net disbursement
+        //     'total_deductions'=>$total_deductions,
+        //     'disbursed_amount'=>$disbursed_amount, //net disbursement
             
-            'first_payment'=>Carbon::now(),
-            'last_payment'=>Carbon::now()->addWeeks(24),
+        //     'disbursement_date'=>Carbon::now(),
+        //     'first_payment_date'=>Carbon::now(),
+        //     'la∑st_payment_date'=>Carbon::now()->addWeeks(24),
 
-            'created_by'=>1,
-        ]);
+        //     'created_by'=>1,
+        // ]);
         
         
+    }
+
+    function money($item,$decimal){
+        return env('CURRENCY_SIGN') . ' ' . number_format($item,$decimal);
+    }
+    function createHoliday(){
+        Holiday::create(['date'=>\Carbon\Carbon::now(),'name'=>'Sample holiday','office_id'=>'1']);
+    }
+
+    function testHoliday(){
+        $date = \Carbon\Carbon::parse("2020-09-29");
+        $office_id  = 24;
+        
+        $scheduler = new \Scheduler($date,$office_id);
+        return $scheduler;
+        
+    }
+
+    function addWeek($date){
+        return $date = \Carbon\Carbon::parse($date)->addWeek();
     }
 ?>

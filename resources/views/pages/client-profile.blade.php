@@ -147,9 +147,9 @@
 		      <div class="card">
 		        <div class="card-header">
 		          <div class="float-left text-center">
-		          	<h4 class="mt-2 text-2xl">Loan Accounts</h4>
+		          	<a href="{{route('client.loan.list',$client->client_id)}}"><h4 class="mt-2 text-2xl">Loan Accounts</h4></a>
 		          </div>
-		           <a href="" class="text-base float-right btn-create">Create Account</a>
+		           <a href="{{route('client.loan.create',$client->client_id)}}" class="text-base float-right btn-create">Create Account</a>
 		        </div>
 		        <div class="card-body">
 		          <div class="table-accounts table-full-width table-responsive">

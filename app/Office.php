@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use App\Holiday;
 use App\PaymentMethod;
 use App\DefaultPaymentMethod;
 use Illuminate\Database\Eloquent\Model;
@@ -261,5 +262,9 @@ class Office extends Model
         $res['for_withdrawal'] = $pm->withdrawal_payment_method_id;
         $res['for_recovery'] = $pm->recovery_payment_method_id;
         return $res;
+    }
+
+    public function holidays(){
+        return $this->hasMany(Holiday::class);
     }
 }

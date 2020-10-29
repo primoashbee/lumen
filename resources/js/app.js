@@ -14,6 +14,7 @@ window.numeral = require('numeral');
 
 
 window.Vue = require('vue');
+
 // window.flatten = require('flat')
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -31,7 +32,8 @@ window.moment = require('moment');
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
-
+import Money from './plugins/money.js';
+Vue.use(Money)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
@@ -74,6 +76,12 @@ Vue.component('loan-products-list', require('./components/Settings/LoanProducts.
 Vue.component('loan-product', require('./components/Settings/LoanProduct.vue').default);
 Vue.component('create-client-dependents', require('./components/ClientDependentCreateComponent.vue').default);
 Vue.component('client-dependents-list', require('./components/ClientDependentListComponent.vue').default);
+
+Vue.component('client-create-loan-account', require('./components/ClientCreateLoanAccountComponent.vue').default);
+
+
+Vue.component('loan-profile', require('./components/LoanAccountcomponent.vue').default);
+Vue.component('random-picker', require('./components/RandomPickerComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

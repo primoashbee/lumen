@@ -165,15 +165,12 @@ class ClientController extends Controller
             }
             DB::commit();
             return response()->json(['msg'=>'Client succesfully created'],200);
-        } catch(ValidationException $e)
-        {
+        }catch(ValidationException $e){
             // Rollback and then redirect
             // back to form with errors
-            DB::rollback();
-            
+            DB::rollback();   
             return response()->json(['errors'=>$e->getErrors()],422);
-        } catch(\Exception $e)
-        {
+        }catch(\Exception $e){
             DB::rollback();
             throw $e;
         }

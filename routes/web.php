@@ -1,14 +1,17 @@
 <?php
+    
 
 use App\User;
 use App\Client;
 use App\Office;
 use App\Deposit;
 use Carbon\Carbon;
+use App\LoanAccount;
 use App\DepositAccount;
 use App\Events\TestEvent;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,56 +27,9 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
-
-Route::get('/sched',function(Request $request){
-    $amt = $request->amount;
-    createLoanAccount($amt);
-    $scheds = \App\LoanAccount::latest()->first()->schedules();
-    echo '<table border="1">
-    <thead>
-        <th>Installment</th>
-        <th>Principal</th>
-        <th>Interest</th>
-        <th>Amortization</th>
-        <th>Principal Balance</th>
-        <th>Interest Balance</th>
-    </thead>
-    <tbody>';
-    $tp=0;
-    $ti=0;
-    $ta=0;
-    $tpb=0;
-    $tpi=0;
-    foreach($scheds as $sched){
-        $tp += $sched->principal;
-        $ti += $sched->interest;
-        $ta += $sched->amortization;
-        $tpb += $sched->principal_balance;
-        $tpi += $sched->interest_balance;
-        echo '<tr>
-                <td>'.$sched->installment.'</td>
-                <td>'.number_format($sched->principal,2).'</td>
-                <td>'.number_format($sched->interest,2).'</td>
-                <td>'.number_format($sched->amortization,2).'</td>
-                <td>'.number_format($sched->principal_balance,2).'</td>
-                <td>'.number_format($sched->interest_balance,2).'</td>
-            </tr>';
-
-
-    }
-    echo '<tr>
-            <td></td>
-            <td>'.number_format($tp,2).'</td>
-            <td>'.number_format($ti,2).'</td>
-            <td>'.number_format($ta,2).'</td>
-            <td>'.number_format($tpb,2).'</td>
-            <td>'.number_format($tpi,2).'</td>
-        </tr>';
-
-    echo '</tbody>
-    </table>';
+Route::get('/ap',function(){
+    return LoanAccount::first()->allRepayments();
 });
-
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
@@ -91,18 +47,32 @@ Route::get('/z',function(){
 
 });
 
-Route::get('/client/{client_id}/create/dependents', 'ClientController@toCreateDependents')->name('client.create.dependents');
-Route::post('/client/create/dependent', 'DependentController@createDependents')->name('create.dependents.post');
-Route::get('/client/update/dependent', 'DependentController@updateDependentStatus')->name('create.dependents.activate');
-Route::get('/client/{client_id}/manage/dependents', 'ClientController@dependents')->name('client.manage.dependents');
-Route::get('/create/client/loan', function(){
-    return view('pages.create-client-loan');
+
+Route::get('/loan/products','LoanController@');
+Route::get('/random',function(){
+    return view('random-picker');
 });
-
-
-Auth::routes(); 
+Auth::routes();
 Route::get('/fees','FeeController@getList');
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/pay','RepaymentController@repayLoan');
+    Route::post('/loan/calculator', 'LoanAccountController@calculate')->name('loan.calculator');
+
+
+    Route::get('/client/{client_id}/create/dependents', 'ClientController@toCreateDependents')->name('client.create.dependents');
+    Route::post('/client/create/dependent', 'DependentController@createDependents')->name('create.dependents.post');
+    Route::get('/client/update/dependent', 'DependentController@updateDependentStatus')->name('create.dependents.activate');
+    Route::get('/client/{client_id}/manage/dependents', 'ClientController@dependents')->name('client.manage.dependents');
+    Route::get('/client/{client_id}/create/loan', 'LoanAccountController@index')->name('client.loan.create');
+    Route::post('/client/create/loan', 'LoanAccountController@createLoan')->name('client.loan.create.post');
+    Route::get('/client/{client_id}/loans', 'LoanAccountController@clientLoanList')->name('client.loan.list');
+    Route::get('/loan/approve/{loan_id}','LoanAccountController@approve')->name('loan.approve');
+    Route::get('/loan/disburse/{loan_id}','LoanAccountController@disburse')->name('loan.disburse');
+    
+    Route::get('/client/{client_id}/loans/{loan_id}','LoanAccountController@account')->name('loan.account');
+    Route::post('/loans/repay','RepaymentController@accountPayment');
+    Route::post('/loans/preterm','RepaymentController@preTerminate');
+
     Route::get('/dashboard','DashboardController@index')->name('dashboard');
     Route::group(['middleware' => []], function () { 
         Route::get('/create/client','ClientController@index')->name('precreate.client');
@@ -115,7 +85,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/usr/branches','UserController@branches');
     Route::get('/clients','ClientController@list')->name('client.list');
     Route::get('/clients/list','ClientController@getList')->name('get.client.list');
-    Route::get('/client/{client_id}','ClientController@view')->name('get.client.info');
+    Route::get('/client/{client_id}','ClientController@view')->name('client.profile');
     Route::get('/edit/client/{client_id}','ClientController@editClient');
     Route::post('/edit/client','ClientController@update');
     

@@ -217,8 +217,8 @@ class Client extends Model
         return $this->firstname. ' '.$this->lastname;
     }
 
-    public function loans(){
-        return $this->hasMany(LoanAccount::class);
+    public function loanAccounts(){
+        return $this->hasMany(LoanAccount::class,'client_id','client_id');
     }
     
 }
