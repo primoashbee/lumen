@@ -33,8 +33,13 @@ class CreateLoanAccountInstallmentsTable extends Migration
             
             $table->unsignedDouble('principal_balance');
             $table->unsignedDouble('interest_balance');
-            $table->boolean('waived_interest')->default(false);
+
+            $table->unsignedDouble('principal_paid')->default(false);
+            $table->unsignedDouble('interest_paid')->default(false);
+            $table->unsignedDouble('waived_interest')->default(0);
             $table->boolean('paid')->default(false);
+
+            $table->boolean('has_payment')->default(false);
             $table->boolean('reverted')->default(false);
             $table->timestamps();
         });

@@ -74,7 +74,8 @@
 									<p class="text-muted text-lg">{{$client->created_at->format('F, j Y')}} - {{$client->created_at->diffForHumans()}}</p>
 								</div>
 								<div class="p-details mt-2">
-									<p class="title text-xl">Status: <span class="badge-pill badge-success text-lg">ACTIVE</span></p>
+									
+									<p class="title text-xl">Status: <span class="badge badge-pill badge-success">Active</span></h1></p>
 								</div>
 							</div>
 						</div>
@@ -157,24 +158,40 @@
 		              <tbody>
 		              	<tr>
 		                  <td>
-		                    <p class="text-base">Account #</p>
+		                    <p class="text-base">Product</p>
+		                  </td>
+		                  <td>
+		                    <p class="text-base">Amount</p>
+		                  </td>
+		                  <td>
+		                    <p class="text-base">Balance</p>
 		                  </td>
 		                  <td>
 		                    <p class="text-base">Status</p>
 		                  </td>
 		                </tr>
-		                <tr>
+						@foreach($client->activeLoans() as $item)
+						<tr>
 		                  <td>
-		                    <a href="">
-		                      <p class="title text-base">MCBU0001</p>
+						  	<a href="{{route('loan.account',[$client->client_id,$item->id])}}">
+		                      <p class="title text-base">{{$item->product->code}}</p>
 		                    </a>
-		                  </td>
+						  </td>
+						  <td>
+							  <p class="title text-base">{{money($item->amount,2)}}</p>
+						  </td>
+						  <td>
+							  <p class="title text-base">{{money($item->total_balance,2)}}</p>
+						  </td>
 		                  <td>
-		                    <span class="active position-relative px-2 text-base">
-		                      Active
-		                    </span>
+							@if($item->status=="In Arrears")
+								<span class="badge badge-pill badge-danger">{{$item->status}}</span></h1>
+							@else
+								<span class="badge badge-pill badge-success">{{$item->status}}</span></h1>
+							@endif
 		                  </td>
-		                </tr>
+						</tr>
+						@endforeach
 		              </tbody>
 		            </table>
 		          </div>
@@ -242,37 +259,38 @@
 		      <div class="card">
 		        <div class="card-header">
 		          <div class="float-left text-center">
-		          	<h4 class="mt-2 h5">Active Dependents</h4>
+		          	<h4 class="mt-2 h5">Dependents</h4>
 		          </div>
 					<a href="{{route('client.manage.dependents',$client->client_id)}}" class="float-right btn-create">Manage</a>
 				</div>
-				@if($client->hasActiveDependent())
+				
 		        <div class="card-body">
-					<h1> Unit of Plan {{$client->activeDependent->pivotList()->first()->unit_of_plan}}</h1>
+					
 					<div class="table-accounts table-full-width table-responsive">
 					<table class="table">
 						<tr>
-							<td> Name </td>
-							<td> Age </td>
-							<td> Relationship </td>
+							<td> Unit</td>
+							<td> Application Number </td>
+							<td> # of Dependents  </td>
+							<td> Expiry</td>
+							<td> Status</td>
 						</tr>
 						<tbody>
-							@foreach($client->activeDependent->pivotList() as $dependent)
-							<tr>
-								<td>{{$dependent->name}}</td>
-								<td>{{$dependent->age}}</td>
-								<td>{{$dependent->relationship}}</td>
-							</tr>
-							@endforeach		
+							@foreach ($client->dependents as $item)
+								<tr>
+									<td>{{$item->unit_of_plan}}</td>
+									<td>{{$item->application_number}}</td>
+									<td>{{$item->count}}</td>
+									<td>{{$item->expires_at}}</td>
+									<td>{{$item->status}}</td>
+								</tr>
+							@endforeach
 						</tbody>
 					</table>
 					</div>
 				</div>
-				@else
-				<div class="card-body">
-					<h1> <span class="badge badge-pill badge-danger">No Active Dependent</span></h1>
-				</div>
-				@endif
+				
+				
 				
 		      </div>
 		    	<!-- <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

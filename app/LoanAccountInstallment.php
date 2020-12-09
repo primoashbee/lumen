@@ -22,9 +22,12 @@ class LoanAccountInstallment extends Model
         'amount_due',
         'amortization',
         'paid', 
+        'has_payment',
         'carried_over_amount',
         'principal_balance',
         'interest_balance',
+        'interest_paid',
+        'principal_paid',
         'waived_interest'
     ];
 
@@ -43,9 +46,13 @@ class LoanAccountInstallment extends Model
     ];
 
     protected $dates = ['date','created_at','updated_at'];
-    protected $appends = ['is_due','interest_paid','principal_paid','mutated'];
+    // protected $appends = ['is_due','interest_paid','principal_paid','mutated'];
+    protected $appends = ['is_due','mutated'];
     public function repayments(){
         return $this->hasMany(LoanAccountInstallmentRepayment::class);
+    }
+    public function succesfulRepayments(){
+        return $this->hasMany(LoanAccountInstallmentRepayment::class)->where('reverted',false);
     }
 
     public function calculatePayment($amount,$user_id,$payment_method_id){
@@ -155,18 +162,7 @@ class LoanAccountInstallment extends Model
     public function getIsDueAttribute(){
         return $this->date <= Carbon::now() && $this->paid == 0;
     }
-    public function getInterestPaidAttribute(){
-        if($this->paid){
-            return $this->original_interest;
-        }
-        return abs(round($this->interest - $this->original_interest,2));
-    }
-    public function getPrincipalPaidAttribute(){
-        if($this->paid){
-            return $this->original_principal;
-        }
-        return abs(round($this->principal - $this->original_principal,2));
-    }
+ 
 
     public function getMutatedAttribute(){
         $fields = $this->for_mutation;
@@ -199,7 +195,9 @@ class LoanAccountInstallment extends Model
                 'carried_over_amount'=>0,
                 'amount_due'=> round($this->original_principal + $this->original_interest,2),
                 'amortization'=> round($this->original_principal + $this->original_interest,2),
-                'waived_interest'=>false
+                'waived_interest'=>false,
+                'principal_paid'=>0,
+                'interest_paid'=>0,
                 ]);
         }else{
             $this->update([
@@ -211,6 +209,8 @@ class LoanAccountInstallment extends Model
                 'amortization'=> round($this->original_principal + $this->original_interest,2),
                 'waived_interest'=>false,
                 'paid'=>false,
+                'principal_paid'=>0,
+                'interest_paid'=>0,
                 ]);
         }
     }
@@ -227,5 +227,56 @@ class LoanAccountInstallment extends Model
             ]);
     }
 
+    public function recalculate(){
+        $interest_paid = $this->interest_paid;
+        $principal_paid = $this->principal_paid;
+
+        $interest = round($this->original_interest - $interest_paid,2);
+        $principal = round($this->original_principal - $principal_paid,2);
+        $amortization = round($interest + $principal,2);
+
+
+        return $this->update([
+            'interest'=>$interest,
+            'principal'=>$principal,
+            'amortization'=>$amortization
+        ]);
+        
+    }
+
+    public function updateInstallmentStatus(){
+        if($this->date <= Carbon::now() && $this->amount_due == 0){
+            $this->paid = true;
+            return $this->save();
+        }
+        $this->paid = false;
+        return $this->save();
+    }
+
+    public function isFuture(){
+        return  $this->date->diffInDays(Carbon::now()) > 0;
+    }
+
+    public function updatePaymentFromPreterm($interest_paid,$principal_paid,$revert=false){
+        $interest_paid = $interest_paid;
+        $principal_paid = $principal_paid;
+
+        $current_interest_paid = $this->interest_paid;
+        $current_principal_paid = $this->principal_paid;
+
+        $new_interest_paid = round($interest_paid + $current_interest_paid, 2);
+        $new_principal_paid = round($principal_paid + $current_principal_paid, 2);
+        $paid = true;
+        if($revert){
+            $new_interest_paid = round($current_interest_paid - $interest_paid, 2);
+            $new_principal_paid = round($current_principal_paid - $principal_paid, 2);
+            $paid = false;
+        }
+        return $this->update([
+            'interest_paid'=>$new_interest_paid,
+            'principal_paid'=>$new_principal_paid,
+            'paid'=>false
+        ]);
+    }
 
 }

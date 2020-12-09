@@ -19,6 +19,12 @@ class CreateDependentsTable extends Migration
             $table->string('application_number');
             $table->unsignedInteger('unit_of_plan');
 
+            $table->string('member_firstname')->nullable();
+            $table->string('member_middlename')->nullable();;
+            $table->string('member_lastname')->nullable();;
+            $table->date('member_birthday')->nullable();;
+
+            
             $table->boolean('spouse_exists')->default(false);
             $table->string('spouse_firstname')->nullable();
             $table->string('spouse_middlename')->nullable();;
@@ -77,7 +83,10 @@ class CreateDependentsTable extends Migration
             $table->string('common_illness')->nullable();
             $table->double('commonillness_rate')->nullable();
             
-            $table->boolean('active')->default(false);
+            $table->string('status')->default('Unused');
+            $table->unsignedInteger('loan_account_id')->nullable();
+            $table->dateTime('activated_at')->nullable();
+            $table->date('expires_at')->nullable();
             $table->unsignedInteger('created_by');
 
             $table->timestamps();

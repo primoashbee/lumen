@@ -21,6 +21,7 @@ class CreateLoanAccountsTable extends Migration
             $table->double('amount');
             $table->unsignedDouble('principal');
             $table->unsignedDouble('interest');
+            $table->unsignedDouble('total_loan_amount');
             $table->unsignedDouble('interest_rate');
             $table->integer('number_of_installments');
             $table->unsignedDouble('total_deductions'); 
@@ -47,6 +48,7 @@ class CreateLoanAccountsTable extends Migration
             $table->date('last_payment_date');
 
             $table->date('closed_at')->nullable();
+            $table->unsignedInteger('closed_by')->nullable();
             
             
             $table->unsignedInteger('created_by')->nullable();

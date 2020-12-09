@@ -23,3 +23,5 @@ Route::get('/edit/client/{client_id}', 'ClientController@clientInfo');
 Route::get('/structure','API\StructureController@index');
 Route::get('/auth/structure','API\StructureController@auth');
 Route::get('/auth/branches','API\StructureController@branches');    
+
+Route::post('/revert','RevertController@revert');

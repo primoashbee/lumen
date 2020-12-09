@@ -198,15 +198,27 @@ class Client extends Model
     }
 
     public function activeDependent(){
-        return Dependent::where('client_id',$this->client_id)->where('active',true)->first();
+        return $this->dependents->where('expires_at','!=',null)->where('expires_at','<=',Carbon::now());    
+        // return Dependent::where('client_id',$this->client_id)->where('active',true)->first();
     }
 
     public function hasActiveDependent(){
-        return Dependent::where('client_id',$this->client_id)->where('active',true)->count() > 0 ;
+
+        return $this->activeDependent()->count() > 0;
+        
     }
 
+    public function hasUnusedDependent(){
+        return $this->dependents->where('status','Unused')->count() == 1;
+    }
+  
+
     public function getActiveDependentAttribute(){
-        return $this->activeDependent();
+        // return $this->activeDependent();
+    }
+
+    public function unUsedDependent(){
+        return $this->dependents->where('status','Unused')->first();
     }
 
     public function getBirthdayAttribute($value){
@@ -219,6 +231,15 @@ class Client extends Model
 
     public function loanAccounts(){
         return $this->hasMany(LoanAccount::class,'client_id','client_id');
+    }
+
+    public function disbursementDependent(){
+        return $this->dependents->where('active',false);
+    }
+
+    
+    public function activeLoans(){
+        return $this->loanAccounts->whereNull('closed_at');
     }
     
 }

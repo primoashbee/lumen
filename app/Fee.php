@@ -24,7 +24,7 @@ class Fee extends Model
         return $this->belongsToMany(Loan::class,'loan_fee');
     }
 
-    public function calculateFeeAmount($loan_amount,$installment,$loan_product,$dependent=null){
+    public function calculateFeeAmount($loan_amount,$installment,$loan_product,$dependent=null,$unit_of_plan=1){
         
         //cgli premium ok
         //cgli fee ok
@@ -55,7 +55,7 @@ class Fee extends Model
             if($this->name=="MI Premium"){
                 $months = $this->weekToMonth($weeks);
                 $amount = $this->calculateMiPremiumAmount($months,$dependent);
-                return round($amount,2);
+                return round($amount * $unit_of_plan,2);
             }
             if($this->name=="CGLI Fee"){
                 $months = $this->weekToMonth($weeks);
@@ -176,7 +176,7 @@ class Fee extends Model
             'young'=>43
         );
        
-    return collect($rates);
+        return collect($rates);
     }
 
     public function calculateMiPremiumAmount($term,$dependent){
@@ -184,18 +184,22 @@ class Fee extends Model
         // var_dump($term);
         $rate = $rates->where('months',$term)->first();
         $amount = $rate->member;
+        $unit_of_plan =1;
         
+
         if ($dependent != null) {
             foreach ($dependent as $item) {
                 $level = $item->level;
                 $amount += $rate->$level;
+                $unit_of_plan = $item->unit_of_plan;
             }
         }
         
-        return $amount;  
-
-        
+        $total = round($amount*$unit_of_plan,2);
+        return $total;
     }
+    
+
     
 
     

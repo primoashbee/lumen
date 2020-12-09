@@ -12,8 +12,18 @@ use App\Rules\DependentStatus;
 class DependentController extends Controller
 {
     public function createDependents(DependentCreateRequest $request){
+     
+        $data = $request->all();
+        $client = Client::select('firstname','lastname','middlename','birthday')->whereClientId($request->client_id)->first();
         
-        $data=  $this->formatRequest($request->all());
+        $member = [
+            'firstname'=>$client->firstname,
+            'middlename'=>$client->middlename,
+            'lastname'=>$client->lastname,
+            'birthday'=>$client->getRawOriginal('birthday'),
+        ];
+        $data['member'] = $member;
+        $data = $this->formatRequest($data);
         if(Client::where('client_id',$request->client_id)->firstOrFail()->dependents()->create($data)){
             return response()->json(['msg'=>'Dependent Created'], 200);
         }
@@ -42,7 +52,7 @@ class DependentController extends Controller
         $types = ['activate','deactivate'];
         
         Validator::make($request->all(),[
-            'application_number'=>'required|exists:dependents,application_number',
+            'application_number'=>'required|unique:dependents,application_number|exists:dependents,application_number',
             'type'=> [new DependentStatus]
         ])->validate();
         Dependent::where('application_number',$request->application_number)->first()->client_id;
@@ -51,4 +61,5 @@ class DependentController extends Controller
         }
         return Dependent::where('application_number',$request->application_number)->update(['active'=>false]);
     }
+
 }

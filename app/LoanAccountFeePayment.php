@@ -11,12 +11,19 @@ class LoanAccountFeePayment extends Model
 {
     protected $fillable = [
         'loan_account_id',
+        'loan_account_disbursement_transaction_id',
         'transaction_id',
         'fee_id',
         'amount',
         'payment_method_id',
         'paid_at',
         'paid_by',
+        'paid',
+        'created_at',
+        
+        'reverted',
+        'reverted_by',
+        'reverted_at'
     ];
     
     protected $table='loan_account_fee_payments';
@@ -39,8 +46,15 @@ class LoanAccountFeePayment extends Model
     
     public function getMutatedAttribute(){
         $mutated['total_paid'] = env('CURRENCY_SIGN') . ' ' . number_format($this->amount,2);
-        $mutated['paid_by'] = $this->paidBy->fullname;
-        $mutated['payment_method'] = $this->paymentMethod->name;
+        if($this->paidBy!=null){
+            $mutated['paid_by'] = $this->paidBy->fullname;
+            $mutated['payment_method'] = $this->paymentMethod->name;
+            
+        }else{
+            $mutated['paid_by'] = null;
+            $mutated['payment_method'] = null;
+            
+        }
         $mutated['particulars'] = $this->fee->name;
         return $mutated;   
     }
@@ -65,8 +79,20 @@ class LoanAccountFeePayment extends Model
         // }
         
         $repayments = LoanAccountFeePayment::count()+$add;
-        $last = str_pad($repayments,3,0,STR_PAD_LEFT);
+        $last = str_pad($repayments, 3, 0, STR_PAD_LEFT);
         $transaction = 'F'.$year.$month.$day.$loan_account_id.$last;
         return $transaction;
+    }
+
+    public function revert($user_id){
+        return $this->update([
+            'payment_method_id'=>null,
+            'paid'=>false,
+            'paid_by'=>null,
+            'reverted'=>true,
+            'reverted_by'=>$user_id,
+            'reverted_at'=>Carbon::now(),
+            'paid_at'=>null
+        ]);
     }
 }

@@ -546,13 +546,24 @@ class ClientController extends Controller
     }
 
     public function dependents($client_id){
-        $client = Client::with('dependents')->where('client_id',$client_id)->firstOrFail();
+        
+        $client = Client::select('firstname','middlename','lastname','client_id')->where('client_id',$client_id)->firstOrFail();
+        
         return view('pages.client-dependents',compact('client'));
     }
     public function toCreateDependents($client_id){
         $client = Client::select('id','firstname','lastname','civil_status','client_id')->where('client_id',$client_id)->firstOrFail();
         $civil_status = strtolower($client->civil_status);
         return view('pages.create-client-dependents',compact('client','civil_status'));
+    }
+
+    public function listDependents($client_id){
+        $client = Client::fcid($client_id);
+        if($client!=null){
+            $list = $client->dependents->each->append('pivotList','count'); 
+            return response()->json(['msg'=>'Success','list'=>$list],200);
+        }
+        return response()->json(['msg'=>'Invalid Request'],422);
     }
 
 }

@@ -40,9 +40,9 @@ class RecalculateLoanDues extends Command
     {
         // $accounts = LoanAccount::all();
       
-        $total = LoanAccount::active()->count();
+        $accounts = LoanAccount::active();
 
-        $accounts = LoanAccount::limit(500)->offset(0);
+        // $accounts = LoanAccount::limit(500)->offset(0);
         
         foreach($accounts->chunk(100) as $chunk){
             foreach ($chunk as $item) {

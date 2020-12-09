@@ -1,12 +1,13 @@
 @extends('layouts.user')
 @section('content')
 <div class="content content pl-32 pr-8 mt-4" id="content-full">
-    <client-dependents-list data="{{$client}}"></client-dependents-list>
+    
+    <client-dependents-list client_id="{{$client->client_id}}" full_name="{{$client->full_name}}"></client-dependents-list>
 </div>
 @endsection
 
 @section('scripts')
-{{-- <script
+    {{-- <script
   src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
   integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
   crossorigin="anonymous"></script>

@@ -27,8 +27,10 @@ class RepaymentController extends Controller
             $account = LoanAccount::find($request->loan_account_id);
             $request->request->add(['paid_by'=>auth()->user()->id]);
             $account->pay($request->all());
-            $account->updateAccount();
+        
             \DB::commit();
+            
+            $account->fresh()->updateAccount();
             return response()->json(['msg'=>'Payment Successfully Received!'],200);
         }catch(\Exception $e){
             return response()->json(['msg'=>$e->getMessage()],500);
@@ -72,8 +74,6 @@ class RepaymentController extends Controller
             'amount.required'=>'Amount is required',
             'amount.gt'=>'Amount must be greater than 0',
             'amount.numeric'=>'Invalid Amount Data Type',
-            
-            
         ];
         return Validator::make($data,$rules,$messages);
     }
@@ -93,7 +93,7 @@ class RepaymentController extends Controller
             \DB::commit();
             return response()->json(['msg'=>'Transaction Successful'],200);
         }catch(Exception $e){
-
+            return response()->json(['msg'=>$e->getMessage()],422);
         }
     }
 }

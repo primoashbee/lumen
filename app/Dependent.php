@@ -14,6 +14,11 @@ class Dependent extends Model
         'unit_of_plan',
         'application_number',
 
+        'member_firstname',
+        'member_middlename',
+        'member_lastname',
+        'member_birthday',
+
         'spouse_exists',
         'spouse_firstname',
         'spouse_middlename',
@@ -70,18 +75,26 @@ class Dependent extends Model
 
         'common_illness',
         'commonillness_rate',
-        'active',
+
+        'status',
+        'loan_account_id',
+
+        'activated_at',
+        'expires_at',
         'created_by'
         
     ];
     public $fields = ['firstname','middlename','lastname','birthday'];
-    protected $appends =['pivot_list'];
+    
+
+    protected $dates = ['expires_at','activated_at','created_at','updated_at'];
     public function client(){
         return $this->belongsTo(Client::class,'client_id');
     }
 
     public function relationship(){
         $list = [];
+            array_push($list,'member');
         if($this->spouse_exists){
             array_push($list,'spouse');
         }
@@ -186,5 +199,16 @@ class Dependent extends Model
     public function activeDependent($client_id){
         $me = new static;
         return $me->where('client_id',$client_id)->where('active',true)->get();
+    }
+
+    public function getExpiresAtAttribute($value){
+        if($value==null){
+            return 'NULL';
+        }
+        return Carbon::parse($value)->diffInDays() .' days left'; 
+    }
+    
+    public function getCountAttribute(){
+        return $this->pivotList()->count();
     }
 }

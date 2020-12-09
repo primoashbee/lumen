@@ -24,6 +24,10 @@ class CreateLoanAccountRepaymentsTable extends Migration
             $table->unsignedInteger('paid_by');
             $table->unsignedInteger('payment_method_id');
 
+            $table->boolean('reverted')->default(false);
+            $table->unsignedInteger('reverted_by')->nullable();
+
+
             $table->unsignedInteger('for_pretermination')->default(false);
             $table->dateTime('repayment_date');
             $table->mediumText('notes')->nullable();

@@ -54,7 +54,6 @@
 								<input type="number" class="form-control" id="loan_amount" v-model="form.amount" step="1000">
 							</div>
 
-							
 						</div>
 						
 						<div class="d-table-row pl-3 mt-4">
@@ -115,6 +114,7 @@
 
 						<h1> Principal {{calculator.formatted_principal}} </h1>
 						<h1> Interest {{calculator.formatted_interest}} </h1>
+						<h1> Total Loan Amount {{calculator.formatted_total_loan_amount}} </h1>
 
 						<h1> Disbursement Amount {{calculator.formatted_disbursement_amount}} </h1>
 						<h1> Total Deductions {{calculator.formatted_total_deductions}} </h1>
@@ -226,6 +226,7 @@ export default {
 			this.form[field] = value
 		},
 		calculate(){
+			
 			this.form.client_id = this.client_id
 			this.form.interest_rate = this.selected_interest
 			axios.post(this.calculate_route,this.form)

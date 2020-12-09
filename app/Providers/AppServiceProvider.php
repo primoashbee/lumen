@@ -190,10 +190,10 @@ class AppServiceProvider extends ServiceProvider
                 }
             );
             
-            if($latest_payment->diffInDays($repayment_date)){
-                return false;
+            if($repayment_date->gte($latest_payment)){
+                return true;
             }
-            return true;
+                return false;
             
         },$error);
      

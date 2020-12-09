@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Support\Carbon;
+use App\Rules\hasUnusedDepedent;
+use App\Rules\HasNoUnusedDependent;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DependentCreateRequest extends FormRequest
@@ -29,7 +31,7 @@ class DependentCreateRequest extends FormRequest
         $adult_max_age = Carbon::now()->subYear($this->adult_max_age);
         $young_max_age = Carbon::now()->subYear($this->young_max_age);
         return [
-            "client_id"=>'required|exists:clients,client_id',
+            "client_id"=>['required','exists:clients,client_id',new hasUnusedDepedent],
             "application_number"=>"required|unique:dependents,application_number",
 
             
@@ -135,4 +137,6 @@ class DependentCreateRequest extends FormRequest
 
         ];
     }
+
+    
 }

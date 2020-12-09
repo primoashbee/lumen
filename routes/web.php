@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
 */
 
 Route::get('/ap',function(){
-    return LoanAccount::first()->allRepayments();
+    return csrf_token();
 });
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -63,6 +63,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/client/create/dependent', 'DependentController@createDependents')->name('create.dependents.post');
     Route::get('/client/update/dependent', 'DependentController@updateDependentStatus')->name('create.dependents.activate');
     Route::get('/client/{client_id}/manage/dependents', 'ClientController@dependents')->name('client.manage.dependents');
+    Route::get('/dependents/{client_id}', 'ClientController@listDependents')->name('client.dependents.list');
     Route::get('/client/{client_id}/create/loan', 'LoanAccountController@index')->name('client.loan.create');
     Route::post('/client/create/loan', 'LoanAccountController@createLoan')->name('client.loan.create.post');
     Route::get('/client/{client_id}/loans', 'LoanAccountController@clientLoanList')->name('client.loan.list');
@@ -72,7 +73,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/client/{client_id}/loans/{loan_id}','LoanAccountController@account')->name('loan.account');
     Route::post('/loans/repay','RepaymentController@accountPayment');
     Route::post('/loans/preterm','RepaymentController@preTerminate');
-
+    Route::post('/revert','RevertController@revert')->name('revert.action');
     Route::get('/dashboard','DashboardController@index')->name('dashboard');
     Route::group(['middleware' => []], function () { 
         Route::get('/create/client','ClientController@index')->name('precreate.client');

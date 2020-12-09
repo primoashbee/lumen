@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use App\LoanAccount;
 use Illuminate\Http\Request;
 use App\Rules\ClientHasActiveDependent;
+use App\Rules\ClientHasAvailableDependent;
+use App\Rules\HasNoPendingLoanAccount;
+use App\Rules\HasNoUnusedDependent;
 use App\Rules\PaymentMethodList;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,10 +39,12 @@ class LoanAccountController extends Controller
         $number_of_installments = $request->number_of_installments;
         $fee_repayments = array();
         $dependents = null;
-        if($client->hasActiveDependent()){
-            $dependents = $client->activeDependent->pivotList();
-        }
+        $unit_of_plan = 2;
+        
+        $dependents = $client->unUsedDependent()->pivotList();
+        
         foreach($loan->fees as $fee){
+            
             $fee_amount = $fee->calculateFeeAmount($loan_amount, $number_of_installments,$loan,$dependents);
             $total_deductions += $fee_amount;
             $fee_repayments[] = array(
@@ -51,7 +56,6 @@ class LoanAccountController extends Controller
         $disbursed_amount = $loan_amount - $total_deductions;
         $annual_rate = 0.03 * 12;
         $start_date = $request->first_payment;
-
         
         $loan_interest_rate = Loan::rates($loan->id)->where('installments',$number_of_installments)->first()->rate;
 
@@ -80,6 +84,9 @@ class LoanAccountController extends Controller
             
             'interest'=>$calculator->total_interest,
             'formatted_interest'=>money($calculator->total_interest,2),
+
+            'total_loan_amount'=>$calculator->total_loan_amount,
+            'formatted_total_loan_amount'=>money($calculator->total_loan_amount,2),
             
             'installments'=>$calculator->installments,
             'loan'=>$loan->get('name'),
@@ -105,7 +112,8 @@ class LoanAccountController extends Controller
         if(!$for_update){
             $rules = [
                 'loan_id'=>'required|exists:loans,id',
-                'client_id'=>['required','exists:clients,client_id'],
+                'client_id'=>['required','exists:clients,client_id',new HasNoUnusedDependent],
+                // 'client_id'=>['required','exists:clients,client_id',new HasNoPendingLoanAccount],
                 'amount'=>'required|gte:2000',
                 'disbursement_date'=>'required|date',
                 
@@ -131,10 +139,8 @@ class LoanAccountController extends Controller
         $loan_amount = (int) $request->amount;
         $number_of_installments = $request->number_of_installments;
         $fee_repayments = array();
-        $dependents = null;
-        if($client->hasActiveDependent()){
-            $dependents = $client->activeDependent->pivotList();
-        }
+        
+        $dependents = $client->unUsedDependent()->pivotList();
         foreach($loan->fees as $fee){
             $fee_amount = $fee->calculateFeeAmount($loan_amount, $number_of_installments,$loan,$dependents);
             $total_deductions += $fee_amount;
@@ -176,6 +182,7 @@ class LoanAccountController extends Controller
                 'amount'=>$loan_amount,
                 'principal'=>$loan_amount,
                 'interest'=>$calculator->total_interest,
+                'total_loan_amount'=>$calculator->total_loan_amount,
                 'interest_rate'=>$loan_interest_rate,
                 'number_of_installments'=>$number_of_installments,
 
@@ -196,6 +203,7 @@ class LoanAccountController extends Controller
             $this->createFeePayments($loan_acc,$fee_repayments);
             
             $this->createInstallments($loan_acc,$calculator->installments);
+            $client->unUsedDependent()->update(['status'=>'For Loan Disbursement','loan_account_id'=>$loan_acc->id]);
             \DB::commit();
             return response()->json(['msg'=>'Loan Account successfully created'],200);
         }catch(\Exception $e){
@@ -215,21 +223,22 @@ class LoanAccountController extends Controller
                 'fee_id'=> $fee->id,
                 'amount'=> $fee->amount,
             ]);
-            
         }
         return $fee_payments;
     }
     
-    public function payFeePayments($fees,$payment_method_id,$disbursed_by){
+    public function payFeePayments($fees,$payment_method_id,$disbursed_by,$transaction_id){
         $x = 1;
-        $res;
+        $now  = Carbon::now();        
         foreach($fees as $fee){
             $res = $fee->update([
+                'loan_account_disbursement_transaction_id'=>$transaction_id,
                 'transaction_id'=>$fee->generateTransactionID($x),
                 'paid_at'=>Carbon::now(),
                 'paid_by'=>$disbursed_by,
                 'payment_method_id'=>$payment_method_id,
-                'paid'=>true
+                'paid'=>true,
+                'created_at'=>$now
             ]);
             $x++;
         }
@@ -262,7 +271,9 @@ class LoanAccountController extends Controller
     }
 
     public function clientLoanList($client_id){
-        $client =  Client::with('loanAccounts')->select('firstname','lastname','client_id')->where('client_id',$client_id)->firstOrFail();
+        $client =  Client::with(['loanAccounts'=>function($q){
+            return $q->orderBy('created_at','desc');
+        }])->select('firstname','lastname','client_id')->where('client_id',$client_id)->firstOrFail();
 
         return view('pages.client-loans-list',compact('client'));
     }
@@ -281,16 +292,29 @@ class LoanAccountController extends Controller
         \DB::beginTransaction();
         
         try {
-            $this->payFeePayments($fee_payments,$payment_method_id,$disbursed_by);
+            $transaction_id = $account->generateDisbursementTransactionNumber();
+            $this->payFeePayments($fee_payments,$payment_method_id,$disbursed_by,$transaction_id);
 
             $account->update([
-            'disbursed_by'=>auth()->user()->id,
-            'disbursed_at'=>Carbon::now(),
-            'status'=>'Active',
-            'disbursed'=>true
-        ]);
-
-        $account->updateStatus();
+                'disbursed_at'=>Carbon::now(),
+                'status'=>'Active',
+                'disbursed'=>true
+            ]);
+            
+            $account->disbursement()->create([
+                'transaction_id'=>$transaction_id,
+                'disbursed_amount'=>$account->disbursed_amount,
+                'disbursed_by'=>auth()->user()->id,
+                'payment_method_id'=>$payment_method_id 
+            ]);
+        
+        $account->updateAccount();
+        $account->dependents->update([
+            'status'=>'Used',
+            'loan_account_id'=>$account->id,
+            'activated_at'=>Carbon::now(),
+            'expires_at'=>Carbon::now()->addDays(env('INSURANCE_MATURITY_DAYS'))
+            ]);
         \DB::commit();
         return redirect()->back();
         }catch(\Exception $e){
@@ -318,37 +342,37 @@ class LoanAccountController extends Controller
             ]);
             \DB::commit();
             return redirect()->back();
-        }catch(\Exception $e){
+        }catch(\Exception $e){ 
             return response()->json(['msg'=>$e->getMessage()],500);
         }
 
         
     }
     public function account(Request $request, $client_id,$loan_id){
-        
+
         if($request->wantsJson()){
-            $account = LoanAccount::find($loan_id);
+            $account = LoanAccount::find($loan_id)->append('mutated','total_paid','pre_term_amount','activity');
             
             $client = Client::select('firstname','lastname','client_id')->where('client_id',$client_id)->first();
-            $preterm = $account->preTermAmount();;
-            $repayments =$account->repayments;
-            $fees = $account->feePayments;
             
+            
+            $activity = $account->activity();
             return response()->json([
                 'account'=>$account->load('installments'),
                 'client'=>$client,
-                'repayments'=>$repayments,
-                'fee_payments'=>$fees,
-                'pre_term_amount'=>$preterm
+                // 'pre_term_amount'=>$preterm,
+                // 'activity'=>$activity
             ],200);
         }
+        
         $account =  LoanAccount::findOrFail($loan_id);
+        
         $client = Client::where('client_id',$client_id)->firstOrFail();
         return view('pages.client-loan-account',compact('account','client'));
     }
 
-    public function wantsJson(Request $request){
-        return $request->wantsJson();
-    }
+    // public function wantsJson(Request $request){
+    //     return $request->wantsJson();
+    // }
     
 }

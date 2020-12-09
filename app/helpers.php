@@ -158,6 +158,7 @@ use Maatwebsite\Excel\Facades\Excel;
             'name'=>'MI Premium',
             'automated'=>true,
             'calculation_type'=>'matrix',
+            'has_unit_of_plan'=>true,
             'gl_account'=>526,
         ]);
 
