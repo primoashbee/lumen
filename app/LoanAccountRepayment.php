@@ -168,6 +168,12 @@ class LoanAccountRepayment extends Model
             $has_payment = LoanAccountInstallmentRepayment::where('loan_account_installment_id',$item->loan_account_installment_id)
                 ->where('transaction_id','!=',$item->transaction_id)
                 ->count() > 0;
+            if($installment_new_interest > $item->installment->original_interest){
+                $installment_new_interest = $item->installment->original_interest;
+            }
+            if($installment_new_principal > $item->installment->original_principal){
+                $installment_new_principal = $item->installment->original_principal;
+            }
             $item->installment->update([
                 'interest'=>$installment_new_interest,
                 'principal'=>$installment_new_principal,

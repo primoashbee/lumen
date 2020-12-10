@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Carbon\Carbon;
 use App\LoanAccount;
+use App\PaymentMethod;
+use Faker\Provider\Payment;
 use App\Observers\LoanAccountObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
@@ -196,6 +198,52 @@ class AppServiceProvider extends ServiceProvider
                 return false;
             
         },$error);
-     
+        Validator::extendDependent('on_or_before_disbursement_date',function ($attribute, $value, $parameters, $validator){
+
+
+            $values = $validator->getData();
+
+            $disbursed_date = LoanAccount::find($values['loan_account_id'])->disbursed_at;
+            
+            
+            
+            $repayment_date = Carbon::parse($values['repayment_date']);
+            
+            $customMessage = "Cannot make repayment before disbursement date - " . $disbursed_date->format('F d, Y');
+            $validator->addReplacer('on_or_before_disbursement_date', 
+                function($message, $attribute, $rule, $parameters) use ($customMessage) {
+                    return \str_replace(':custom_message', $customMessage, $message);
+                }
+            );
+            $diff = $repayment_date->diffInDays($disbursed_date);
+            if($diff > 0){
+                return false;
+            }
+                return true;
+            
+        },$error);
+        
+        Validator::extendDependent('ctlp',function ($attribute, $value, $parameters, $validator){
+
+            $values = $validator->getData();
+            $method = PaymentMethod::find($values['payment_method']);
+            $repayment_amount = $values['amount'];
+            if($method->isCTLP()){
+                $code = LoanAccount::find($values['loan_account_id'])->client->ctlpAccount()->type->product_id;
+                $balance = LoanAccount::find($values['loan_account_id'])->client->ctlpAccount()->getRawOriginal('balance')  ;
+                
+                $customMessage = "Insufficient ".$code." Balance  (".money($balance,2).")";
+                $validator->addReplacer('ctlp', 
+                function($message, $attribute, $rule, $parameters) use ($customMessage) {
+                    return \str_replace(':custom_message', $customMessage, $message);
+                    }
+                );    
+                return $repayment_amount > $balance ? false : true;
+            }
+
+            return true;
+            
+        },$error);
+        
     }
 }

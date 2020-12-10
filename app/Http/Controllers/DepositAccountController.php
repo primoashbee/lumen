@@ -22,6 +22,7 @@ class DepositAccountController extends Controller
 
     public function deposit($deposit_account_id,Request $request){
         $this->validator($request->all())->validate();
+        $request->request->add(['user_id'=>auth()->user()->id]);
         if ($request->type == 'deposit') {
 
             DepositAccount::find($deposit_account_id)->deposit($request->all());

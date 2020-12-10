@@ -241,5 +241,8 @@ class Client extends Model
     public function activeLoans(){
         return $this->loanAccounts->whereNull('closed_at');
     }
-    
+    public function ctlpAccount(){
+        $ctlp = Deposit::where('product_id','MCBU')->first()->id;
+        return $this->deposits->where('deposit_id',$ctlp)->first();
+    }
 }

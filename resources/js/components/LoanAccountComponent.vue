@@ -287,7 +287,8 @@ export default {
             })
         },
         preTerm(){
-            var account = this.account            
+            var account = this.account      
+            var vm = this      
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
                     confirmButton: 'btn btn-success',
@@ -361,7 +362,7 @@ export default {
                         confirmButtonText: 'OK'
                     })
                     .then(res=>{
-                        // location.reload()
+                        location.reload()
                     })
                     this.is_loading = false;
                 })

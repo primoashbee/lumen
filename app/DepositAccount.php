@@ -47,7 +47,7 @@ class DepositAccount extends Model
             'amount'=>$data['amount'],
             'payment_method'=>$data['payment_method'],
             'repayment_date'=>$data['repayment_date'],
-            'user_id'=> auth()->user()->id,
+            'user_id'=> $data['user_id'],
             'balance' => $new_balance
         ]);
             
@@ -70,14 +70,52 @@ class DepositAccount extends Model
             'amount'=>$data['amount'],
             'payment_method'=>$data['payment_method'],
             'repayment_date'=>$data['repayment_date'],
-            'user_id'=> auth()->user()->id,
+            'user_id'=> $data['user_id'],
             'balance' => $new_balance
         ]);
         
         $this->balance = $new_balance;
-        return $this->save();        
+        return $this->save();
     }
 
+    public function payCTLP(array $data){
+        if($this->getRawOriginal('balance') < $data['amount']){
+            return false;
+        }
+        $new_balance = $this->getRawOriginal('balance') - $data['amount'];
+
+        DepositTransaction::create([
+            'transaction_id' => uniqid(),
+            'deposit_account_id' => $this->id,
+            'transaction_type'=>'CTLP',
+            'amount'=>$data['amount'],
+            'payment_method'=>$data['payment_method'],
+            'repayment_date'=>$data['repayment_date'],
+            'user_id'=> $data['user_id'],
+            'balance' => $new_balance
+        ]);
+        
+        $this->balance = $new_balance;
+        return $this->save();
+    }
+    public function revertPayCTLP(array $data){
+        
+        $new_balance = $this->getRawOriginal('balance') + $data['amount'];
+        DepositTransaction::create([
+            'transaction_id' => uniqid(),
+            'deposit_account_id' => $this->id,
+            'transaction_type'=>'Deposit',
+            'amount'=>$data['amount'],
+            'payment_method'=>$data['payment_method'],
+            'repayment_date'=>$data['repayment_date'],
+            'user_id'=> $data['user_id'],
+            'balance' => $new_balance
+        ]);
+            
+        
+        $this->balance = $new_balance;
+        return $this->save();
+    }
     public function transactions(){
         return $this->hasMany(DepositTransaction::class)->orderBy('created_at','desc');
     }

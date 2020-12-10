@@ -121,8 +121,8 @@ use Maatwebsite\Excel\Facades\Excel;
             'deposit_interest_expense' => 0,
         ]);
         Deposit::create([
-            'name'=>'VOLUNTARY CBU',
-            'product_id'=>'VCBU',
+            'name'=>'MANDATORY CBU',
+            'product_id'=>'MCBU',
             'description'=>'aba ewan ko sa inyo',
             'minimum_deposit_per_transaction'=>50,
             'account_per_client'=>1,
@@ -235,6 +235,7 @@ use Maatwebsite\Excel\Facades\Excel;
         Loan::find($id)->fees()->attach([Fee::find(2)->id]);
         Loan::find($id)->fees()->attach([Fee::find(4)->id]);
         Loan::find($id)->fees()->attach([Fee::find(5)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(6)->id]);
         $id = Loan::create([
             "code"=>'AGL',
             "name"=>'AGRICULTURAL LOAN',

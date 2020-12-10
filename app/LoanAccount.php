@@ -58,6 +58,17 @@ class LoanAccount extends Model
         'amount_due'
     ];
 
+    protected $dates = [
+        'created_at',
+        'disbursed_at',
+        'approved_at',
+        'disbursement_date',
+        'first_payment_date',
+        'last_payment_date',
+        'created_at',
+        'updated_at'
+    ];
+
     protected $for_mutation =['amount','principal','interest','disbursed_amount','total_balance','interest_balance','principal_balance'];
 
     public static function active(){
@@ -72,7 +83,7 @@ class LoanAccount extends Model
     }
 
     public function client(){
-        return $this->belongsTo(Client::class,'client_id');
+        return $this->belongsTo(Client::class,'client_id','client_id');
     }
 
     
@@ -490,7 +501,7 @@ class LoanAccount extends Model
         return $this->successfulRepayments->first();
     }
 
-    public function generateRepaymentTransactionNumber(){
+    public function generateRepaymentTransactionNumber($type=null){
         
         //year + month + day + loan account number + micro
         $now = Carbon::now();
@@ -514,6 +525,13 @@ class LoanAccount extends Model
         $repayments = $this->repayments->count()+1;
         $last = str_pad($repayments,3,0,STR_PAD_LEFT);
         $transaction = 'R'.$year.$month.$day.$loan_account_id.$last;
+        if($type=='ctlp'){
+            $transaction = 'C'.$year.$month.$day.$loan_account_id.$last;
+        }
+        if($type=='pretermination'){
+            $transaction = 'P'.$year.$month.$day.$loan_account_id.$last;
+        }
+        
         return $transaction;
     }
     
@@ -566,9 +584,13 @@ class LoanAccount extends Model
         $repayment_date = $data['repayment_date'];
         $notes = $data['notes'];
 
+        $method = PaymentMethod::find($data['payment_method']);
+        if($method->isCTLP()){
+            $this->client->ctlpAccount()->payCTLP($data); 
+        }
         $interest_paid = 0;
         $principal_paid = 0;
-        $transaction_number = $this->generateRepaymentTransactionNumber();
+        $transaction_number = $this->generateRepaymentTransactionNumber('ctlp');
         // if($payment_amount == $this->maximumPayment()->amount){
         
         // }
@@ -677,7 +699,7 @@ class LoanAccount extends Model
 
         $total_paid = $this->totalPaid();
         $amount = $this->preTermAmount();
-        $transaction_id = $this->generateRepaymentTransactionNumber();
+        $transaction_id = $this->generateRepaymentTransactionNumber('pretermination');
         $interest_from_pretermination = $amount->interest;
         $principal_from_pretermination = $amount->principal;
         $paid_by = $data['paid_by'];
@@ -688,6 +710,10 @@ class LoanAccount extends Model
 
 
 
+        $method = PaymentMethod::find($data['payment_method']);
+        if($method->isCTLP()){
+            $this->client->ctlpAccount()->payCTLP($data); 
+        }
         $remaining_installments = $this->remainingInstallments();
         
         foreach($remaining_installments as $installment){

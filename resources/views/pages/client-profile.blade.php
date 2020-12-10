@@ -270,8 +270,8 @@
 					<table class="table">
 						<tr>
 							<td> Unit</td>
-							<td> Application Number </td>
-							<td> # of Dependents  </td>
+							<td> App. #</td>
+							<td> # of Dpnts </td>
 							<td> Expiry</td>
 							<td> Status</td>
 						</tr>

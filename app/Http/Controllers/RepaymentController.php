@@ -26,6 +26,7 @@ class RepaymentController extends Controller
         try{
             $account = LoanAccount::find($request->loan_account_id);
             $request->request->add(['paid_by'=>auth()->user()->id]);
+            $request->request->add(['user_id'=>auth()->user()->id]);
             $account->pay($request->all());
         
             \DB::commit();
@@ -59,10 +60,10 @@ class RepaymentController extends Controller
     public function validator(array $data){
         $rules = [
             'office_id' =>['required', new OfficeID()],
-            'repayment_date'=>['required','date', new PreventFutureDate(),'prevent_previous_repayment_date'],
+            'repayment_date'=>['required','date', new PreventFutureDate(),'prevent_previous_repayment_date','on_or_before_disbursement_date'],
             'payment_method'=>['required', new PaymentMethodList],
             'loan_account_id'=>['required', 'numeric','exists:loan_accounts,id',new AccountMustBeActive],
-            'amount' => ['required','gt:0','maximum_loan_repayment'],
+            'amount' => ['required','gt:0','maximum_loan_repayment','ctlp'],
             
         ];
         $messages =[
@@ -84,11 +85,13 @@ class RepaymentController extends Controller
             'repayment_date'=>['required','date', new PreventFutureDate(),'prevent_previous_repayment_date'],
             'payment_method'=>['required', new PaymentMethodList],
             'loan_account_id'=>['required', 'numeric','exists:loan_accounts,id',new AccountMustBeActive],
+            'amount'=>['ctlp']
         ]);
 
         \DB::beginTransaction();
         try{
             $request->request->add(['paid_by'=>auth()->user()->id]);
+            $request->request->add(['user_id'=>auth()->user()->id]);
             $acc = LoanAccount::find($request->loan_account_id)->preTerminate($request->all());
             \DB::commit();
             return response()->json(['msg'=>'Transaction Successful'],200);

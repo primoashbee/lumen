@@ -18,7 +18,28 @@ class RevertController extends Controller
         $request->request->add(['user_id'=>$user_id]);
         $this->validator($request->all())->validate();
         $type = $this->checkPaymentType($request->transaction_id);
+        
         if ($type =='repayment') {
+            \DB::beginTransaction();
+
+            try {
+                $transaction = LoanAccountRepayment::where('transaction_id', $request->transaction_id)->first();
+                $res = $transaction->revert($user_id);
+                
+                \DB::commit();
+
+                if ($res) {
+                    $transaction->loanAccount->updateAccount();
+                    // $transaction->loanAccount->updateStatus();
+                    return response()->json(['msg'=>'Transaction reverted succesfully!'], 200);
+                } else {
+                    return response()->json(['msg'=>'Cannot revert transaction. Revert latest transaction first'], 422);
+                }
+            } catch (Exception $e) {
+                return response()->json(['msg'=>$e->getMessage()], 500);
+            }
+        }
+        if ($type =='ctlp') {
             \DB::beginTransaction();
 
             try {
@@ -88,13 +109,24 @@ class RevertController extends Controller
 
     public function checkPaymentType($transaction_id){
         //check if repayment
-        $repayment = LoanAccountRepayment::where('transaction_id',$transaction_id);
-        if($repayment->count() > 0){
-            return $repayment->first()->for_pretermination ? 'pretermination' : 'repayment';
-        }
-        $disbursement = LoanAccountDisbursement::where('transaction_id',$transaction_id);
-        if($disbursement->count() > 0){
-            return 'disbursement';
+        
+        if(LoanAccountRepayment::where('transaction_id',$transaction_id)->count() > 0){
+
+            if(\Str::contains($transaction_id, 'R')){
+                return 'repayment';
+            }
+            if(\Str::contains($transaction_id, 'D')){
+                return 'disbursement';
+            }
+            if(\Str::contains($transaction_id, 'F')){
+                return 'fee_payment';
+            }
+            if(\Str::contains($transaction_id, 'C')){
+                return 'ctlp';
+            }
+            if(\Str::contains($transaction_id, 'P')){
+                return 'pretermination';
+            }
         }
         
     }
