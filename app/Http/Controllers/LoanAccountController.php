@@ -11,6 +11,7 @@ use App\Rules\ClientHasActiveDependent;
 use App\Rules\ClientHasAvailableDependent;
 use App\Rules\HasNoPendingLoanAccount;
 use App\Rules\HasNoUnusedDependent;
+use App\Rules\LoanAmountModulo;
 use App\Rules\PaymentMethodList;
 use Illuminate\Support\Facades\Validator;
 
@@ -114,7 +115,7 @@ class LoanAccountController extends Controller
                 'loan_id'=>'required|exists:loans,id',
                 'client_id'=>['required','exists:clients,client_id',new HasNoUnusedDependent],
                 // 'client_id'=>['required','exists:clients,client_id',new HasNoPendingLoanAccount],
-                'amount'=>'required|gte:2000',
+                'amount'=>['required','gte:2000',new LoanAmountModulo],
                 'disbursement_date'=>'required|date',
                 
                 'first_payment'=>'required|date|after_or_equal:disbursement_date',
