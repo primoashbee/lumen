@@ -11,6 +11,9 @@ class DepositTransaction extends Model
     protected $casts = [
         'created_at' => 'datetime:F d, Y',
     ];
+    protected $dates = [
+        'repayment_date',
+    ];
 
     public function getAmountAttribute($value){
         return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
@@ -24,4 +27,5 @@ class DepositTransaction extends Model
     public function postedBy(){
         return $this->belongsTo(User::class,'user_id');
     }
+
 }

@@ -21,10 +21,10 @@ class DepositAccountController extends Controller
     
 
     public function deposit($deposit_account_id,Request $request){
+        $data = $request->all();
         $this->validator($request->all())->validate();
         $request->request->add(['user_id'=>auth()->user()->id]);
         if ($request->type == 'deposit') {
-
             DepositAccount::find($deposit_account_id)->deposit($request->all());
             return response()->json(['msg'=>'Deposit Transaction Succesful'],200);
 
@@ -56,7 +56,7 @@ class DepositAccountController extends Controller
                 'amount'=>['required','numeric',new AmountDepositBelowMinimum($acc)],
                 'payment_method'=>['required', new PaymentMethodList()],
                 'deposit_account_id'=>['required','exists:deposit_accounts,id'],
-                'repayment_date'=>['required','date', new PreventFutureDate(), new PreventLaterThanLastTransactionDate($data['deposit_account_id'])],
+                'repayment_date'=>['required','date', new PreventFutureDate(), 'prevent_previous_deposit_transaction_date'],
                 'type'=>['required', new TransactionType()]
             ];
         }
@@ -83,22 +83,22 @@ class DepositAccountController extends Controller
             
             $rules = [
                 'office_id' =>['required', new OfficeID()],
-                'repayment_date'=>['required','date', new PreventFutureDate()],
+                'accounts.*.repayment_date'=>['required','date', new PreventFutureDate(),'prevent_previous_deposit_transaction_date'],
                 'payment_method'=>['required', new PaymentMethodList()],
                 'type'=>['required', new TransactionType()],        
                 'accounts.*.deposit_id'=> ['required','exists:deposit_accounts,id'],
-                'accounts.*.amount'=> ['required', 'cbu_deposit:accounts.*.amount'],
+                'accounts.*.amount'=> ['required', 'cbu_deposit:accounts.*.amount','gt:0','integer'],
                 ];
 
             $messages = [];
         }else if($type=='withdraw'){
             $rules = [
                 'office_id' =>['required', new OfficeID()],
-                'repayment_date'=>['required','date', new PreventFutureDate()],
+                'repayment_date'=>['required','date', new PreventFutureDate(), 'prevent_previous_deposit_transaction_date'],
                 'payment_method'=>['required', new PaymentMethodList()],
                 'type'=>['required', new TransactionType()],        
                 'accounts.*.deposit_id'=> ['required','exists:deposit_accounts,id'],
-                'accounts.*.amount'=> ['gt:0','cbu_withdraw:accounts.*.amount'],
+                'accounts.*.amount'=> ['gt:0','cbu_withdraw:accounts.*.amount','integer'],
             ];
 
             $messages = [];
@@ -128,11 +128,10 @@ class DepositAccountController extends Controller
         }
     }
     public function showBulkView(Request $request){
-        return view('pages.deposit-bulk-transactions');
+        return view('pages.bulk.deposit');
     }
 
     public function bulkDeposit(Request $request){
-
         $this->validateBulk($request->all(),'deposit')->validate();
 
         $total_amount = 0;
@@ -144,6 +143,7 @@ class DepositAccountController extends Controller
                 'amount' => $account['amount'],
                 'payment_method'=>$request->payment_method,
                 'repayment_date'=>$request->repayment_date,
+                'user_id'=>auth()->user()->id
             );
             $current->deposit($deposit_info);
             $total_amount = $total_amount + $account['amount'];

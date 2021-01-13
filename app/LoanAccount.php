@@ -69,7 +69,7 @@ class LoanAccount extends Model
         'updated_at'
     ];
 
-    protected $for_mutation =['amount','principal','interest','disbursed_amount','total_balance','interest_balance','principal_balance'];
+    protected $for_mutation =['amount','principal','interest','disbursed_amount','total_balance','interest_balance','principal_balance','total_deductions','disbursed_amount'];
 
     public static function active(){
         
@@ -83,7 +83,8 @@ class LoanAccount extends Model
     }
 
     public function client(){
-        return $this->belongsTo(Client::class,'client_id','client_id');
+        return Client::fcid($this->client_id);
+        // return $this->hasOne(Client::class,'client_id','client_id');
     }
 
     
@@ -888,5 +889,151 @@ class LoanAccount extends Model
 
     public function getActivityAttribute(){
         return $this->activity();
+    }
+
+    public function getClientAttribute(){
+        return $this->client();
+    }
+    
+    public function getBasicClientAttribute(){
+        return Client::select('firstname','middlename','lastname')->where('client_id',$this->client_id)->first();
+    }
+    public function canBeApproved(){
+        if(is_null($this->approved_by) && is_null($this->approved_at) && $this->approved == false){
+            return true;
+        }
+
+        return false;
+    }
+
+    public function approve($user_id){
+        $this->update([
+            'approved_by'=>$user_id,
+            'approved_at'=>Carbon::now(),
+            'status'=>'Approved',
+            'approved'=>true
+        ]);
+    }
+
+    public function disburse(array $payment_info){
+        $account = $this;
+        $fee_payments = $account->feePayments;
+        $payment_method_id = $payment_info['payment_method_id'];
+        $disbursed_by = $payment_info['disbursed_by'];
+        \DB::beginTransaction();
+      
+        try{
+            $transaction_id = $account->generateDisbursementTransactionNumber();
+            
+            
+            $account->payFeePayments($fee_payments,$payment_method_id,$disbursed_by,$transaction_id);
+            
+            $disbursement_date = Carbon::parse($payment_info['disbursement_date']);
+            $start_date = Carbon::parse($payment_info['first_repayment_date']);
+            $office_id = $payment_info['office_id'];
+            if($this->disbursement_date != $disbursement_date){
+               $this->disbursement_date = $disbursement_date;
+               $this->save();
+            }
+
+            if($this->installments->first()->date != Carbon::parse($payment_info['first_repayment_date'])){
+                //create new installments
+                $this->installments()->delete();
+                $annual_rate = 0.03 * 12;
+                $product = $this->product;
+                $data = array(
+                    'principal'=>$this->amount,
+                    'annual_rate'=>$annual_rate,
+                    'interest_rate'=>$product->interest_rate,
+                    'interest_interval'=>$product->interest_interval,
+                    'term'=>$product->installment_method,
+                    'term_length'=>$this->number_of_installments,
+                    'disbursement_date'=>$disbursement_date,
+                    'start_date'=>$start_date,
+                    'office_id'=>$office_id
+                );
+                $calculator = LoanAccount::calculate($data);
+                $this->createInstallments($this,$calculator->installments);
+            }
+
+            
+            $account->update([
+                'disbursed_at'=>Carbon::now(),
+                'status'=>'Active',
+                'disbursed'=>true
+            ]);
+            
+            $account->disbursement()->create([
+                'transaction_id'=>$transaction_id,
+                'disbursed_amount'=>$account->disbursed_amount,
+                'disbursed_by'=>auth()->user()->id,
+                'payment_method_id'=>$payment_method_id 
+            ]);
+            
+            $account->updateAccount();
+            $account->dependents->update([
+                'status'=>'Used',
+                'loan_account_id'=>$account->id,
+                'activated_at'=>Carbon::now(),
+                'expires_at'=>Carbon::now()->addDays(env('INSURANCE_MATURITY_DAYS'))
+                ]);
+            \DB::commit();
+            return true;
+        }catch(\Exeception $e){
+            Log::alert($e->getMessage());
+            return false;
+            // return $e->getMessage();
+        }
+
+    }
+    public function canBeDisbursed(){
+        if($this->approved == 1 && $this->disbursed == 0){
+            return true;
+        }
+        return false;
+    }
+       
+    public function payFeePayments($fees,$payment_method_id,$disbursed_by,$transaction_id){
+        $x = 1;
+        $now  = Carbon::now();        
+        foreach($fees as $fee){
+            $res = $fee->update([
+                'loan_account_disbursement_transaction_id'=>$transaction_id,
+                'transaction_id'=>$fee->generateTransactionID($x),
+                'paid_at'=>Carbon::now(),
+                'paid_by'=>$disbursed_by,
+                'payment_method_id'=>$payment_method_id,
+                'paid'=>true,
+                'created_at'=>$now
+            ]);
+            $x++;
+        }
+        return $res;
+    }
+
+    public function createInstallments($loan_acc,object $installments){
+        $x=0;   //skip first installment
+        $list = array();
+        foreach($installments as $item){
+            if ($x>0) {
+                $list[] = $loan_acc->installments()->create([
+                    'installment'=>$item->installment,
+                    'date'=>$item->date,
+                    'original_principal'=>$item->principal,
+                    'original_interest'=>$item->interest,
+                    'principal'=>$item->principal,
+                    'interest'=>$item->interest,
+                    
+                    'principal_due'=>$item->principal,
+                    'interest_due'=>$item->interest_due,
+                    'amount_due'=>$item->amount_due,
+                    'amortization'=>$item->amortization,
+                    'principal_balance'=>$item->principal_balance,
+                    'interest_balance'=>$item->interest_balance,
+                ]);
+            }
+            $x++;
+        }
+        return $list;
     }
 }

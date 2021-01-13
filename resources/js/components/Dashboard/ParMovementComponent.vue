@@ -31,35 +31,36 @@ export default {
         datasets: [
           {
             label: 'Over 180',
-            fill:false,
+            backgroundColor: 'rgba(0,0,255,0.4)',
             borderColor: "#0000FF",
 
             data: [10, 25, 30, 45, 50]
           },
           {
             label: '91-180',
-            fill:false,
+            
             borderColor: "#006400",
+            backgroundColor: 'rgba(0,100,0,0.4)',
 
             data: [8, 22, 28, 40, 45]
           },
           {
             label: '61-90',
-            fill:false,
-            borderColor: "#FFDF00",
 
+            borderColor: "#FFDF00",
+            backgroundColor: 'rgba(255,223,0,0.4)',  
             data: [6, 18, 25, 35, 40]
           },
           {
             label: '30-60',
-            fill:false,
+            
             borderColor: "#008080",
 
             data: [4, 15, 20, 30, 20   ]
           },
           {
             label: '1-30',
-            fill:false,
+            
             borderColor: "#90EE90",
 
             data: [10, 40, 25, 45 ,0 ]

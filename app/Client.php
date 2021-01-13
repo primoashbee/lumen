@@ -120,42 +120,71 @@ class Client extends Model
         return $me->searchables;
     }
 
-    public static function like($office_id, $query){
+    public static function like($office_id, $query,$limited=false){
         $me = new static;
         $searchables = $me->searchables;
        
         $office = Office::find($office_id);
         $office_ids = $office->getAllChildrenIDS();
+        if($limited){
+            if (count($office_ids)>0) {
+                $office_ids = $office->getLowerOfficeIDS();
+                if ($query!=null) {
+                    $clients = Client::with('office')->select('id','client_id','firstname','middlename','lastname','office_id')->whereIn('office_id', $office_ids)->where(function (Builder $dbQuery) use ($searchables, $query) {
+                        foreach ($searchables as $item) {
+                            $dbQuery->orWhere($item, 'LIKE', '%'.$query.'%');
+                        }
+                    });
+                    return $clients;
+                }
+                $clients = Client::with('office')->select('id','client_id','firstname','middlename','lastname','office_id')->whereIn('office_id', $office_ids);
+                return $clients;
+            }
+
+            if ($query!=null) {
+                $office_ids = $office->getLowerOfficeIDS();
+                
+                $clients = Client::select('id','client_id','firstname','middlename','lastname','office_id')->whereIn('office_id', $office_ids)->where(function (Builder $dbQuery) use ($searchables, $query) {
+                    foreach ($searchables as $item) {
+                        $dbQuery->orWhere($item, 'LIKE', '%'.$query.'%');
+                    }
+                })->load('office');
+                return $clients;
+            }
         
-        if(count($office_ids)>0){
-            
             $office_ids = $office->getLowerOfficeIDS();
-            if($query!=null){
-                $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables, $query){
-                    foreach($searchables as $item){  
-                        $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
+            $clients = Client::select('id','client_id','firstname','middlename','lastname','office_id')->load('office')->whereIn('office_id', $office_ids);
+            return $clients;
+        }else{
+            if (count($office_ids)>0) {
+                $office_ids = $office->getLowerOfficeIDS();
+                if ($query!=null) {
+                    $clients = Client::with('office')->whereIn('office_id', $office_ids)->where(function (Builder $dbQuery) use ($searchables, $query) {
+                        foreach ($searchables as $item) {
+                            $dbQuery->orWhere($item, 'LIKE', '%'.$query.'%');
+                        }
+                    });
+                    return $clients;
+                }
+                $clients = Client::with('office')->whereIn('office_id', $office_ids);
+                return $clients;
+            }
+
+            if ($query!=null) {
+                $office_ids = $office->getLowerOfficeIDS();
+                
+                $clients = Client::with('office')->whereIn('office_id', $office_ids)->where(function (Builder $dbQuery) use ($searchables, $query) {
+                    foreach ($searchables as $item) {
+                        $dbQuery->orWhere($item, 'LIKE', '%'.$query.'%');
                     }
                 });
                 return $clients;
             }
-            $clients = Client::with('office')->whereIn('office_id',$office_ids);
-            return $clients;
-        }
-
-        if($query!=null){
-            $office_ids = $office->getLowerOfficeIDS();
-                
-            $clients = Client::with('office')->whereIn('office_id',$office_ids)->where(function(Builder $dbQuery) use($searchables,$query){
-                foreach($searchables as $item){
-                    $dbQuery->orWhere($item,'LIKE','%'.$query.'%');
-                }
-            });
-            return $clients;
-        }
         
-        $office_ids = $office->getLowerOfficeIDS();       
-        $clients = Client::with('office')->whereIn('office_id',$office_ids);
-        return $clients;
+            $office_ids = $office->getLowerOfficeIDS();
+            $clients = Client::with('office')->whereIn('office_id', $office_ids);
+            return $clients;
+        }
     }
     public static function search($query){
         $me = new static;
@@ -245,4 +274,15 @@ class Client extends Model
         $ctlp = Deposit::where('product_id','MCBU')->first()->id;
         return $this->deposits->where('deposit_id',$ctlp)->first();
     }
+
+    public function restrictedAccount(){
+        $acc = Deposit::where('product_id','RCBU')->first()->id;
+        return $this->deposits->where('deposit_id',$acc)->first();
+    }
+
+    public function getLoanAccountValidationNotesAttribute(){
+        return 'nice';
+    }
+
+    
 }

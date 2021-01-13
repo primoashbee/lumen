@@ -128,6 +128,13 @@ class RevertController extends Controller
                 return 'pretermination';
             }
         }
-        
+
+        if(LoanAccountDisbursement::where('transaction_id',$transaction_id)->count() > 0){
+            if(\Str::contains($transaction_id, 'D')){
+                return 'disbursement';
+            }
+        }
     }
+
+  
 }

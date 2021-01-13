@@ -233,6 +233,39 @@ class Office extends Model
         return Client::whereIn('office_id',$ids)->orderBy('lastname')->get();
     }
 
+    public function getLoanAccounts($type=null,$loan_product_id=null){
+        if (is_null($loan_product_id)) {
+            if ($type==null) {
+
+            }
+            if ($type=='pending') {
+                $ids = $this->getLowerOfficeIDS();
+                $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Pending Approval')->get();
+            }
+            if ($type=='approved') {
+                $ids = $this->getLowerOfficeIDS();
+                $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Approved')->get();
+            }
+        }else{
+            //if product type is selected
+            if ($type==null) {
+            }
+            if ($type=='pending') {
+                $ids = $this->getLowerOfficeIDS();
+                $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Pending Approval')->where('loan_id',$loan_product_id)->get();
+            }
+            if ($type=='approved') {
+                $ids = $this->getLowerOfficeIDS();
+                $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Approved')->where('loan_id',$loan_product_id)->get();
+            }
+
+        }
+    }
+
     public static function depositAccounts($office_id, $deposit_id=null){
         if ($deposit_id!=null) {
             $client_ids = Office::find($office_id)->getClients()->pluck('client_id');

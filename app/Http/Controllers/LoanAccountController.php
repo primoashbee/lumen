@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Loan;
 use App\Client;
+use App\Office;
 use Carbon\Carbon;
 use App\LoanAccount;
 use Illuminate\Http\Request;
-use App\Rules\ClientHasActiveDependent;
-use App\Rules\ClientHasAvailableDependent;
-use App\Rules\HasNoPendingLoanAccount;
-use App\Rules\HasNoUnusedDependent;
 use App\Rules\LoanAmountModulo;
 use App\Rules\PaymentMethodList;
+use App\Rules\HasNoUnusedDependent;
+use App\Rules\HasNoPendingLoanAccount;
+use App\Rules\ClientHasActiveDependent;
+use App\Rules\LoanAccountCanBeApproved;
+use App\Rules\LoanAccountCanBeDisbursed;
 use Illuminate\Support\Facades\Validator;
+use App\Rules\ClientHasAvailableDependent;
 
 class LoanAccountController extends Controller
 {
@@ -114,7 +117,7 @@ class LoanAccountController extends Controller
             $rules = [
                 'loan_id'=>'required|exists:loans,id',
                 'client_id'=>['required','exists:clients,client_id',new HasNoUnusedDependent],
-                // 'client_id'=>['required','exists:clients,client_id',new HasNoPendingLoanAccount],
+                'client_id'=>['required','exists:clients,client_id',new HasNoPendingLoanAccount],
                 'amount'=>['required','gte:2000',new LoanAmountModulo],
                 'disbursement_date'=>'required|date',
                 
@@ -129,6 +132,7 @@ class LoanAccountController extends Controller
         }
     }
 
+    
     public function createLoan(Request $request){
         $this->validator($request->all())->validate();
         $client = Client::where('client_id',$request->client_id)->first();
@@ -217,6 +221,112 @@ class LoanAccountController extends Controller
         
     }
 
+    public function bulkCreateLoan(Request $request){
+        $this->bulkValidator($request->all())->validate();
+        \DB::beginTransaction();
+        try{
+            foreach($request->accounts as $item){
+                $client_id = $item['client_id'];
+                
+                $client = Client::where('client_id',$client_id)->first();
+                $loan =  Loan::find($request->loan_id);
+                $fees = $loan->fees;
+                $total_deductions = 0;
+        
+                $loan_amount = (int) $item['amount'];
+                $number_of_installments = $request->number_of_installments;
+                $fee_repayments = array();
+                
+                $dependents = $client->unUsedDependent()->pivotList();
+                foreach($loan->fees as $fee){
+                    $fee_amount = $fee->calculateFeeAmount($loan_amount, $number_of_installments,$loan,$dependents);
+                    $total_deductions += $fee_amount;
+                    $fee_repayments[] = (object)[
+                        'id'=>$fee->id,
+                        'name'=>$fee->name,
+                        'amount'=>$fee_amount
+                    ];
+                }
+                
+                $disbursed_amount = $loan_amount - $total_deductions;
+                $annual_rate = 0.03 * 12;
+                $start_date = $request->first_payment;
+        
+                //get loan rates via loan and installment length
+                $loan_interest_rate = Loan::rates($loan->id)->where('installments',$number_of_installments)->first()->rate;
+        
+                $data = array(
+                    'principal'=>$loan_amount,
+                    'annual_rate'=>$annual_rate,
+                    'interest_rate'=>$loan_interest_rate,
+                    'interest_interval'=>$loan->interest_interval,
+                    'term'=>$loan->installment_method,
+                    'term_length'=>$number_of_installments,
+                    'disbursement_date'=>$request->disbursement_date,
+                    'start_date'=>$start_date,
+                    'office_id'=>$client->office->id
+                );
+                
+                
+                $calculator = LoanAccount::calculate($data);
+                
+                //dependent on calculator result.
+        
+                
+                $loan_acc = $client->loanAccounts()->create([
+                    'loan_id'=>$loan->id,
+                    'amount'=>$loan_amount,
+                    'principal'=>$loan_amount,
+                    'interest'=>$calculator->total_interest,
+                    'total_loan_amount'=>$calculator->total_loan_amount,
+                    'interest_rate'=>$loan_interest_rate,
+                    'number_of_installments'=>$number_of_installments,
+
+                    'total_deductions'=>$total_deductions,
+                    'disbursed_amount'=>$disbursed_amount, //net disbursement
+                    
+                                
+                    'total_balance'=>$loan_amount + $calculator->total_interest,
+                    'principal_balance'=>$loan_amount,
+                    'interest_balance'=>0,
+
+                    'disbursement_date'=>$calculator->disbursement_date,
+                    'first_payment_date'=>$calculator->start_date,
+                    'last_payment_date'=>$calculator->end_date,
+                    'created_by'=>auth()->user()->id,
+                ]);
+            
+                $this->createFeePayments($loan_acc,$fee_repayments);
+                
+                $this->createInstallments($loan_acc,$calculator->installments);
+                $client->unUsedDependent()->update(['status'=>'For Loan Disbursement','loan_account_id'=>$loan_acc->id]);
+
+            }
+            \DB::commit();
+            return response()->json(['msg'=>'Loan Account successfully created'],200);
+        }catch(\Exception $e){
+            return response()->json(['msg'=>$e->getMessage()],500);
+
+        }
+    }
+
+    public function bulkValidator(array $data){
+        $rules = [
+            'loan_id'=>'required|exists:loans,id',
+            'accounts.*.client_id'=>['required','exists:clients,client_id','bulk_has_no_unused_dependent'],
+            // 'accounts.*.client_id'=>['required','exists:clients,client_id'],
+            'accounts.*.amount'=>['required','gte:2000',new LoanAmountModulo],
+            'disbursement_date'=>'required|date',
+            'first_payment'=>'required|date|after_or_equal:disbursement_date',
+            'number_of_installments'=>'required|gt:0|integer',
+            'accounts' => 'required'
+        ];
+        return Validator::make(
+            $data,
+            $rules,
+        );
+    }
+
     public function createFeePayments($loan_acc, $fee_repayments){
         $fee_payments = array();
         foreach($fee_repayments as $fee){
@@ -244,6 +354,10 @@ class LoanAccountController extends Controller
             $x++;
         }
         return $res;
+    }
+    public function createSchedules(array $data){
+        
+        $calculator = LoanAccount::calculate($data);
     }
     public function createInstallments($loan_acc,object $installments){
         $x=0;   //skip first installment
@@ -335,12 +449,7 @@ class LoanAccountController extends Controller
         \DB::beginTransaction();
         
         try{
-            LoanAccount::findOrFail($id)->update([
-                'approved_by'=>auth()->user()->id,
-                'approved_at'=>Carbon::now(),
-                'status'=>'Approved',
-                'approved'=>true
-            ]);
+            LoanAccount::findOrFail($id)->approve(auth()->user()->id);
             \DB::commit();
             return redirect()->back();
         }catch(\Exception $e){ 
@@ -376,4 +485,117 @@ class LoanAccountController extends Controller
     //     return $request->wantsJson();
     // }
     
+    public function bulkCreateForm(){
+        return view('pages.bulk.create-loan-accounts');
+    }
+
+    public function bulkApproveForm(){
+        return view('pages.bulk.approve-loan-accounts');
+    }
+    public function bulkDisburseForm(){
+        return view('pages.bulk.disburse-loan-accounts');
+    }
+    public function bulkDisburse(Request $request){
+        $rules = [
+            'office_id' =>'required|exists:offices,id',
+            'disbursement_date'=>'required|date',
+            'first_repayment_date'=>'required|after_or_equal:disbursement_date',
+            'accounts.*' => ['required', 'exists:loan_accounts,id',new LoanAccountCanBeDisbursed]
+        ];
+        Validator::make(
+            $request->all(),
+            $rules,
+        )->validate();
+        \DB::beginTransaction();
+        try {
+            $payment_info = [
+                'disbursement_date'=>$request->disbursement_date,
+                'first_repayment_date'=>$request->first_repayment_date,
+                'payment_method_id'=>$request->paymentSelected,
+                'office_id'=>$request->office_id,
+                'disbursed_by'=>auth()->user()->id
+            ];
+            foreach ($request->accounts as $account) {
+                LoanAccount::find($account)->disburse($payment_info);
+            }
+            \DB::commit();
+            return response()->json(['msg'=>'Loan Account successfully created'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['msg'=>$e->getMessage()], 500);
+        }
+    }
+
+    public function bulkApprove(Request $request){
+        
+        $rules = [
+            'accounts.*' => ['required', 'exists:loan_accounts,id',new LoanAccountCanBeApproved]
+        ];
+        Validator::make(
+            $request->all(),
+            $rules,
+        )->validate();
+
+        \DB::beginTransaction();
+        $ctr = 0;
+        try {
+            foreach($request->accounts as $account){
+                LoanAccount::find($account)->approve(auth()->user()->id);
+                $ctr++;
+            }
+            \DB::commit();
+            return response()->json(['msg'=>'Account/s ('.$ctr.'/'.count($request->accounts).') Succesfully Approved'],200);
+        }catch(\Exception $e){ 
+            return response()->json(['msg'=>$e->getMessage()],500);
+        }
+        
+
+    }
+
+    public function pendingLoans(Request $request){
+
+        $rules = [
+            'office_id' =>'required|exists:offices,id'
+        ];
+        Validator::make(
+            $request->all(),
+            $rules,
+        )->validate();
+        
+        $office = Office::find($request->office_id);
+
+        if(is_null($request->loan_id)){
+            $list = $office->getLoanAccounts('pending')->each->append('basic_client','mutated');
+        }else{
+            $list = $office->getLoanAccounts('pending',$request->loan_id)->each->append('basic_client','mutated');
+        }
+        return response()->json([
+            'msg'=>'Success',
+            'list'=>$list
+        ],200);
+        
+    }
+    public function approvedLoans(Request $request){
+
+        $rules = [
+            'office_id' =>'required|exists:offices,id'
+        ];
+        Validator::make(
+            $request->all(),
+            $rules,
+        )->validate();
+        
+        $office = Office::find($request->office_id);
+
+        if(is_null($request->loan_id)){
+            $list = $office->getLoanAccounts('approved')->each->append('basic_client','mutated');
+        }else{
+            $list = $office->getLoanAccounts('approved',$request->loan_id)->each->append('basic_client','mutated');
+        }
+        return response()->json([
+            'msg'=>'Success',
+            'list'=>$list
+        ],200);
+        
+    }
+
 }

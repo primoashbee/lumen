@@ -28,7 +28,8 @@ use Symfony\Component\HttpFoundation\Request;
 */
 
 Route::get('/ap',function(){
-    return csrf_token();
+    $acc = \App\LoanAccount::first();
+    return ($acc->append('basic_client','mutated'));
 });
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -98,7 +99,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit/office/{id}', 'OfficeController@editOffice');
     Route::post('/edit/office/{id}', 'OfficeController@updateOffice');
 
-    Route::get('client/{client_id}/deposit/{deposit_account_id}', 'ClientController@depositAccount')->name('client.deposit'); 
+    Route::get('/client/{client_id}/deposit/{deposit_account_id}', 'ClientController@depositAccount')->name('client.deposit'); 
 
     Route::post('/deposit/{deposit_account_id}','DepositAccountController@deposit')->name('client.make.deposit'); //make deposit transaction individually
     Route::get('/payment/methods','PaymentMethodController@fetchPaymentMethods');
@@ -107,6 +108,17 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/bulk/deposit', 'DepositAccountController@showBulkView')->name('bulk.deposit.deposit');
     Route::get('/bulk/withdraw', 'DepositAccountController@showBulkView')->name('bulk.deposit.withdraw');
     Route::get('/bulk/post_interest', 'DepositAccountController@showBulkView')->name('bulk.deposit.post_interest');
+    
+    Route::get('/bulk/create/loans', 'LoanAccountController@bulkCreateForm')->name('bulk.create.loans');
+    Route::post('/loans/pending/list', 'LoanAccountController@pendingLoans');
+    Route::post('/bulk/create/loans', 'LoanAccountController@bulkCreateLoan')->name('bulk.create.loans.post');
+    
+    Route::get('/bulk/approve/loans','LoanAccountController@bulkApproveForm')->name('bulk.approve.loans');
+    Route::post('/bulk/approve/loans','LoanAccountController@bulkApprove')->name('bulk.approve.loans.post');
+    
+    Route::post('/loans/approved/list','LoanAccountController@approvedLoans');
+    Route::get('/bulk/disburse/loans','LoanAccountController@bulkDisburseForm')->name('bulk.disburse.loans');
+    Route::post('/bulk/disburse/loans','LoanAccountController@bulkDisburse')->name('bulk.disburse.loans.post');
     
     Route::post('/bulk/deposit', 'DepositAccountController@bulkDeposit')->name('bulk.deposit.deposit.post');
     Route::post('/bulk/withdraw', 'DepositAccountController@bulkWithdraw')->name('bulk.deposit.withdraw.post');
@@ -124,7 +136,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/loans/list','LoanController@postInterestByUser')->name('deposit.account.post.interest');
 
 
-
+    Route::get('/loan/products','LoanController@loanProducts')->name('loan.products');
     Route::get('/settings/loan','LoanController@index')->name('settings.loan-products');
     Route::get('/settings/api/get/loans','LoanController@loanProducts')->name('settings.loan-list');
     Route::get('/auth/structure', 'UserController@authStructure')->name('auth.structure');

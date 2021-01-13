@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Client;
 use Carbon\Carbon;
 use App\LoanAccount;
 use App\PaymentMethod;
+use App\DepositAccount;
 use Faker\Provider\Payment;
 use App\Observers\LoanAccountObserver;
 use Illuminate\Support\ServiceProvider;
@@ -244,6 +246,51 @@ class AppServiceProvider extends ServiceProvider
             return true;
             
         },$error);
+
+        Validator::extendDependent('prevent_previous_deposit_transaction_date',function ($attribute, $value, $parameters, $validator){
+
+
+            $values = $validator->getData();
+            $arr = explode('.', $attribute);
+            $_account = $validator->getData()[$arr[0]][$arr[1]];
+            $account = DepositAccount::find($_account['id']);
+            
+            if($account->lastTransaction() == null){
+                return false;
+            }
+            $last_transaction_date = $account->lastTransaction()->repayment_date;
+           
+            $customMessage = "Cannot make transaction before " . $last_transaction_date->format('F d, Y');
+            $validator->addReplacer('prevent_previous_deposit_transaction_date', 
+                function($message, $attribute, $rule, $parameters) use ($customMessage) {
+                    return \str_replace(':custom_message', $customMessage, $message);
+                }
+            );
         
+            return  $last_transaction_date->diffInDays($_account['repayment_date'],false) < 0 ? false : true;
+
+            
+        },$error);
+        
+        Validator::extendDependent('bulk_has_no_unused_dependent',function ($attribute, $value, $parameters, $validator){
+
+
+            $values = $validator->getData();
+            $arr = explode('.', $attribute);
+            $_account = $validator->getData()[$arr[0]][$arr[1]];
+            
+            
+            $customMessage = "Client has no applied dependent";
+            $validator->addReplacer('bulk_has_no_unused_dependent', 
+                function($message, $attribute, $rule, $parameters) use ($customMessage) {
+                    return \str_replace(':custom_message', $customMessage, $message);
+                }
+            );
+
+            $res = Client::where('client_id',$_account['client_id'])->first()->hasUnusedDependent();
+            return $res;
+
+            
+        },$error);
     }
 }

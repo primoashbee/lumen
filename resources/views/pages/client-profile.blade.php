@@ -186,6 +186,10 @@
 		                  <td>
 							@if($item->status=="In Arrears")
 								<span class="badge badge-pill badge-danger">{{$item->status}}</span></h1>
+							@elseif($item->status=='Pending Approval')
+								<span class="badge badge-pill badge-warning">{{$item->status}}</span></h1>
+							@elseif($item->status=='Approved')
+								<span class="badge badge-pill badge-primary">{{$item->status}}</span></h1>
 							@else
 								<span class="badge badge-pill badge-success">{{$item->status}}</span></h1>
 							@endif

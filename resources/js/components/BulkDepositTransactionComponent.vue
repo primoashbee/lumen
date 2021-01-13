@@ -76,6 +76,7 @@
 						
 						<td>
 							<div class="form-group">
+								
 								<amount-input :disabled="inputDisabled(item.id) "@amountEncoded="amountEncoded" :add_class="errorAddClass(item.id)"  :account_info="item" :tabindex="key+1" ></amount-input>
 								<div class="text-danger" v-if="hasInputError(item.id)">
 									{{inputErrorMessage(item.id)}}
@@ -221,7 +222,9 @@ export default {
     },	
     methods : {
 		inputDisabled(id){
-			return false;
+			return this.form.accounts.filter(x=>{
+				return x.id ==id
+			}).includes(id)
 		},
 		errorAddClass(account_id){
 			if(this.hasInputError(account_id)){
@@ -256,7 +259,13 @@ export default {
 
 			return false;
 		},
+		finalizeData(){
+			this.form.accounts.forEach(item=>{
+				item['repayment_date'] = this.form.repayment_date
+			})
+		},
 		depositAll(){
+			this.finalizeData()
 			axios.post(this.postUrl,this.form)
 			.then(res=>{
 				this.errors = [];

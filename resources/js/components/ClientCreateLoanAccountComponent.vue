@@ -21,10 +21,11 @@
 						<div class="col-lg-6">
 							<div class="form-group">
 								<label for="loan_products" class="title text-xl">Product</label>
-								<select id="loan_products" class="form-control" @change="selected">
+								<!-- <select id="loan_products" class="form-control" @change="selected">
 									<option :value="null">Please Select</option>
 									<option v-for="item in loan_products" :key="item.id" :value="JSON.stringify({id:item.id,code:item.code})" :data-name="item.code">{{item.name}}</option>
-								</select>
+								</select> -->
+								<loan-product-list id="loan_products" @selected="selected"></loan-product-list>
 							</div>
 							<div class="form-group">
 							</div>
@@ -155,7 +156,9 @@
 
 <script>
 import moment from 'moment'
+import LoanProduct from './Settings/LoanProduct.vue'
 export default {
+  components: { LoanProduct },
 	props: ['client_id','name'],
 	data(){
 		return {
@@ -190,10 +193,10 @@ export default {
 			return _date;
 		},
 		selected(e){
-			let selected = JSON.parse(e.target.value)
 
-			this.form.loan_id = selected.id
-			this.code = selected.code
+			// let selected = JSON.parse(e.target.value)
+			this.form.loan_id = e.id
+			this.code = e.code
 		},
 		fetchLoanProducts(){
 			axios.get(this.loan_products_route)

@@ -57,8 +57,12 @@ Vue.component('payment-methods', require('./components/PaymentMethodComponent.vu
 Vue.component('payment-methods-dashboard', require('./components/PaymentMethodDashboardComponent.vue').default);
 Vue.component('product-component', require('./components/ProductSelectComponent.vue').default);
 Vue.component('bulk-deposit-transaction', require('./components/BulkDepositTransactionComponent.vue').default);
+Vue.component('bulk-create-loan-account', require('./components/BulkCreateLoanAccountComponent.vue').default);
+Vue.component('bulk-transaction-loan-accounts', require('./components/BulkTransactionLoanAccountComponent.vue').default);
+
 Vue.component('amount-input', require('./components/AmountInputComponent.vue').default);
 Vue.component('multi-search', require('./components/MultiSearchComponent.vue').default);
+Vue.component('loan-product-list', require('./components/LoanProductSelectComponent.vue').default);
 
 
 Vue.component('chart-par-movement', require('./components/Dashboard/ParMovementComponent.vue').default);

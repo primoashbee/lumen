@@ -281,15 +281,15 @@ import Swal from 'sweetalert2';
 							'deposit_account_id':vm.account_info.id
 							}
 						)
-						.catch(err=>{
-							console.log(err)
-						})
 						.then(res=>{
 							swalWithBootstrapButtons.fire(
 							'<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Posted!</span>',
 							'Accrued Interest Posted',
 							'success'
 							)
+						})
+						.catch(err=>{
+							console.log(err)
 						})
 					} else if (
 						/* Read more about handling dismissals below */

@@ -9,10 +9,8 @@ use App\DepositTransaction;
 use App\PostedAccruedInterest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-
 class DepositAccount extends Model
 {
-    //
     protected $appends = ['new_balance','new_balance_formatted','raw_balance'];
     protected $fillable = [
         'client_id',
@@ -25,6 +23,11 @@ class DepositAccount extends Model
     ];
     protected $casts = [
         'created_at' => 'datetime:F d, Y',
+    ];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+
     ];
     public function type(){
         return $this->belongsTo(Deposit::class,'deposit_id');
@@ -40,7 +43,7 @@ class DepositAccount extends Model
     public function deposit(array $data){
         
         $new_balance = $this->getRawOriginal('balance') + $data['amount'];
-        DepositTransaction::create([
+        $transaction = DepositTransaction::create([
             'transaction_id' => uniqid(),
             'deposit_account_id' => $this->id,
             'transaction_type'=>'Deposit',
@@ -50,8 +53,10 @@ class DepositAccount extends Model
             'user_id'=> $data['user_id'],
             'balance' => $new_balance
         ]);
-            
         
+        
+
+
         $this->balance = $new_balance;
         return $this->save();
 
@@ -296,4 +301,5 @@ class DepositAccount extends Model
         return $this->client->office;
     }
 
+    
 }

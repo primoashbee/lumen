@@ -60,7 +60,7 @@
 						  <ul class="sub-collapse">
 							<li class="sub-list">
 								<a class="sub-nav" data-toggle="collapse" href="#bulk-deposit" role="button" aria-expanded="false" aria-controls="create" class="has-sub">
-									<i class="">D</i>
+									<i class="fas fa-piggy-bank"></i>
 									<p>Deposit<b class="caret"></b></p>
 								</a>
 								<div class="collapse" id="bulk-deposit">
@@ -87,11 +87,34 @@
 								</div>
 							</li>
 							<li class="sub-list">
-								<a class="sub-nav" href="/create/office/cluster">
-									<i class="">L</i>
+								<a class="sub-nav" data-toggle="collapse" href="#bulk-loans" role="button" aria-expanded="false" aria-controls="create" class="has-sub">
+									<i class="fas fa-money-check"></i>
 									<p>Loans<b class="caret"></b></p>
 								</a>
+								<div class="collapse" id="bulk-loans">
+									<ul class="sub-collapse">
+										<li class="second-sub-list">
+											<a class="second-sub-nav" href="{{route('bulk.create.loans')}}">
+												<i class="fas fa-plus-square"></i>
+												<p>Create Loans</p>
+											</a>
+										</li>
+										<li class="second-sub-list">
+											<a class="second-sub-nav" href="{{route('bulk.approve.loans')}}">
+												<i class="fas fa-thumbs-up"></i>
+												<p> Approve Loans</p>
+											</a>
+										</li>
+										<li class="second-sub-list">
+											<a class="second-sub-nav" href="{{route('bulk.disburse.loans')}}">
+												<i class="fas fa-cash-register"></i>
+												<p>Disburse Loans</p>
+											</a>
+										</li>
+									</ul>
+								</div>
 							</li>
+
 						</ul>
 					 </div>
 				</li>

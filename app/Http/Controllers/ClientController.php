@@ -277,10 +277,13 @@ class ClientController extends Controller
     public function list(){
         return view('pages.client-list');
     }
-    
 
     //return JSON data when filtering the list via component
     public function getList(Request $request){
+        if($request->has('limited')){
+            $clients = Client::like($request->office_id, $request->search,true)->paginate(30);
+            return response()->json($clients);
+        }
         $clients = Client::like($request->office_id, $request->search)->paginate(30);
         return response()->json($clients);
     }
@@ -292,7 +295,6 @@ class ClientController extends Controller
             return response()->route('client.list');
         }
         return view('pages.client-profile',compact('client'));
-        
     }
 
     public function view($client_id){
