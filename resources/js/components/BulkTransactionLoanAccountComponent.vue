@@ -171,7 +171,7 @@ export default {
                     'success'
                 )
                 .then(()=>{
-                    location.reload()
+                    // location.reload()
                 })
                 
             }).catch(err=>{

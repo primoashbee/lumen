@@ -17,6 +17,7 @@ use App\Rules\LoanAccountCanBeApproved;
 use App\Rules\LoanAccountCanBeDisbursed;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\ClientHasAvailableDependent;
+use App\Rules\DateIsWorkingDay;
 
 class LoanAccountController extends Controller
 {
@@ -119,9 +120,9 @@ class LoanAccountController extends Controller
                 'client_id'=>['required','exists:clients,client_id',new HasNoUnusedDependent],
                 'client_id'=>['required','exists:clients,client_id',new HasNoPendingLoanAccount],
                 'amount'=>['required','gte:2000',new LoanAmountModulo],
-                'disbursement_date'=>'required|date',
+                'disbursement_date'=>['required','date', new DateIsWorkingDay],
                 
-                'first_payment'=>'required|date|after_or_equal:disbursement_date',
+                'first_payment'=>['required','date','after_or_equal:disbursement_date', new DateIsWorkingDay],
                 'number_of_installments'=>'required|gt:0|integer',
                 'interest_rate'=>'required', 
             ];
@@ -423,7 +424,7 @@ class LoanAccountController extends Controller
                 'payment_method_id'=>$payment_method_id 
             ]);
         
-        $account->updateAccount();
+        $account->updateStatus();
         $account->dependents->update([
             'status'=>'Used',
             'loan_account_id'=>$account->id,
@@ -461,17 +462,18 @@ class LoanAccountController extends Controller
     public function account(Request $request, $client_id,$loan_id){
 
         if($request->wantsJson()){
-            $account = LoanAccount::find($loan_id)->append('mutated','total_paid','pre_term_amount','activity');
+            $account  = LoanAccount::find($loan_id)->append('mutated','total_paid','pre_term_amount');;
+            $installments = $account->installments->each->append('mutated','is_due'); ;
             
             $client = Client::select('firstname','lastname','client_id')->where('client_id',$client_id)->first();
             
             
-            $activity = $account->activity();
+            $activity = $account->activity()->each->append('mutated');
             return response()->json([
-                'account'=>$account->load('installments'),
+                'account'=>$account,
                 'client'=>$client,
-                // 'pre_term_amount'=>$preterm,
-                // 'activity'=>$activity
+                'installments'=>$installments,
+                'activity'=>$activity
             ],200);
         }
         

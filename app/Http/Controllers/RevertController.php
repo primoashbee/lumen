@@ -11,7 +11,7 @@ use App\Rules\ValidTransactionID;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
-class RevertController extends Controller
+class RevertController extends Controller 
 {
     public function revert(Request $request){
         $user_id = auth()->user()->id;
@@ -24,13 +24,17 @@ class RevertController extends Controller
 
             try {
                 $transaction = LoanAccountRepayment::where('transaction_id', $request->transaction_id)->first();
+
                 $res = $transaction->revert($user_id);
                 
                 \DB::commit();
 
                 if ($res) {
-                    $transaction->loanAccount->updateAccount();
-                    // $transaction->loanAccount->updateStatus();
+                    $account = $transaction->loanAccount;
+                    $account->updateBalances();
+                    $account->updateStatus();
+                    
+                    
                     return response()->json(['msg'=>'Transaction reverted succesfully!'], 200);
                 } else {
                     return response()->json(['msg'=>'Cannot revert transaction. Revert latest transaction first'], 422);
@@ -49,8 +53,7 @@ class RevertController extends Controller
                 \DB::commit();
 
                 if ($res) {
-                    $transaction->loanAccount->updateAccount();
-                    // $transaction->loanAccount->updateStatus();
+                    $transaction->loanAccount->fresh()->updateStatus();
                     return response()->json(['msg'=>'Transaction reverted succesfully!'], 200);
                 } else {
                     return response()->json(['msg'=>'Cannot revert transaction. Revert latest transaction first'], 422);
@@ -67,8 +70,9 @@ class RevertController extends Controller
 
                 \DB::commit();
                 if ($res) {
-                    // $transaction->loanAccount->updateAccount();
-                    $transaction->loanAccount->updateStatus();
+                    $account = $transaction->loanAccount;
+                    $account->updateBalances();
+                    $account->updateStatus();
                     return response()->json(['msg'=>'Transaction reverted succesfully!'], 200);
                 } else {
                     return response()->json(['msg'=>'Cannot revert transaction. Revert latest transaction first'], 422);

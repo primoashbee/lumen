@@ -75,7 +75,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-if="loaded"> 
-                                    <tr v-for="item in account.installments" :key="item.transaction_id">
+                                    <tr v-for="item in installments" :key="item.transaction_id">
                                         <td>{{item.installment}}</td>
                                         <td>{{moment(item.date)}}</td>
                                         <td>{{item.mutated.amortization}}</td>
@@ -83,13 +83,9 @@
                                         <td>{{(item.mutated.original_principal)}}</td>
                                         <td>{{(item.mutated.original_interest)}}</td>
 
-                                        
-                                        
-
                                         <td>{{(item.mutated.principal_due)}}</td>
                                         <td>{{(item.mutated.interest_due)}}</td>
 
-                                        
                                         <td>{{(item.mutated.principal_paid)}}</td>
                                         <td>{{(item.mutated.interest_paid)}}</td>
                                                                                 
@@ -102,7 +98,6 @@
                                                     
                                                 <span v-else class="badge badge-light">Not Due</span>
                                                     
-                                                
                                         </td>
                                         
                                         <td>{{item.status}}</td>
@@ -126,7 +121,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-if="loaded && account.disbursed"> 
-                                    <tr v-for="item in account.activity" :key="item.transaction_id">
+                                    <tr v-for="item in activity" :key="item.transaction_id">
                                         <td>{{item.transaction_id }}</td>
                                         <td>{{moment(item.repayment_date) }}</td>
                                         <td>{{moment(item.created_at,true) }}</td>
@@ -163,7 +158,7 @@
     <form>
         <div class="form-group mt-4">
             <label class="text-lg">Branch</label>
-            <v2-select @officeSelected="assignOffice" list_level="" :default_value="this.office_id" v-bind:class="hasError('office_id') ? 'is-invalid' : ''"></v2-select>
+            <v2-select @officeSelected="assignOffice" list_level="branch" :default_value="this.office_id" v-bind:class="hasError('office_id') ? 'is-invalid' : ''"></v2-select>
             <div class="invalid-feedback" v-if="hasError('office_id')">
                 {{ errors.office_id[0]}}
             </div>
@@ -226,6 +221,8 @@ export default {
     data(){
         return {
             account:null,
+            activity: null,
+            installments: null,
             client:null,
             is_loading:false,
             loaded:null,
@@ -362,7 +359,7 @@ export default {
                         confirmButtonText: 'OK'
                     })
                     .then(res=>{
-                        location.reload()
+                        // location.reload()
                     })
                     this.is_loading = false;
                 })
@@ -411,6 +408,7 @@ export default {
             this.is_loading = true;
             await axios.get(this.fetch_url,config).then(response=>{
                 this.account = response.data.account
+                this.installments = response.data.installments
                 this.client = response.data.client
                 this.repayments = response.data.repayments
                 this.is_loading = false

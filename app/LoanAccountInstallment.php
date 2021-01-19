@@ -5,6 +5,7 @@ namespace App;
 use App\Traits\MoneyMutator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use stdClass;
 
 class LoanAccountInstallment extends Model
 {
@@ -22,13 +23,9 @@ class LoanAccountInstallment extends Model
         'amount_due',
         'amortization',
         'paid', 
-        'has_payment',
-        'carried_over_amount',
         'principal_balance',
         'interest_balance',
-        'interest_paid',
-        'principal_paid',
-        'waived_interest'
+        
     ];
 
     protected $for_mutation  = [
@@ -40,122 +37,103 @@ class LoanAccountInstallment extends Model
         'interest_due',
         'amount_due',
         'amortization',
-        'carried_over_amount',
-        'principal_balance',
-        'interest_balance'
     ];
 
     protected $dates = ['date','created_at','updated_at'];
     // protected $appends = ['is_due','interest_paid','principal_paid','mutated'];
-    protected $appends = ['is_due','mutated'];
+    // protected $appends = ['is_due','mutated'];
+
+    public function loanAccount(){
+        return $this->belongsTo(LoanAccount::class);
+    }
     public function repayments(){
         return $this->hasMany(LoanAccountInstallmentRepayment::class);
     }
-    public function succesfulRepayments(){
-        return $this->hasMany(LoanAccountInstallmentRepayment::class)->where('reverted',false);
-    }
+    public function pay($amount,$transaction_id,$paid_by){
+        
+        $payment = $amount;
+        $principal = $this->principal_due;
 
-    public function calculatePayment($amount,$user_id,$payment_method_id){
-        
-        
-        $amount_due = $this->amount_due;
+        $amount_paid = new stdClass;
+        $amount_paid->interest = 0;
+        $amount_paid->principal = 0;
+        $temp;
+        $fully_paid = false;
         $is_due = $this->isDue();
-        $paid = false;
-        if($amount >= $amount_due){
-            $paid = true;
-        }
-        //check if installment is due
+        $amount_due = 0;
         if($is_due){
-        //if installment has due then check amount vs amount due
-            if($amount >= $amount_due){
-                $interest_paid = $this->interest_due;
-                $principal_paid = $this->principal_due;
-                $amount_paid = round($interest_paid + $principal_paid,2);
-
-                return [
-                    'interest_paid'=>$interest_paid,
-                    'principal_paid'=>$principal_paid,
-                    'amount_paid'=> $amount_paid,
-                    'carried_over_amount' => round($amount-$amount_paid,2),
-                    'paid'=>$paid
-                ];
-            //pay only what can be payed
-            }elseif($amount < $amount_due){
-            
-                //can pay the whole interest and some principal due
-                if($amount > $this->interest_due){
-                    $interest_paid = $this->interest_due;
-                    $principal_paid = round($amount-$interest_paid,2);
-                    $amount_paid = round($interest_paid + $principal_paid,2);
-                    return [
-                        'interest_paid'=>$interest_paid,
-                        'principal_paid'=>$principal_paid,
-                        'amount_paid'=> $amount_paid,
-                        'carried_over_amount' => round($amount-$amount_paid,2),
-                        'paid'=>$paid
-                    ];
-                }elseif($amount < $this->interest_due){
-                    $interest_paid = $amount;
-                    $principal_paid = 0;
-                    $amount_paid = round($interest_paid + $principal_paid,2);
-                    return [
-                        'interest_paid'=>$amount,
-                        'principal_paid'=>0,
-                        'amount_paid'=> $amount,
-                        'carried_over_amount' =>  $amount_paid,
-                        'paid'=>$paid
-                    ];
-                }
-            }
+            $interest = $this->interest_due;
         }else{
-            $amortized_interest = $this->interest;
-            $amortized_principal = $this->principal;
-            $amortization  = round($amortized_interest + $amortized_principal,2);
-
-            if($amount >= $amortization){
-                $interest_paid = $this->interest;
-                $principal_paid = $this->principal;
-                $amount_paid = round($interest_paid + $principal_paid,2);
-                return [
-                    'interest_paid'=>$interest_paid,
-                    'principal_paid'=>$principal_paid,
-                    'amount_paid'=> $amount_paid,
-                    'carried_over_amount' => round($amount-$amount_paid,2),
-                    'paid'=>true
-                ];
-            }elseif($amount < $amortization){
-                //can pay the whole interest and some principal due
-                if($amount >= $amortized_interest){
-                    $interest_paid = $amortized_interest;
-                    $principal_paid = round($amount-$interest_paid,2);
-                    $amount_paid = round($interest_paid + $principal_paid,2);
-                    return [
-                        'interest_paid'=>$interest_paid,
-                        'principal_paid'=>$principal_paid,
-                        'amount_paid'=> $amount_paid,
-                        'carried_over_amount' => round($amount-$amount_paid,2),
-                        'paid'=> false
-                    ];
-                }elseif($amount < $amortized_interest){
-                    $interest_paid = $amount;
-                    $principal_paid = 0;
-                    $amount_paid = round($interest_paid + $principal_paid,2);
-                    return [
-                        'interest_paid'=>$amount,
-                        'principal_paid'=>0,
-                        'amount_paid'=> $amount,
-                        'carried_over_amount' =>  $amount_paid,
-                        'paid'=>false
-                    ];
-                }
-            }
+            $interest = $this->interest;
         }
         
-    }
+        //payment =250 interest 500
+        if($payment >= $interest){
+            $amount_paid->interest =  $interest;
+            $payment = round($payment - $interest,2);
+            
+        }else{
+            $amount_paid->interest = $payment;
+            $payment = 0;
+        }
+      
+        if($payment >= $principal){
+            $amount_paid->principal =  $principal;
+            $payment = round($payment - $principal,2);
+            $fully_paid = true;
+        }else{
+            $amount_paid->principal = $payment;
+            $payment = 0;
+        }
+        if($is_due){
+            $amount_due = round($this->amount_due - ($amount_paid->interest + $amount_paid->principal),2);
+        }
+        
+        
+        if($is_due){
+            $this->update([
+                'interest_due'=>round($this->interest_due - $amount_paid->interest,2),
+                'principal_due'=>round($this->principal_due - $amount_paid->principal,2),
+                'paid'=>$fully_paid,
+                'amount_due'=>$amount_due
+            ]);
+        }else{
+            $this->update([
+                'interest'=>round($this->interest - $amount_paid->interest,2),
+                'principal_due'=>round($this->principal_due - $amount_paid->principal,2),
+                'paid'=>$fully_paid,
+                'amount_due'=>$amount_due
+            ]);
+        }
+        $this->repayments()->create([
+            'principal_paid'=>$amount_paid->principal,
+            'interest_paid'=>$amount_paid->interest,
+            'total_paid'=>round($amount_paid->principal + $amount_paid->interest,2),
+            'paid_by'=>$paid_by,
+            'transaction_id'=>$transaction_id   
+        ]);
+        if($payment > 0){
+            // $temp = $this->pay($amount,$transaction_id);
+            
+            if($this->loanAccount->remainingInstallments()->count() > 0){
+                $temp = $this->loanAccount->remainingInstallments()->first()->pay($payment,$transaction_id,$paid_by);
+            }else{
 
+                return $amount_paid;
+            }
+            
+            $amount_paid->interest += $temp->interest;
+            $amount_paid->principal += $temp->principal;
+        }
+        return $amount_paid;
+    }
     public function isDue(){
         
         return $this->date <= Carbon::now() && $this->paid == 0;
+    }
+
+    public function dateIsDue(){
+        return $this->date->diffInDays(Carbon::now(),false) >= 0;
     }
 
     
@@ -171,12 +149,13 @@ class LoanAccountInstallment extends Model
             $attribute = $field;
             $mutated[$attribute] = env('CURRENCY_SIGN') . ' ' . number_format($this->$field,2);
         }
-        $interest_paid =$this->original_interest;
-        $principal_paid =$this->original_principal;
-        if(!$this->paid){
-            $interest_paid = abs(round($this->interest - $this->original_interest,2));    
-            $principal_paid = abs(round($this->principal - $this->original_principal,2));
-        }
+        $interest_paid = $this->repayments->sum('interest_paid');
+        $principal_paid = $this->repayments->sum('principal_paid');
+
+        // if(!$this->paid){
+        //     $interest_paid = abs(round($this->interest - $this->original_interest,2));    
+        //     $principal_paid = abs(round($this->principal - $this->original_principal,2));
+        // }
         
         
         $mutated['interest_paid'] = env('CURRENCY_SIGN') . ' ' . number_format($interest_paid,2);
@@ -187,59 +166,27 @@ class LoanAccountInstallment extends Model
     }
     
     public function reset(){
-        if($this->date->diffInDays(Carbon::now()) < 0){
-            $this->update([
-                'principal_due' => $this->original_principal,
-                'interest_due' => $this->original_interest,
-                'paid'=>false,
-                'carried_over_amount'=>0,
-                'amount_due'=> round($this->original_principal + $this->original_interest,2),
-                'amortization'=> round($this->original_principal + $this->original_interest,2),
-                'waived_interest'=>false,
-                'principal_paid'=>0,
-                'interest_paid'=>0,
-                ]);
-        }else{
-            $this->update([
-                'principal_due' => $this->original_principal,
-                'principal' => $this->original_principal,
-                'interest' => $this->original_interest,
-                'interest_due' => 0,
-                'carried_over_amount'=>0,
-                'amortization'=> round($this->original_principal + $this->original_interest,2),
-                'waived_interest'=>false,
-                'paid'=>false,
-                'principal_paid'=>0,
-                'interest_paid'=>0,
-                ]);
-        }
-    }
 
-    public function waiveInterest(){
-        $interest  = $this->interest;
-        $amount_due = round($this->amount_due - $interest,2);
-        return $this->update([
-            'interest'=>0,
-            'interest_due'=>0,
-            'amount_due'=>$amount_due,
-            'amortization'=>$amount_due,
-            'waived_interest'=>true
+        if($this->isDue()){
+            return $this->update([
+                'interest'=>$this->original_interest,
+                'principal'=>$this->original_principal,
+                'interest_due'=>$this->original_interest,
+                'principal_due'=>$this->original_principal,
+                'amount_due'=>$this->amortization,
+                'paid'=>false,
+                'reverted'=>false
             ]);
-    }
-
-    public function recalculate(){
-        $interest_paid = $this->interest_paid;
-        $principal_paid = $this->principal_paid;
-
-        $interest = round($this->original_interest - $interest_paid,2);
-        $principal = round($this->original_principal - $principal_paid,2);
-        $amortization = round($interest + $principal,2);
-
+        }
 
         return $this->update([
-            'interest'=>$interest,
-            'principal'=>$principal,
-            'amortization'=>$amortization
+            'interest'=>$this->original_interest,
+            'principal'=>$this->original_principal,
+            'interest_due'=>0,
+            'principal_due'=>$this->original_principal,
+            'paid'=>false,
+            'amount_due'=>0,
+            'reverted'=>false
         ]);
         
     }
@@ -279,4 +226,30 @@ class LoanAccountInstallment extends Model
         ]);
     }
 
+    public function fullyPaid(){
+        return $this->repayments->sum('total_paid') == $this->amortization;
+    }
+    public function refresh(){
+        
+        $diff = $this->date->diffInDays(Carbon::now(),false) ;
+
+        //negative means future date
+        if($diff >= 0) {
+            if($this->fullyPaid()){
+                return $this->update([
+                    'interest'=>$this->interest,
+                    'principal_due'=>$this->principal_due,
+                    'amount_due'=>round($this->interest + $this->principal_due, 2),
+                ]);
+            }else{
+                return $this->update([
+                    'interest_due'=>$this->interest
+                ]);
+
+            }
+            
+        }else{
+
+        }
+    }
 }

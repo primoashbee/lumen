@@ -114,6 +114,12 @@
 									</ul>
 								</div>
 							</li>
+							<li class="sub-list">
+								<a class="sub-nav" href="{{route('bulk.repayment')}}" role="button" aria-expanded="false" aria-controls="create" class="has-sub">
+									<i class="fas fa-money-check"></i>
+									<p>Repayments</p>
+								</a>
+							</li>
 
 						</ul>
 					 </div>

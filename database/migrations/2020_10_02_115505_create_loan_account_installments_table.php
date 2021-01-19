@@ -28,19 +28,12 @@ class CreateLoanAccountInstallmentsTable extends Migration
             $table->unsignedDouble('interest_due');
             $table->unsignedDouble('amount_due');
             $table->unsignedDouble('amortization');
-
-            $table->unsignedDouble('carried_over_amount')->nullable();
             
             $table->unsignedDouble('principal_balance');
             $table->unsignedDouble('interest_balance');
 
-            $table->unsignedDouble('principal_paid')->default(false);
-            $table->unsignedDouble('interest_paid')->default(false);
-            $table->unsignedDouble('waived_interest')->default(0);
             $table->boolean('paid')->default(false);
-
-            $table->boolean('has_payment')->default(false);
-            $table->boolean('reverted')->default(false);
+            
             $table->timestamps();
         });
     }

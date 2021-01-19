@@ -45,6 +45,7 @@ class LoanAccount extends Model
         
 
         'closed_at',
+        'closed_by',
 
         'created_by',
         'created_at',
@@ -179,12 +180,16 @@ class LoanAccount extends Model
                     
                     $previous_installment_date  = Carbon::parse($installments[$x-1]->date);
                     $date = Scheduler::getDate($previous_installment_date->addWeek(),$office_id);
-                    $late = false;
+
                     
                     $interest_due = 0;
                     $principal_due = 0;
                     $amount_due = 0;
-
+                    
+                    $late = false;
+                    if($date->lt($current_date)){
+                        $late = true;
+                    }
                     if($late){
                         $interest_due = $interest;
                         $principal_due = $principal;
@@ -343,7 +348,7 @@ class LoanAccount extends Model
         return $this->hasOne(Dependent::class);
     }
     public function unDueInstallments(){
-        return $this->installments()->where('amount_due',0)->where('paid',0)->orderBy('installment','asc');
+        return $this->installments()->where('paid',0)->orderBy('installment','asc');
     }
 
     public function dueInstallments(){
@@ -361,37 +366,6 @@ class LoanAccount extends Model
         in_array($this->status,$inactives);
         return !in_array($this->status,$inactives);
     }
-
-    //update balances from dues only
-    public function updateBalances(){
-        $interest_balance = round($this->interest - $this->totalPaid()->interest,2);
-        $principal_balance = round($this->principal - $this->totalPaid()->principal,2);
-        $total_balance = round($interest_balance + $principal_balance,2);
-        return $this->update([
-            'interest_balance'=>$interest_balance,
-            'principal_balance'=>$principal_balance,
-            'total_balance'=>$total_balance
-        ]);
-    }
-
-    public function updateStatus(){
-        if($this->total_balance==0){
-            $this->status="Closed";
-            $this->closed_at=Carbon::now();
-            return $this->save();
-        }
-        if ($this->disbursed) {
-            $has_due = $this->hasDue();
-            if ($has_due) {
-                 $this->status = 'In Arrears';
-                 return $this->save();
-            }
-            $this->status = 'Active';
-            return $this->save();
-        }
-    }
-
-    
 
     public function updateDueInstallments(){
         $installments = $this->installments->where('date','<=',Carbon::now());
@@ -449,8 +423,9 @@ class LoanAccount extends Model
         }
         $total = round($interest + $principal,2);
         $amount_due = $this->amountDue();
-        if($amount_due->total > $total){
+        if($amount_due->interest > 0){
             $interest = $amount_due->interest;
+            $total = round($interest + $principal,2);
         }
     
         return (object) [
@@ -535,6 +510,35 @@ class LoanAccount extends Model
         
         return $transaction;
     }
+
+
+    public function updateStatus($user_id=null){
+        $amount_due = $this->amountDue();
+        if($amount_due->total > 0){
+            return $this->update([
+                'status'=>'In Arrears'
+            ]);
+        }
+        if($amount_due->total == 0){
+            return $this->update([
+                'status'=>'Active'
+            ]);
+        }
+        if($this->total_balance == 0){
+            return $this->update([
+                'status'=>'Closed'
+            ]);
+        }
+        
+       
+    }
+    
+    public function closeAccount($paid_by){
+        return $this->update([
+            'closed_at'=>Carbon::now(),
+            'closed_by'=>$paid_by
+        ]);
+    }
     
     public function generateDisbursementTransactionNumber(){
         $now = Carbon::now();
@@ -572,11 +576,21 @@ class LoanAccount extends Model
         $this->update([
             'interest_balance'=>$this->interest,
             'principal_balance'=>$this->principal,
-            'total_balance'=>round($this->interest+$this->principal,2)
+            'total_balance'=>round($this->interest+$this->principal,2),
+            'closed_by'=>null,
+            'closed_at'=>null
         ]);
-        $this->updateAccount();
+        $this->updateStatus();
+       
     }
 
+    public function updateBalancesAfterPayment($interest_paid,$principal_paid){
+        return $this->update([
+            'interest_balance'=>round($this->interest_balance - $interest_paid),
+            'principal_balance'=>round($this->principal_balance - $principal_paid),
+            'total_balance'=>round($this->total_balance - ($interest_paid + $principal_paid),2)
+        ]);
+    }
     public function pay(array $data){
         $payment_amount = round($data['amount'],2);
         $amount_due = $this->amountDue();
@@ -584,105 +598,77 @@ class LoanAccount extends Model
         $payment_method_id = $data['payment_method'];
         $repayment_date = $data['repayment_date'];
         $notes = $data['notes'];
-
+        
         $method = PaymentMethod::find($data['payment_method']);
-        if($method->isCTLP()){
-            $this->client->ctlpAccount()->payCTLP($data); 
-        }
-        $interest_paid = 0;
-        $principal_paid = 0;
-        $transaction_number = $this->generateRepaymentTransactionNumber('ctlp');
-        // if($payment_amount == $this->maximumPayment()->amount){
+        $transaction_number= $this->generateRepaymentTransactionNumber();
+       
+        \DB::beginTransaction();
+
+        try{
+             if($method->isCTLP()){
+                $this->client->ctlpAccount()->payCTLP($data); 
+                $transaction_number = $this->generateRepaymentTransactionNumber('ctlp');
+            }
         
-        // }
-        //acount has due installments 
-        if($amount_due->total > 0){
-            $installments = $this->dueInstallments;
-            //if amount paid can do advanced payment
-            if($payment_amount > $installments->sum('amount_due')){
-                    $installments = collect($installments)->merge(collect($this->unDueInstallments));
+            $repayment = $this->remainingInstallments()->first()->pay($payment_amount,$transaction_number,$paid_by);
+            $this->repayments()->create([
+                'transaction_id'=>$transaction_number,
+                'interest_paid'=>$repayment->interest,
+                'principal_paid'=>$repayment->principal,
+                'total_paid'=> round($repayment->interest + $repayment->principal,2),
+                'paid_by'=>$paid_by,
+                'payment_method_id'=>$payment_method_id,
+                'repayment_date'=>$repayment_date,
+                'notes'=>$notes
+            ]);
+            
+            $this->fresh()->updateBalancesAfterPayment($repayment->interest,$repayment->principal);
+            if($this->total_balance == 0){
+                $this->closeAccount($paid_by);
             }
-        //if advanced payments
-        }else{
-            $installments = $this->unDueInstallments;
+            $this->fresh()->updateStatus();
+            \DB::commit();
+           
+        }catch(\Execption $e){
+            return $e->getMessage();
         }
-
-
         
-        $for_payment = $payment_amount; //for decrementals
-        foreach($installments as $installment){
-            $info = $installment->calculatePayment($for_payment,$paid_by, $payment_method_id);
-            $for_payment = round($for_payment - $info['amount_paid'],2);
-            $interest_paid = round($interest_paid + $info['interest_paid'],2);
-            $principal_paid = round($principal_paid + $info['principal_paid'],2);
-            $installment_interest_paid = round($info['interest_paid'] + $installment->interest_paid,2);
-            $installment_principal_paid = round($info['principal_paid'] + $installment->principal_paid,2);
-                
-            if($installment->isDue()){
-                $amount_due = $installment->amount_due;
-                $new_interest_due  = round($installment->interest_due - $info['interest_paid'],2); 
-                $new_principal_due = round($installment->principal_due - $info['principal_paid'],2);
-                $new_amount_due = round(($new_interest_due+ $new_principal_due),2);
-                $installment->update([
-                    'interest_due'=>$new_interest_due,
-                    'principal_due'=>$new_principal_due,
-                    'amount_due'=> $new_amount_due,
-                    'carried_over_amount'=>$info['carried_over_amount'],
-                    'has_payment'=>true,
-                    'interest_paid'=>$installment_interest_paid,
-                    'principal_paid'=>$installment_principal_paid ,
-                    'paid'=>$info['paid'] 
-                ]);
-                $installment->repayments()->create([
-                    'interest_paid'=>$info['interest_paid'],
-                    'principal_paid'=>$info['principal_paid'],
-                    'total_paid'=>$info['amount_paid'],
-                    'transaction_id'=>$transaction_number,
-                    'paid_by'=>$paid_by
-                ]);
-            }else{
-                $new_installment_interest = round($installment->interest - $info['interest_paid'],2);
-                $new_installment_principal = round($installment->principal - $info['principal_paid'],2);
-                $new_installment_amortization = $new_installment_interest + $new_installment_principal;
-                $installment->update([
-                    // 'interest'=>$new_installment_interest,
-                    // 'principal'=>$new_installment_principal,
-                    // 'principal_due'=>$new_installment_principal,
-                    // 'amortization'=>$new_installment_amortization,
-                    'has_payment'=>true,
-                    'interest_paid'=>$installment_interest_paid,
-                    'principal_paid'=>$installment_principal_paid ,
-                    'carried_over_amount'=>$info['carried_over_amount'],
-                    'paid'=>$info['paid']
-                ]);
-                $installment->repayments()->create([
-                    'interest_paid'=>$info['interest_paid'],
-                    'principal_paid'=>$info['principal_paid'],
-                    'total_paid'=>$info['amount_paid'],
-                    'transaction_id'=>$transaction_number,
-                    'paid_by'=>$paid_by
-                ]);
-                $installment->recalculate();
-            }
+       
+    }
 
-            if($for_payment <= 0){
-                
-                break;
-            }
-        }
+    public function updateBalances(){
+        $interest_paid = $this->totalPaid()->interest;
+        $principal_paid = $this->totalPaid()->principal;
+        $total_paid = $this->totalPaid()->total;
 
-        return $this->repayments()->create([
-            'transaction_id'=>$transaction_number,
-            'interest_paid'=>$interest_paid,
-            'principal_paid'=>$principal_paid,
-            'total_paid'=>$payment_amount,
-            'paid_by'=>$paid_by,
-            'payment_method_id'=>$payment_method_id,
-            'repayment_date'=>$repayment_date,
-            'notes'=>$notes
+        return $this->update([
+            'interest_balance'=>round($this->interest  - $interest_paid ,2),
+            'principal_balance'=>round($this->principal  - $principal_paid ,2),
+            'total_balance'=>round($this->total_loan_amount  - $total_paid ,2),
         ]);
     }
 
+    public function ctlp(array $data){
+        $payment_amount = round($data['amount'],2);
+        $amount_due = $this->amountDue();
+        $paid_by = $data['paid_by'];
+        $payment_method_id = $data['payment_method'];
+        $repayment_date = $data['repayment_date'];
+        $notes = $data['notes'];
+
+        $this->client->ctlpAccount()->payCTLP($data); 
+        $transaction_number = $this->generateRepaymentTransactionNumber('ctlp');
+        \DB::beginTransaction();
+
+        try{
+            $repayment = $this->remainingInstallments()->first()->pay($payment_amount,$transaction_number);
+            \DB::commit();
+        }catch(\Execption $e){
+            return $e->getMessage();
+        }
+    }
+
+    
     public function maximumPayment(){ 
         
        return (object) [
@@ -690,96 +676,74 @@ class LoanAccount extends Model
            'formatted_amount'=>money($this->total_balance,2)
         ];
     }
-    public function updateAccount(){
-        $this->updateBalances();
-        $this->updateStatus();
-        
-    }
-
+    
     public function preTerminate(array $data){
 
-        $total_paid = $this->totalPaid();
         $amount = $this->preTermAmount();
         $transaction_id = $this->generateRepaymentTransactionNumber('pretermination');
-        $interest_from_pretermination = $amount->interest;
-        $principal_from_pretermination = $amount->principal;
+        $preterm_interest = $amount->interest;
+        $preterm_principal = $amount->principal;
         $paid_by = $data['paid_by'];
         $payment_method_id = $data['payment_method'];
         $repayment_date = $data['repayment_date'];
         $notes = $data['notes'];
-
-
-
-
+        
         $method = PaymentMethod::find($data['payment_method']);
         if($method->isCTLP()){
             $this->client->ctlpAccount()->payCTLP($data); 
         }
-        $remaining_installments = $this->remainingInstallments();
         
-        foreach($remaining_installments as $installment){
-            
-            if($installment->isDue()){
-                $interest_paid = $installment->interest_due;
-                $principal_paid = $installment->principal_due;
-                if($interest_from_pretermination <= 0){
-                    $interest_paid = 0;
-                }
-                $total_paid = round($interest_paid + $principal_paid, 2);
-                $installment->updatePaymentFromPreterm($interest_paid, $principal_paid);
-                $installment->repayments()->create([
-                    'interest_paid'=>$interest_paid,
-                    'principal_paid'=>$principal_paid,
-                    'total_paid'=>$total_paid,
-                    'paid_by'=>$paid_by,
-                    'transaction_id'=>$transaction_id
-                ]);
-                $interest_from_pretermination -= $interest_paid;
-                $principal_from_pretermination -= $principal_paid;
-            }else{
-              
-                $principal_paid = $installment->principal_due;
-                if($interest_from_pretermination <= 0){
-                    $installment->updatePaymentFromPreterm(0, $principal_paid);
-                    $installment->repayments()->create([
-                        'interest_paid'=>0,
-                        'principal_paid'=>$principal_paid,
-                        'total_paid'=>$principal_paid,
-                        'paid_by'=>$paid_by,
-                        'transaction_id'=>$transaction_id
-                    ]);
-                    $principal_from_pretermination -= $principal_paid;
-                }else{
-                    if($interest_from_pretermination < $installment->interest){
-                        $installment->updatePaymentFromPreterm($interest_from_pretermination, $principal_paid);
-                        $total_paid = round($principal_paid + $interest_from_pretermination,2);
-                        $installment->repayments()->create([
-                            'principal_paid'=>$principal_paid,
-                            'interest_paid'=>$interest_from_pretermination,
-                            'total_paid'=>$total_paid,
-                            'paid_by'=>$paid_by,
-                            'transaction_id'=>$transaction_id
-                        ]);
-                    }else{
-                        $interest_paid = $installment->interest;
-                        $total_paid = round($principal_paid + $interest_paid,2);
-                        $installment->updatePaymentFromPreterm($interest_paid, $principal_paid);
-                        $installment->repayments()->create([
-                            'principal_paid'=>$principal_paid,
-                            'interest_paid'=>$interest_paid,
-                            'total_paid'=>$total_paid,
-                            'paid_by'=>$paid_by,
-                            'transaction_id'=>$transaction_id
-                        ]);
-                    }
+        $installments = $this->remainingInstallments();
+        $interest_paid = 0;
+        $principal_paid = 0;
+        foreach($installments as $installment){
+            $is_due = $installment->isDue();
+            $interest = $installment->interest;
+            $principal = $installment->principal_due;
 
-                    $interest_from_pretermination -= $interest_paid;
-                }
+            if($preterm_interest < $interest){
+                $interest = $preterm_interest;
+                $preterm_interest = 0;
                 
-
+            }
+            if($is_due){
+                $interest = $installment->interest_due;
             }
 
+            if ($preterm_interest > $interest) {
+                $preterm_interest = round($preterm_interest - $interest, 2);
+            }
+
+            $preterm_principal = round($preterm_principal - $principal,2);
+
+            if($is_due){
+                $installment->update([
+                    'interest_due'=>round($installment->interest_due - $interest,2),
+                    'interest'=>0,
+                    'principal_due'=>round($installment->principal_due - $principal,2),
+                    'amount_due'=>0,
+                    'paid'=>true
+                ]);
+            }else{
+                $installment->update([
+                    'interest'=>round($installment->interest - $interest,2),
+                    'principal_due'=>round($installment->principal_due - $principal,2),
+                    'paid'=>true
+                ]);
+            }
+            $installment->repayments()->create([
+                'interest_paid'=>$interest,
+                'principal_paid'=>$principal,
+                'total_paid'=>round($interest + $principal,2),
+                'transaction_id'=>$transaction_id,
+                'paid_by'=>$paid_by,
+            ]);
+
         }
+
+ 
+        
+    
 
         $this->repayments()->create([
             'transaction_id'=>$transaction_id,
@@ -803,27 +767,12 @@ class LoanAccount extends Model
         ]);
     }
 
-    
-
-    public function installmentWithPayments(){
-        return $this->installments->where('has_payment',true)->sortByDesc('installment');
-    }
-    public function refreshInstallments(){
-        $installments = $this->installments;
-    }
-    
-    public function cantRevertDisbursement(){
-        if($this->successfulRepayments->count() > 0){
-            return false;
-        }
-        return true;
-    }
 
     public function remainingInstallments(){
         $due_installments = collect($this->dueInstallments);
         $undue_installments = collect($this->unDueInstallments);
 
-        return $due_installments->merge($undue_installments);
+        return $due_installments->merge($undue_installments)->unique();
     
     }
     
@@ -931,12 +880,13 @@ class LoanAccount extends Model
             $disbursement_date = Carbon::parse($payment_info['disbursement_date']);
             $start_date = Carbon::parse($payment_info['first_repayment_date']);
             $office_id = $payment_info['office_id'];
-            if($this->disbursement_date != $disbursement_date){
+            if($this->disbursement_date->diffInDays($disbursement_date,false) > 0){
                $this->disbursement_date = $disbursement_date;
                $this->save();
             }
 
-            if($this->installments->first()->date != Carbon::parse($payment_info['first_repayment_date'])){
+            //first payment is not the same as created payment
+            if($this->installments->first()->date->diffInDays($disbursement_date,false) > 0){
                 //create new installments
                 $this->installments()->delete();
                 $annual_rate = 0.03 * 12;
@@ -959,6 +909,7 @@ class LoanAccount extends Model
             
             $account->update([
                 'disbursed_at'=>Carbon::now(),
+                'disbursed_by'=>$disbursed_by,
                 'status'=>'Active',
                 'disbursed'=>true
             ]);
@@ -970,7 +921,7 @@ class LoanAccount extends Model
                 'payment_method_id'=>$payment_method_id 
             ]);
             
-            $account->updateAccount();
+            $account->updateStatus();
             $account->dependents->update([
                 'status'=>'Used',
                 'loan_account_id'=>$account->id,
@@ -1035,5 +986,11 @@ class LoanAccount extends Model
             $x++;
         }
         return $list;
+    }
+
+    public function getAmountFromDate($date){
+        if($this->amountDue()->total > 0){
+
+        }
     }
 }

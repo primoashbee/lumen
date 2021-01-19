@@ -28,8 +28,12 @@ use Symfony\Component\HttpFoundation\Request;
 */
 
 Route::get('/ap',function(){
-    $acc = \App\LoanAccount::first();
-    return ($acc->append('basic_client','mutated'));
+    $disbursement = \App\LoanAccount::first()->disbursed_at;
+    $repayment = \Carbon\Carbon::now();
+
+    $z = $disbursement->diffInDays($repayment,false);
+
+    return 'xxx';
 });
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -55,6 +59,9 @@ Route::get('/random',function(){
 });
 Auth::routes();
 Route::get('/fees','FeeController@getList');
+Route::get('/ssss',function(){
+    // \App\LoanAccount::first()->updateStatus();
+});
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/pay','RepaymentController@repayLoan');
     Route::post('/loan/calculator', 'LoanAccountController@calculate')->name('loan.calculator');
@@ -124,7 +131,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/bulk/withdraw', 'DepositAccountController@bulkWithdraw')->name('bulk.deposit.withdraw.post');
     Route::post('/bulk/post_interest', 'DepositAccountController@bulkPostInterest')->name('bulk.deposit.interst_post.post');
     
-   
+    Route::get('/bulk/repayment','RepaymentController@showBulkForm')->name('bulk.repayment');
+    Route::post('/loans/scheduled/list','RepaymentController@scheduledList');
     
     
     Route::get('/deposits','DepositAccountController@showList');

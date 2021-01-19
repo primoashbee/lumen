@@ -18,24 +18,16 @@ class RepaymentController extends Controller
     public function accountPayment(Request $request){
         
         $this->validator($request->all())->validate();
+        
         $account = LoanAccount::find($request->loan_account_id);
+        $request->request->add(['paid_by'=>auth()->user()->id]);
+        $request->request->add(['user_id'=>auth()->user()->id]);
+        $account->pay($request->all());
+        $account->updateBalances();
+    
         
-        
-        \DB::beginTransaction();
-        
-        try{
-            $account = LoanAccount::find($request->loan_account_id);
-            $request->request->add(['paid_by'=>auth()->user()->id]);
-            $request->request->add(['user_id'=>auth()->user()->id]);
-            $account->pay($request->all());
-        
-            \DB::commit();
-            
-            $account->fresh()->updateAccount();
-            return response()->json(['msg'=>'Payment Successfully Received!'],200);
-        }catch(\Exception $e){
-            return response()->json(['msg'=>$e->getMessage()],500);
-        }
+        return response()->json(['msg'=>'Payment Successfully Received!'],200);
+ 
 
     }
 
@@ -98,5 +90,12 @@ class RepaymentController extends Controller
         }catch(Exception $e){
             return response()->json(['msg'=>$e->getMessage()],422);
         }
+    }
+    public function showBulkForm(){
+        return view('pages.bulk.repayments');
+    }   
+
+    public function scheduledList(){
+
     }
 }

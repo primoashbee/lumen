@@ -194,7 +194,8 @@ class AppServiceProvider extends ServiceProvider
                 }
             );
             
-            if($repayment_date->gte($latest_payment)){
+            $diff = $latest_payment->diffInDays($repayment_date,false);
+            if($diff>=0){
                 return true;
             }
                 return false;
@@ -217,11 +218,12 @@ class AppServiceProvider extends ServiceProvider
                     return \str_replace(':custom_message', $customMessage, $message);
                 }
             );
-            $diff = $repayment_date->diffInDays($disbursed_date);
-            if($diff > 0){
-                return false;
-            }
+            
+            $diff = $disbursed_date->diffInDays($repayment_date,false);
+            if($diff >= 0){
                 return true;
+            }
+                return false;
             
         },$error);
         
@@ -256,7 +258,7 @@ class AppServiceProvider extends ServiceProvider
             $account = DepositAccount::find($_account['id']);
             
             if($account->lastTransaction() == null){
-                return false;
+                return true;
             }
             $last_transaction_date = $account->lastTransaction()->repayment_date;
            
