@@ -65,11 +65,7 @@ class Client extends Model
         'sss'
     ];
 
-    protected $appends = ['full_name','active_dependent'];
-
-
-
-    
+    protected $appends = ['full_name'];
 
     public static function boot(){
         parent::boot();

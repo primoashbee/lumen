@@ -253,9 +253,11 @@ class AppServiceProvider extends ServiceProvider
 
 
             $values = $validator->getData();
-            $arr = explode('.', $attribute);
-            $_account = $validator->getData()[$arr[0]][$arr[1]];
-            $account = DepositAccount::find($_account['id']);
+
+            // $arr = explode('.', $attribute);
+            // $_account = $validator->getData()[$arr[0]][$arr[1]];
+            $repayment_date = Carbon::parse($values['repayment_date']);
+            $account = DepositAccount::find($values['deposit_account_id']);
             
             if($account->lastTransaction() == null){
                 return true;
@@ -268,8 +270,11 @@ class AppServiceProvider extends ServiceProvider
                     return \str_replace(':custom_message', $customMessage, $message);
                 }
             );
-        
-            return  $last_transaction_date->diffInDays($_account['repayment_date'],false) < 0 ? false : true;
+            
+            
+            
+            return $last_transaction_date->diffInDays($values['repayment_date'],false) >= 0 ? true : false;
+            // return  $last_transaction_date->diffInDays($_account['repayment_date'],false) < 0 ? false : true;
 
             
         },$error);

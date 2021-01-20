@@ -33,7 +33,7 @@
 			            <p class="text-muted text-lg">Product code</p>
 					</div>
 					<div class="d-inline-block mr-16">
-						<p class="title text-lg">{{account_info.accrued_interest}}</p>
+						<p class="title text-lg">{{account_info.accrued_interest_formatted}}</p>
 			            <p class="text-muted text-lg">Accrued Interest</p>
 					</div>
 		        </div>    
@@ -47,7 +47,7 @@
 			            <p class="text-muted text-lg">Interest Rate (per annum)</p>
 					</div>
 		            <div class="d-inline-block mr-16">
-		                <p class="title text-lg">{{account_info.balance}}</p>
+		                <p class="title text-lg">{{account_info.balance_formatted}}</p>
 		                <p class="text-muted text-lg">Balance</p>
 		            </div>
 		            <div class="d-inline-block">
@@ -254,11 +254,11 @@ import Swal from 'sweetalert2';
 						</thead>
 						<tr>
 							<td class="text-right pr-2">Current Balance: </td>
-							<td class="text-left">`+vm.account_info.balance+`</td>
+							<td class="text-left">`+vm.account_info.balance_formatted+`</td>
 						</tr>
 						<tr>
 							<td class="text-right pr-2">Accrued Interest: </td>
-							<td class="text-left">`+vm.currency +" "+vm.account_info.accrued_interest+`</td>
+							<td class="text-left">`+vm.account_info.accrued_interest_formatted+`</td>
 						</tr>
 						<tr style="border:none">
 							<td class="text-right pr-2" style="font-weight:900">Balance after Posting: </td>
@@ -268,7 +268,7 @@ import Swal from 'sweetalert2';
 						</table>
 						`,
 						
-					title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Are you sure you want to post interest? (Can\'t revert this)</span> ',
+					title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1em;font-weight:600">Are you sure you want to post interest? (Can\'t revert this)</span> ',
 					icon: 'question',
 					showCancelButton: true,
 					confirmButtonText: 'Yes',
@@ -283,7 +283,7 @@ import Swal from 'sweetalert2';
 						)
 						.then(res=>{
 							swalWithBootstrapButtons.fire(
-							'<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Posted!</span>',
+							'<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1em;font-weight:600">Posted!</span>',
 							'Accrued Interest Posted',
 							'success'
 							)
@@ -296,7 +296,7 @@ import Swal from 'sweetalert2';
 						result.dismiss === Swal.DismissReason.cancel
 					) {
 						swalWithBootstrapButtons.fire(
-						'<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Cancelled</span>',
+						'<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1em;font-weight:600">Cancelled</span>',
 						'Transaction cancelled',
 						'error'
 						)
@@ -329,7 +329,7 @@ import Swal from 'sweetalert2';
 					.then(res=>{
 						Swal.fire({
 							icon: 'success',
-							title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1.875;font-weight:600">Success!</span>',
+							title: '<span style="font-family:\'Open Sans\', sans-serif!important;color:black;font-size:1em;font-weight:600">Success!</span>',
 							text: res.data.msg,
 							confirmButtonText: 'OK'
 						})
@@ -362,9 +362,7 @@ import Swal from 'sweetalert2';
             clientLink(){
 				return '/client/'+this.account_info.client_id
 			},
-			currency(){
-				return this.account_info.balance.substr(0,1)
-			}
+			
 		},
 		watch: {
 			'modal.modalState' : function(){

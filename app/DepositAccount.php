@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 class DepositAccount extends Model
 {
-    protected $appends = ['new_balance','new_balance_formatted','raw_balance'];
+    protected $appends = [
+        'balance_formatted',
+        'new_balance',
+        'new_balance_formatted',
+        'accrued_interest_formatted'];
     protected $fillable = [
         'client_id',
         'deposit_id',
@@ -33,9 +37,9 @@ class DepositAccount extends Model
         return $this->belongsTo(Deposit::class,'deposit_id');
     }
 
-    public function getBalanceAttribute($value){
+    public function getBalanceFormattedAttribute(){
         // return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
-        return env('CURRENCY_SIGN').' '.numberFormat($value);
+        return env('CURRENCY_SIGN').' '.numberFormat($this->getRawOriginal('balance'));
         // }
     }
     
@@ -283,13 +287,16 @@ class DepositAccount extends Model
     }
 
     public function getNewBalanceAttribute(){
-        return ($this->getRawOriginal('balance') + $this->getRawOriginal('accrued_interest'));
+        return round($this->getRawOriginal('balance') + $this->getRawOriginal('accrued_interest'),4);
     }
     public function getNewBalanceFormattedAttribute(){
-        return env('CURRENCY_SIGN')." ".round(($this->getRawOriginal('balance') + $this->getRawOriginal('accrued_interest')),4);
+        return env('CURRENCY_SIGN')." ".number_format(round($this->getRawOriginal('balance') + $this->getRawOriginal('accrued_interest'),4),2);
     }
     public function getRawBalanceAttribute(){
-        return $this->getRawOriginal('balance');
+        return round($this->getRawOriginal('balance'),2);   
+    }
+    public function getAccruedInterestFormattedAttribute(){
+        return  env('CURRENCY_SIGN')." ".round($this->getRawOriginal('accrued_interest'),4);   
     }
 
     public function lastTransaction(){

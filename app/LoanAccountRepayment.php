@@ -135,9 +135,4 @@ class LoanAccountRepayment extends Model
     }
 
     
-
-    
-
-
-    
 }

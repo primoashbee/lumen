@@ -3,12 +3,13 @@
 namespace App;
 
 use stdClass;
+use App\Client;
 use App\Scheduler;
 use Carbon\Carbon;
 use App\LoanInstallment;
 use App\LoanAccountFeePayment;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
 
 class LoanAccount extends Model
 {
@@ -84,8 +85,8 @@ class LoanAccount extends Model
     }
 
     public function client(){
-        return Client::fcid($this->client_id);
-        // return $this->hasOne(Client::class,'client_id','client_id');
+        // return Client::fcid($this->client_id);
+        return $this->belongsTo(Client::class,'client_id','client_id');
     }
 
     
@@ -359,8 +360,6 @@ class LoanAccount extends Model
             ->orderBy('installment','asc');
     }
     
-    
-
     public function isActive(){
         $inactives = ['Pending Approval','Approved','Disapproved','Closed'];
         in_array($this->status,$inactives);
@@ -622,11 +621,12 @@ class LoanAccount extends Model
                 'notes'=>$notes
             ]);
             
-            $this->fresh()->updateBalancesAfterPayment($repayment->interest,$repayment->principal);
+            
             if($this->total_balance == 0){
                 $this->closeAccount($paid_by);
             }
             $this->fresh()->updateStatus();
+            $this->updateBalances();
             \DB::commit();
            
         }catch(\Execption $e){
@@ -769,6 +769,7 @@ class LoanAccount extends Model
 
 
     public function remainingInstallments(){
+        // return $this->dueInstallments;
         $due_installments = collect($this->dueInstallments);
         $undue_installments = collect($this->unDueInstallments);
 
@@ -840,8 +841,8 @@ class LoanAccount extends Model
         return $this->activity();
     }
 
-    public function getClientAttribute(){
-        return $this->client();
+    public function getPartnerClientAttribute(){
+        return $this->client;
     }
     
     public function getBasicClientAttribute(){
@@ -988,9 +989,75 @@ class LoanAccount extends Model
         return $list;
     }
 
-    public function getAmountFromDate($date){
-        if($this->amountDue()->total > 0){
+    
+    public function getDuesFromDate($date){
+        
+        $id = $this->id;
+        $account = LoanAccount::find($id);
+        $date = Carbon::parse($date);
+        $installments = $account->installments
+            // ->where('amount_due','>',0)
+            ->where('paid',false)
+            ->where('date','<=', $date);
+        $dues  = $installments->where('interest_due','>',0);
+        
+        $unDues  = $installments->where('interest_due','=',0);
 
-        }
+        $amount = new stdClass;
+        $due_interest = $dues->sum('interest_due');
+        $undue_interest = $unDues->sum('interest');
+        
+        $due_principal = $dues->sum('principal_due');
+        $undue_principal = $unDues->sum('principal_due');
+        $total_interest = round($due_principal + $undue_principal,2);
+        $total_principal =  round($due_interest + $undue_interest,2);
+        $total_amount = round($total_interest + $total_principal,2);
+
+        
+        $amount->interest = $total_interest;
+        $amount->_interest= env('CURRENCY_SIGN') . ' ' . number_format($total_interest,2);
+        
+        $amount->principal = $total_principal;
+        $amount->_principal = env('CURRENCY_SIGN') . ' ' . number_format($total_principal,2);
+       
+        $amount->amount_due = $total_amount;
+        $amount->_amount_due = env('CURRENCY_SIGN') . ' ' . number_format($total_amount,2);
+
+        return $amount;
+        // $dues = $installments->where('interest_due','>',0)->get();
+        // $unDues = $installments->where('interest_due','=',0)->get();
+    
+        // $amount = new stdClass;
+
+        // $interest_due  = $dues->sum('interest_due');
+        // $interest_undue  = $unDues->sum('interest');
+
+        // $principal_due = $dues->sum('principal_due');
+        // $principal_undue = $unDues->sum('principal_due');
+
+        // $amount_due = $dues->sum('amount_due');
+        // $amount_unDue = round($interest_undue + $principal_undue,2);
+
+
+        // $interest  = round($interest_due + $interest_undue,2);
+        // $principal = round($principal_due + $principal_undue,2);
+        
+        // $amount_due_all = round($amount_due + $amount_unDue,2);
+        // $amount->interest = $interest;
+        // $amount->_interest= env('CURRENCY_SIGN') . ' ' . number_format($interest,2);
+        
+        // $amount->principal = $principal;
+        // $amount->_principal = env('CURRENCY_SIGN') . ' ' . number_format($principal,2);
+       
+        // $amount->amount_due = $amount_due_all;
+        // $amount->_amount_due = env('CURRENCY_SIGN') . ' ' . number_format($amount_due_all,2);
+
+        // return $amount;
     }
+
+    public static function repaymentsFromDate(array $array){
+        return Office::repaymentSheet($array);
+    }
+ 
+
 }

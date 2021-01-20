@@ -248,6 +248,11 @@ class Office extends Model
                 $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
                 return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Approved')->get();
             }
+            if ($type=='active') {
+                $ids = $this->getLowerOfficeIDS();
+                $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->whereNotNull('disbursed_at')->get();
+            }
         }else{
             //if product type is selected
             if ($type==null) {
@@ -262,10 +267,57 @@ class Office extends Model
                 $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
                 return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Approved')->where('loan_id',$loan_product_id)->get();
             }
+            if ($type=='active') {
+                $ids = $this->getLowerOfficeIDS();
+                $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->whereNotNull('disbursed_at')->where('loan_id',$loan_product_id)->get();
+            }
+
+
 
         }
     }
 
+    public static function repaymentSheet(array $array){
+        $office_id = $array['office_id'];
+        $date = $array['date'];
+        $loan_product_id = $array['loan_account_id'];
+
+        $office = Office::find($office_id);
+        $ids = $office->getLowerOfficeIDS();
+
+        $client_ids = Client::select('client_id')
+            ->whereIn('office_id',$ids)
+            ->pluck('client_id');
+
+        // \DB::raw('Select x.*, la.id, la.total_balance from (SELECT client_id, firstname, lastname from clients c where office_id in 
+        //     (76,131,21)) x 
+        //     left join
+        //     loan_accounts la
+        //     on
+        //     x.client_id = la.client_id');
+        
+        // $accounts = LoanAccount::with(['client'=>function($q){
+        //     $q->select('id');
+        // }])->whereIn('id',$client_ids)->select('id','client_id')->get();
+
+        $accounts = LoanAccount::with(['client'=>function($q) use($client_ids){
+            $q->select('client_id','firstname','lastname');
+            $q->whereIn('client_id',$client_ids);
+        }])->select('id','client_id',)->get();
+
+        $list = collect();
+
+        $accounts->map(function($account) use ($date, &$list) {
+            $repayment_info =$account->getDuesFromDate($date);
+            $account->repayment_info = $repayment_info;
+
+            $list->push($account);
+        });
+
+        return $list;
+        
+    }
     public static function depositAccounts($office_id, $deposit_id=null){
         if ($deposit_id!=null) {
             $client_ids = Office::find($office_id)->getClients()->pluck('client_id');

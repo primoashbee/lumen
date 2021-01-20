@@ -95,7 +95,19 @@ class RepaymentController extends Controller
         return view('pages.bulk.repayments');
     }   
 
-    public function scheduledList(){
+    public function scheduledList(Request $request){
+        $this->scheduledListValidator($request->all());
+        $data = [
+            'office_id'=>$request->office_id,
+            'date'=>$request->date,
+            'loan_account_id'=>$request->product_id
+        ];
+        $list = LoanAccount::repaymentsFromDate($data);
+        
+        return response()->json(['list'=>$list,'msg'=>'success'],200);
+    }
+
+    public function scheduledListValidator(array $array){
 
     }
 }

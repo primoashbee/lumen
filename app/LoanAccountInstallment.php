@@ -243,13 +243,21 @@ class LoanAccountInstallment extends Model
                 ]);
             }else{
                 return $this->update([
-                    'interest_due'=>$this->interest
+                    'interest_due'=>$this->interest,
+                    'amount_due'=>round($this->interest + $this->principal_due, 2),
                 ]);
 
             }
             
         }else{
+            if($this->fullyPaid()){
 
+            }else{
+                return $this->update([
+                    'interest_due'=>0,
+                    'amount_due'=>0,
+                ]);
+            }
         }
     }
 }

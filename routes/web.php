@@ -28,12 +28,11 @@ use Symfony\Component\HttpFoundation\Request;
 */
 
 Route::get('/ap',function(){
-    $disbursement = \App\LoanAccount::first()->disbursed_at;
-    $repayment = \Carbon\Carbon::now();
 
-    $z = $disbursement->diffInDays($repayment,false);
+    return LoanAccount::with('client:firstname,middlename,lastname')->first();
+   
 
-    return 'xxx';
+   
 });
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -100,7 +99,7 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::post('/create/office/', 'OfficeController@createOffice');
 
-    Route::get('/office/{level}', 'OfficeController@viewOffice');
+    Route::get('/office/{level}', 'OfficeController@viewOffice')->name('offices.view');
     Route::get('/office/list/{level}','OfficeController@getOfficeList');
 
     Route::get('/edit/office/{id}', 'OfficeController@editOffice');
