@@ -23,35 +23,30 @@
                     <button  type="button" class="btn btn-primary" data-toggle="modal" @click="preTerm">
                         PreTerminate
                     </button>
-    
+                    <h4 class="h4 mt-4"> Amortization Schedule </h4>
+                    <p class="text-base text-white" v-if="disbursed"> Loan Amount {{account.mutated.amount}}</p>
+                    <p class="text-base text-white" v-if="disbursed"> Interest: {{account.mutated.interest_balance}} </p>
+                    <p class="text-base text-white" v-if="disbursed"> Principal: {{account.mutated.principal_balance}} </p>
+                    <p class="text-base text-white" v-if="disbursed"> Total: {{account.mutated.total_balance}} </p>
+                    <p class="text-base text-white" v-if="disbursed"> Interest Paid: {{account.total_paid.formatted_interest}} </p>
+                    <p class="text-base text-white" v-if="disbursed"> Principal Paid: {{account.total_paid.formatted_principal}} </p>
+                    <p class="text-base text-white" v-if="disbursed"> Total Paid: {{account.total_paid.formatted_total}} </p>
+                    <p class="text-base text-white" v-if="disbursed"> Pre-termination Amount: {{account.pre_term_amount.formatted_total}} </p>
                     
                     
-                    <h1> Amortization Schedule </h1>
-                    <h1 v-if="disbursed"> Loan Amount {{account.mutated.amount}}</h1>
-                    <h1 v-if="disbursed"> Interest: {{account.mutated.interest_balance}} </h1>
-                    <h1 v-if="disbursed"> Principal: {{account.mutated.principal_balance}} </h1>
-                    <h1 v-if="disbursed"> Total: {{account.mutated.total_balance}} </h1>
-
-                    <h1 v-if="disbursed"> Interest Paid: {{account.total_paid.formatted_interest}} </h1>
-                    <h1 v-if="disbursed"> Principal Paid: {{account.total_paid.formatted_principal}} </h1>
-                    <h1 v-if="disbursed"> Total Paid: {{account.total_paid.formatted_total}} </h1>
-                    
-                    <h1 v-if="disbursed"> Pre-termination Amount: {{account.pre_term_amount.formatted_total}} </h1>
-                    
-                    
-                    <h2 v-if="disbursed"><span v-if="account.status=='In Arrears'" class="badge badge-danger"> In Arrears</span></h2>
-                    <h2 v-if="disbursed"><span v-if="account.status=='Active'" class="badge badge-success">Active</span></h2>
-                    <h2 v-if="disbursed"><span v-if="account.status=='Closed'" class="badge badge-dark">Closed</span></h2>
-
-                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="account-installments-tab" data-toggle="pill" href="#account-installment" role="tab" aria-controls="account-installment" aria-selected="true">Installments</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Activity</a>
-                        </li>
-
-                    </ul>
+                    <h2 v-if="disbursed"><span v-if="account.status=='In Arrears'" class="badge text-base badge-danger"> In Arrears</span></h2>
+                    <h2 v-if="disbursed"><span v-if="account.status=='Active'" class="badge text-base badge-success">Active</span></h2>
+                    <h2 v-if="disbursed"><span v-if="account.status=='Closed'" class="badge text-base badge-dark">Closed</span></h2>
+                    <div class="loan-menu-tabs mt-3">
+                        <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="account-installments-tab" data-toggle="pill" href="#account-installment" role="tab" aria-controls="account-installment" aria-selected="true">Installments</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Activity</a>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="account-installment" role="tabpanel" aria-labelledby="account-installments-tab">
                             <table class="table table-condensed">

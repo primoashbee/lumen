@@ -31,7 +31,7 @@
 								</a>
 							</li>
 							<li class="sub-list">
-								<a class="sub-nav" href="/create/office/cluster">
+								<a class="sub-nav" href="/settings/create/office/cluster">
 									<i class="">CL</i>
 									<p>Cluster</p>
 								</a>
@@ -95,19 +95,19 @@
 									<ul class="sub-collapse">
 										<li class="second-sub-list">
 											<a class="second-sub-nav" href="{{route('bulk.create.loans')}}">
-												<i class="fas fa-plus-square"></i>
+												<i class="">CL</i>
 												<p>Create Loans</p>
 											</a>
 										</li>
 										<li class="second-sub-list">
 											<a class="second-sub-nav" href="{{route('bulk.approve.loans')}}">
-												<i class="fas fa-thumbs-up"></i>
+												<i class="">AL</i>
 												<p> Approve Loans</p>
 											</a>
 										</li>
 										<li class="second-sub-list">
 											<a class="second-sub-nav" href="{{route('bulk.disburse.loans')}}">
-												<i class="fas fa-cash-register"></i>
+												<i class="">DL</i>
 												<p>Disburse Loans</p>
 											</a>
 										</li>

@@ -1,50 +1,45 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-5">
                 <label for="" style="color:white" class="lead mr-2">Filter:</label>
-                <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:500px;" v-model="office_id"></v2-select>
+                <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:80%;" v-model="office_id"></v2-select>
+            </div>
+            <div class="col-lg-5">
+                <div class="form-group d-inline-block">
+                    <label for="product_id" class="lead mr-2">Product:</label>
+                    <loan-product-list id="product_id" class="w-8" @selected="selected"></loan-product-list>
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="form-group">
-                    <label for="product_id" > Product </label>
-                    <loan-product-list id="product_id" @selected="selected"></loan-product-list>
+        <div class="row mt-3">
+            <div class="col-lg-5">
+                
+                <div class="row">
+                    <div class="form-group w-4 px-3">
+                        <label for="disbursement_date">Disbursement Date</label> 
+                        <input type="date" class="form-control" v-model="form.disbursement_date">
+                    </div>
+                    <div class="form-group w-4 px-3">
+                        <label for="repayment_date">First Repayment Date</label> 
+                        <input type="date" class="form-control" v-model="form.first_payment">
+                    </div>
                 </div>
+                <div class="row pb-4">
+                    <div class="form-group w-4 px-3">
+                        <label for="installment" class="title text-xl">Number of Installment</label>
+                        <select id="installment" class="form-control" v-model="form.number_of_installments">
+                            <option :value="null"> Please Select</option>
+                            <option v-for="item in installment_list" :value="item.installments" :key="item.id"> {{item.installments}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group w-4 px-3">
+                        <label for="Interest" class="title text-xl">Interest</label>
+                        <input type="text" class="form-control" id="Interest" readonly :value="selected_interest">
+                    </div>
+                </div>  
             </div>
-            <div class="col-lg-2">
-            <div class="form-group">
-                <label for="disbursement_date">Disbursement Date</label> 
-                <input type="date" class="form-control" v-model="form.disbursement_date">
-            </div>
-            <div class="form-group">
-                <label for="repayment_date">First Repayment Date</label> 
-                <input type="date" class="form-control" v-model="form.first_payment">
-            </div>
-        </div>
-
-        <div class="row pb-4">
-  
-            
-            <div class="d-table-row pl-3 mt-4">
-                <div class="d-table-cell form-group">
-                    <label for="installment" class="title text-xl">Number of Installment</label>
-                    <select id="installment" class="form-control" v-model="form.number_of_installments">
-                        <option :value="null"> Please Select</option>
-                        <option v-for="item in installment_list" :value="item.installments" :key="item.id"> {{item.installments}}</option>
-                    </select>
-                </div>
-                <div class="form-group d-table-cell pl-4">
-                    <label for="Interest" class="title text-xl">Interest</label>
-                    <input type="text" class="form-control" id="Interest" readonly :value="selected_interest">
-                </div>
-            </div>
-            
-        </div>	
-      
- 
         </div>
 
         
@@ -76,7 +71,7 @@
             <paginator :dataset="lists" @updated="fetch"></paginator>
         </div>
         
-        <button class="btn btn-primary" @click="submit">Create</button>
+        <button class="btn btn-primary ml-3 mt-4" @click="submit">Create</button>
         <loading :is-full-page="true" :active.sync="isLoading" ></loading>
     </div>
 </template>

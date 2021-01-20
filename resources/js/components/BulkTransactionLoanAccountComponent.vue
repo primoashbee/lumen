@@ -2,19 +2,20 @@
     <div>
         <form @submit.prevent="fetch">
         <div class="row">
-            <div class="col-lg">
+            <div class="col-lg-5">
                 <div class="form-group">
                     <label for="" style="color:white" class="lead mr-2">Filter:</label>
-                    <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:500px;" v-model="request.office_id"></v2-select>
+                    <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:80%;" v-model="request.office_id"></v2-select>
                 </div>
             </div>
-            <div class="col-lg">
+            <div class="col-lg-5">
                 <div class="form-group">
-                    <label for="product_id" > Product </label>
-                    <loan-product-list id="product_id" @selected="selected"></loan-product-list>
+                    <label for="product_id" class="mr-3"> Product: </label>
+                    <loan-product-list id="product_id" @selected="selected" style="width:80%"></loan-product-list>
                 </div>
-
-                <button  class="btn btn-primary" >Filter</button>
+            </div>
+            <div class="col-lg-2">
+                <button  class="btn btn-primary align-items-end" style="padding: 8px 20px;">Filter</button>
             </div>
             
         </div>
@@ -36,7 +37,6 @@
                     </tr>
                 </thead>
                 <tbody v-if="hasRecords">
-                    
                     <tr v-for="client in lists" :key="client.client_id">
                         <td><input type="checkbox" :id="client.client_id" @change="checked(client,$event)"></td>
                         <td><label :for="client.client_id">{{client.client_id}}</label></td>
@@ -55,15 +55,15 @@
             <paginator :dataset="lists" @updated="fetch"></paginator>
         </div>
         
-        <button class="btn btn-primary" @click="submit">Submit</button>
+        <button class="btn btn-primary ml-3" @click="submit">Submit</button>
         <loading :is-full-page="true" :active.sync="isLoading" ></loading>
 
         	<b-modal id="deposit-modal" v-model="modal.modalState" size="lg" hide-footer :title="modal.modalTitle" :header-bg-variant="background" :body-bg-variant="background" >
 		    
-            <h1> # of Accounts: {{summary.accounts}} </h1>
-            <h1> Total Amount: {{summary.amount}} </h1>
-            <h1> Total Fees: {{summary.fees}} </h1>
-            <h1> Total Disbursement: {{summary.disbursement}} </h1>
+            <h6 class="h6"> # of Accounts: {{summary.accounts}} </h6 class="h6">
+            <h6 class="h6"> Total Amount: {{summary.amount}} </h6 class="h6">
+            <h6 class="h6"> Total Fees: {{summary.fees}} </h6 class="h6">
+            <h6 class="h6"> Total Disbursement: {{summary.disbursement}} </h6 class="h6">
             <form @submit.prevent="disburse">
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">Branch</label>
@@ -95,7 +95,7 @@
 		        </div>
 
 		        
-		        <button class="btn btn-primary">Submit</button>
+		        <button class="ml-3 btn btn-primary">Submit</button>
 		    </form>
 		</b-modal>
     </div>

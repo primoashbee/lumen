@@ -7,7 +7,7 @@
     :multiple="false"  
     :group-select="false" 
     :allow-empty="false"
-    placeholder="Select Level"
+    placeholder="Select Payment Method"
     track-by="name" 
     label="name"
     @input = "emitToParent"

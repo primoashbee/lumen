@@ -256,7 +256,7 @@ class AppServiceProvider extends ServiceProvider
             $account = DepositAccount::find($_account['id']);
             
             if($account->lastTransaction() == null){
-                return false;
+                return true;
             }
             $last_transaction_date = $account->lastTransaction()->repayment_date;
            

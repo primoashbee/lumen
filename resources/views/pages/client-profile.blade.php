@@ -265,7 +265,7 @@
 		          <div class="float-left text-center">
 		          	<h4 class="mt-2 h5">Dependents</h4>
 		          </div>
-					<a href="{{route('client.manage.dependents',$client->client_id)}}" class="float-right btn-create">Manage</a>
+					<a href="{{route('client.manage.dependents',$client->client_id)}}" class="float-right btn-create text-base">Manage</a>
 				</div>
 				
 		        <div class="card-body">

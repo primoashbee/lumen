@@ -48,9 +48,9 @@
 						<h1 class="text-2xl title">Loan Terms</h1>
 					<div class="row pb-4">
 						
-						<div class="d-table-row px-3 mt-4">
+						<div class="d-table-row mt-4 pl-3">
 
-							<div class="form-group d-table-cell pl-4">
+							<div class="form-group d-table-cell">
 								<label for="loan_amount" class="title text-xl">Loan Amount</label>
 								<input type="number" class="form-control" id="loan_amount" v-model="form.amount" step="1000">
 							</div>
@@ -76,7 +76,7 @@
 					<h1 class="text-2xl title mt-4">Fees</h1>
 					<div v-if="calculator!=null	">
 						<div class="form-inline py-2" v-for="fee in calculator.fees" :key="fee.id">
-							<div class="form-group pl-3">
+							<div class="form-group">
 								<label :for="fee.name">{{fee.name}}</label>
 								<input type="text" :id="fee.name" class="form-control ml-3" disabled :value="fee.amount">
 							</div>
@@ -86,7 +86,7 @@
 					<hr>
 					<h1 class="title text-2xl">Minimum Deposit Balance</h1>
 					<div class="row">
-						<div class="d-flex w-8 px-3 mt-4">
+						<div class="d-flex w-8 pl-3 mt-4">
 							<div class="w-full form-group">
 								<label for="deposit_account" class="title text-xl">Deposit Account</label>
 								<select id="deposit_account" class="form-control">
@@ -107,18 +107,18 @@
 					<button class="btn btn-primary" @click.prevent="calculate"> Calculate </button>
 
 				
-					<div v-if="calculated">
-						<h1> Loan {{calculator.code}} </h1>
-						<h1> Number of Installments {{calculator.number_of_installments}} </h1>
-						<h1> Start Date {{calculator.start_date}} </h1>
-						<h1> End Date {{calculator.end_date}} </h1>
+					<div v-if="calculated" class="mt-6">
+						<h6 class="h6"> Loan {{calculator.code}} </h6>
+						<h6 class="h6"> Number of Installments {{calculator.number_of_installments}} </h6>
+						<h6 class="h6"> Start Date {{calculator.start_date}} </h6>
+						<h6 class="h6"> End Date {{calculator.end_date}} </h6>
 
-						<h1> Principal {{calculator.formatted_principal}} </h1>
-						<h1> Interest {{calculator.formatted_interest}} </h1>
-						<h1> Total Loan Amount {{calculator.formatted_total_loan_amount}} </h1>
+						<h6 class="h6"> Principal {{calculator.formatted_principal}} </h6>
+						<h6 class="h6"> Interest {{calculator.formatted_interest}} </h6>
+						<h6 class="h6"> Total Loan Amount {{calculator.formatted_total_loan_amount}} </h6>
 
-						<h1> Disbursement Amount {{calculator.formatted_disbursement_amount}} </h1>
-						<h1> Total Deductions {{calculator.formatted_total_deductions}} </h1>
+						<h6 class="h6"> Disbursement Amount {{calculator.formatted_disbursement_amount}} </h6>
+						<h6 class="h6"> Total Deductions {{calculator.formatted_total_deductions}} </h6>
 						<table class="table"  v-if="calculated">
 							<thead>
 								<tr>

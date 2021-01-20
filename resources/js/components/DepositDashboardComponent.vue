@@ -10,10 +10,10 @@
 
 			<div class="row">
 				<div class="col-lg-6">
-					<div class="d-details b-btm">
+					<div class="d-details pb-4 b-btm">
 						<h1 class="title text-4xl">{{account_info.type.name}}</h1>
 						<h1 class="italic text-2xl">{{account_info.client_id + '-' + account_info.client.firstname + ' ' +account_info.client.lastname}}</h1>
-						<p class="title text-xl mt-4 pb-4">Status: <span class="badge-pill badge-success">ACTIVE</span></p>
+						<span class="badge badge-success">ACTIVE</span>
 					</div>
 				</div>
 				<div class="col-lg-6 text-right">

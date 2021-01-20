@@ -5028,6 +5028,10 @@ body{
 
 /*CLASSES FOR CARDS*/
 
+.card{
+    padding-bottom: 60px;
+}
+
 .card .card-header h5.chart-header,
 .card .card-header h5
 {
@@ -5211,10 +5215,11 @@ ul.pagination li button:hover{
 
 /*Dark Mode CSS*/
 body.dark-mode .navbar.fixed-top{
-    padding-bottom: 0!important;
-    border-bottom: 1px solid #fdad7d;
-    background: #1e1e2f;
-    transition: all ease 0.3s;
+    /*padding-bottom: 0!important;*/
+    /*border-bottom: 1px solid #fdad7d;*/
+    /*background: #1e1e2f;*/
+    /*transition: all ease 0.3s;*/
+    position: relative;
 }
 body.dark-mode #search::placeholder{
     color:#fff;
@@ -5724,7 +5729,7 @@ textarea.form-control:hover{
     border-color: #fdad7d!important;
     background-color: transparent;
     box-shadow: none;
-
+    color: #fff;
 }
 div.form-group label{
     color: #dddddd;
@@ -5910,7 +5915,7 @@ select {
   cursor: pointer;
 }
 /* Arrow */
-.select::after {
+/*.select::after {
   content: "\25BC";
   position: absolute;
   top: 5px;
@@ -5922,7 +5927,7 @@ select {
   -webkit-transition: 0.25s all ease;
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
-}
+}*/
 /* Transition */
 .select:hover::after {
   color: #fdad7d;
@@ -6105,23 +6110,24 @@ ol {
   text-indent: -0.5em;
   text-shadow: 1px 0 1px #b3b3b3;
 }
-.profile-menu-tabs ul.nav-tabs{
+.profile-menu-tabs ul.nav-tabs, .loan-menu-tabs ul.nav-tabs{
     border-bottom:1px solid #ef8240;
 }
-.profile-menu-tabs .nav-tabs .nav-link.active{
+.profile-menu-tabs .nav-tabs .nav-link.active, .loan-menu-tabs .nav-tabs .nav-link.active{
     color: #fff;
     background-color: transparent;
     border-color: #ef8240 #ef8240 transparent #ef8240;
 }
-.profile-menu-tabs .nav-item a{
+.profile-menu-tabs .nav-item a, .loan-menu-tabs .nav-item a{
     border: 1px solid transparent;
     display: inline-block; 
     border-bottom: 0px; 
     margin: 0px;    
-  color: #fff;
+    color: #fff;
     cursor: pointer;
 }
-.profile-menu-tabs .nav-tabs .nav-link:not(.active):hover {
+.profile-menu-tabs .nav-tabs .nav-link:not(.active):hover,
+.loan-menu-tabs .nav-tabs .nav-link:not(.active):hover {
     border-color: transparent;
 }
 .p-details span.title:first-child{

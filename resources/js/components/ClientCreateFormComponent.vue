@@ -312,7 +312,7 @@
                         <div class="hi form-group p0 my-2" data-attribute="is_self_employed" :class="{active:fields.is_self_employed}">
                             <label for="sevice_type">Service Type</label>
                             <div class="select">
-                                <select v-model="fields.service_type" id="service_type">
+                                <select v-model="fields.service_type" class="form-control" id="service_type">
                                 <option value=""> CHOOSE AN OPTION</option> 
                                 <option value="AGRICULTURE"> AGRICULTURE </option>
                                 <option value="TRADING/MERCHANDISING"> TRADING/MERCHANDISING </option>
@@ -464,7 +464,7 @@
                     </div>
                     
                 </div>
-                 <button type="submit" class="btn btn-primary"> Submit </button>
+                 <button type="submit" class="ml-3 btn btn-primary"> Submit </button>
                 </form>
           </div>
     </div>

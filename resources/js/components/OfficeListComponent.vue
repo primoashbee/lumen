@@ -152,7 +152,7 @@
                 }
             },
             createOfficeLink(){
-                return '/create/office/'+this.level
+                return '/settings/create/office/'+this.level
             },
             inputSearch(){
                 this.fetch()
@@ -198,7 +198,7 @@
             },
             submit(){
                 if (this.fields.level == "cluster") {
-                    this.fields.name = this.officeInfo.code
+                    this.fields.name = this.fields.code
                 }
                 axios.post(this.toEditOfficeLink(this.fields.id), this.fields)
                 .then(res=>{

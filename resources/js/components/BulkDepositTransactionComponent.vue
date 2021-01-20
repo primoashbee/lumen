@@ -3,16 +3,16 @@
         <div class="row">
             <div class="col-lg-5">
                 <label for="" style="color:white" class="lead mr-2">Filter:</label>
-                <product-component product_type="deposit" @productSelected="productSelected" class="d-inline-block" style="width:500px" v-model="office_id"></product-component>
+                <product-component product_type="deposit" @productSelected="productSelected" class="d-inline-block" style="width:90%" v-model="office_id"></product-component>
                 <!-- <button type="button" class="btn btn-primary" @click="filter">Add New</button> -->
             </div>
             <div class="col-lg-5">
                 <label for="" style="color:white" class="lead mr-2">Filter:</label>
-                <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:500px" v-model="office_id"></v2-select>
+                <v2-select @officeSelected="assignOffice" class="d-inline-block" style="width:90%" v-model="office_id"></v2-select>
                 <!-- <button type="button" class="btn btn-primary" @click="filter">Add New</button> -->
             </div>
             <div class="col-lg-2">
-                <button type="button" class="btn btn-primary" @click="submit">Search</button>
+                <button type="button" class="btn btn-primary" style="padding:10px 20px" @click="submit">Search</button>
             </div>
             <div class="col-lg-6 float-right d-flex"  v-if="false">
                 <label for="" style="color:white" class="lead mr-2">Search:</label>
@@ -91,9 +91,12 @@
 			</table>
 			<p class="lead float-left text-right" style="color:white">Showing Records {{lists.from}} - {{lists.to}} of {{totalRecords}} </p>
 			<p class="lead float-right text-right" style="color:white">Total Records: {{totalRecords}} </p>
-			<button type="button" class="btn btn-primary" @click="showModal()" v-if="hasRecords"> {{transactionTypeDisplay}} </button>
+			
 			<div class="clearfix"></div>
 			<paginator :dataset="lists" @updated="fetch"></paginator>
+
+			<button type="button" class="mt-3 btn btn-primary" @click="showModal()" v-if="hasRecords"> {{transactionTypeDisplay}} </button>
+			
 		</div>
 		
         </div>

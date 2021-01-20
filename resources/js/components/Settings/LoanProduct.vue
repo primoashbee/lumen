@@ -186,110 +186,108 @@
 					</div>
 					<h1 class="text-2xl title">Fees</h1>
 	
-					<div class="col-lg-12 px-3" v-if="!isLoading">
-						<div class="col-lg-12 mt-8">
-							<div class="form-group w-100">
-								<multi-select :default_value="form.fees" :multiple="true" :class="{'is-invalid': hasError('fees') }" track_by="id" label="name" list="fees" @changed="changed"></multi-select>
-                                <div class="text-danger" v-if="hasError('fees.fees')">
-                                    {{errorMessage('fees.fees')}}
-                                </div>
-							</div>
+					<div class="col-lg-12 pl-0 px-3" v-if="!isLoading">
+						<div class="form-group mt-2 w-100">
+							<multi-select :default_value="form.fees" :multiple="true" :class="{'is-invalid': hasError('fees') }" track_by="id" label="name" list="fees" @changed="changed"></multi-select>
+                            <div class="text-danger" v-if="hasError('fees.fees')">
+                                {{errorMessage('fees.fees')}}
+                            </div>
 						</div>
 					</div>
 					<h1 class="text-2xl title">General Ledger Accounts</h1>
 	
-					<div class="col-lg-12 px-3">
-						<div class="col-lg-12 mt-8">
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_portfolio_active">Loan Portfolio Active</label>
-								<select id="loan_portfolio_active" class="form-control" :class="{'is-invalid': hasError('loan_portfolio_active') }" v-model="form.loan_portfolio_active">
-									<option value="">Select GL Account</option>
-									<option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_portfolio_active')">
-                                    {{errorMessage('loan_portfolio_active')}}
-                                </div>
-							</div>
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_portfolio_in_arrears">Loan Portfolio In Arrears</label>
-								<select id="loan_portfolio_in_arrears" class="form-control" :class="{'is-invalid': hasError('loan_portfolio_in_arrears') }" v-model="form.loan_portfolio_in_arrears">
-									<option value="">Select GL Account</option>
-                                    <option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_portfolio_in_arrears')">
-                                    {{errorMessage('loan_portfolio_in_arrears')}}
-                                </div>
-							</div>
+					<div class="col-lg-12 pr-3 mt-4">
+						
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_portfolio_active">Loan Portfolio Active</label>
+							<select id="loan_portfolio_active" class="form-control" :class="{'is-invalid': hasError('loan_portfolio_active') }" v-model="form.loan_portfolio_active">
+								<option value="">Select GL Account</option>
+								<option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_portfolio_active')">
+                                {{errorMessage('loan_portfolio_active')}}
+                            </div>
+						</div>
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_portfolio_in_arrears">Loan Portfolio In Arrears</label>
+							<select id="loan_portfolio_in_arrears" class="form-control" :class="{'is-invalid': hasError('loan_portfolio_in_arrears') }" v-model="form.loan_portfolio_in_arrears">
+								<option value="">Select GL Account</option>
+                                <option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_portfolio_in_arrears')">
+                                {{errorMessage('loan_portfolio_in_arrears')}}
+                            </div>
+						</div>
 
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_portfolio_matured">Loan Portfolio Matured</label>
-								<select id="loan_portfolio_matured" class="form-control" :class="{'is-invalid': hasError('loan_portfolio_matured') }" v-model="form.loan_portfolio_matured">
-									<option value="">Select GL Account</option>
-                                    <option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_portfolio_matured')">
-                                    {{errorMessage('loan_portfolio_matured')}}
-                                </div>
-							</div>
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_portfolio_matured">Loan Portfolio Matured</label>
+							<select id="loan_portfolio_matured" class="form-control" :class="{'is-invalid': hasError('loan_portfolio_matured') }" v-model="form.loan_portfolio_matured">
+								<option value="">Select GL Account</option>
+                                <option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_portfolio_matured')">
+                                {{errorMessage('loan_portfolio_matured')}}
+                            </div>
+						</div>
+					
+					
+					
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_interest_income_active">Loan Interest Active</label>
+							<select id="loan_interest_income_active" class="form-control" :class="{'is-invalid': hasError('loan_interest_income_active') }" v-model="form.loan_interest_income_active">
+								<option value="">Select GL Account</option>
+                                <option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_interest_income_active')">
+                                {{errorMessage('loan_interest_income_active')}}
+                            </div>
+						</div>
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_interest_income_in_arrears">Loan Interest In Arrears</label>
+							<select id="loan_interest_income_in_arrears" class="form-control" :class="{'is-invalid': hasError('loan_interest_income_in_arrears') }" v-model="form.loan_interest_income_in_arrears">
+								<option value="">Select GL Account</option>
+                                <option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_interest_income_in_arrears')">
+                                {{errorMessage('loan_interest_income_in_arrears')}}
+                            </div>
+						</div>
+
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_interest_income_matured">Loan Interest Matured</label>
+							<select id="loan_interest_income_matured" class="form-control" :class="{'is-invalid': hasError('loan_interest_income_matured') }" v-model="form.loan_interest_income_matured">
+								<option value="">Select GL Account</option>
+                                <option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_interest_income_matured')">
+                                {{errorMessage('loan_interest_income_matured')}}
+                            </div>
+						</div>
+					
+					
+					
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_write_off">Loan Write Off</label>
+							<select id="loan_write_off" class="form-control" :class="{'is-invalid': hasError('loan_write_off') }" v-model="form.loan_write_off">
+								<option value="">Select GL Account</option>
+                                <option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_write_off')">
+                                {{errorMessage('loan_write_off')}}
+                            </div>
+						</div>
+
+						<div class="form-group w-100">
+							<label class="title text-lg" for="loan_recovery">Loan Recovery</label>
+							<select id="loan_recovery" class="form-control" :class="{'is-invalid': hasError('loan_recovery') }" v-model="form.loan_recovery">
+								<option value="">Select GL Account</option>
+                                <option value="26">CASH IN BANK</option>
+							</select>
+                            <div class="text-danger" v-if="hasError('loan_recovery')">
+                                {{errorMessage('loan_recovery')}}
+                            </div>
 						</div>
 						
-						<div class="col-lg-12 mt-8">
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_interest_income_active">Loan Interest Active</label>
-								<select id="loan_interest_income_active" class="form-control" :class="{'is-invalid': hasError('loan_interest_income_active') }" v-model="form.loan_interest_income_active">
-									<option value="">Select GL Account</option>
-                                    <option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_interest_income_active')">
-                                    {{errorMessage('loan_interest_income_active')}}
-                                </div>
-							</div>
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_interest_income_in_arrears">Loan Interest In Arrears</label>
-								<select id="loan_interest_income_in_arrears" class="form-control" :class="{'is-invalid': hasError('loan_interest_income_in_arrears') }" v-model="form.loan_interest_income_in_arrears">
-									<option value="">Select GL Account</option>
-                                    <option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_interest_income_in_arrears')">
-                                    {{errorMessage('loan_interest_income_in_arrears')}}
-                                </div>
-							</div>
-
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_interest_income_matured">Loan Interest Matured</label>
-								<select id="loan_interest_income_matured" class="form-control" :class="{'is-invalid': hasError('loan_interest_income_matured') }" v-model="form.loan_interest_income_matured">
-									<option value="">Select GL Account</option>
-                                    <option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_interest_income_matured')">
-                                    {{errorMessage('loan_interest_income_matured')}}
-                                </div>
-							</div>
-						</div>
-						
-						<div class="col-lg-12">
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_write_off">Loan Write Off</label>
-								<select id="loan_write_off" class="form-control" :class="{'is-invalid': hasError('loan_write_off') }" v-model="form.loan_write_off">
-									<option value="">Select GL Account</option>
-                                    <option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_write_off')">
-                                    {{errorMessage('loan_write_off')}}
-                                </div>
-							</div>
-
-							<div class="form-group w-100">
-								<label class="title text-lg" for="loan_recovery">Loan Recovery</label>
-								<select id="loan_recovery" class="form-control" :class="{'is-invalid': hasError('loan_recovery') }" v-model="form.loan_recovery">
-									<option value="">Select GL Account</option>
-                                    <option value="26">CASH IN BANK</option>
-								</select>
-                                <div class="text-danger" v-if="hasError('loan_recovery')">
-                                    {{errorMessage('loan_recovery')}}
-                                </div>
-							</div>
-						</div>
 						
 					</div>
 					<button type="submit" class="btn btn-primary ml-3" >Submit</button>

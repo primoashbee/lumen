@@ -186,14 +186,12 @@
 					</div>
 					<h1 class="text-2xl title">Fees</h1>
 	
-					<div class="col-lg-12 px-3">
-						<div class="col-lg-12 mt-8">
-							<div class="form-group w-100">
-								<multi-select :multiple="true" :class="{'is-invalid': hasError('fees') }" track_by="id" label="name" list="fees" @changed="changed"></multi-select>
-                                <div class="text-danger" v-if="hasError('fees.fees')">
-                                    {{errorMessage('fees.fees')}}
-                                </div>
-							</div>
+					<div class="col-lg-12 pl-0 pr-3">
+						<div class="form-group mt-2 w-100">
+							<multi-select :multiple="true" :class="{'is-invalid': hasError('fees') }" track_by="id" label="name" list="fees" @changed="changed"></multi-select>
+                            <div class="text-danger" v-if="hasError('fees.fees')">
+                                {{errorMessage('fees.fees')}}
+                            </div>
 						</div>
 					</div>
 					<h1 class="text-2xl title">General Ledger Accounts</h1>
