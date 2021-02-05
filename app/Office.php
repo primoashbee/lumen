@@ -15,7 +15,23 @@ class Office extends Model
     protected $searchables = [
         'name',
     ];
- 
+    
+    public static function makeClientID($office_id){
+        $office = Office::find($office_id);
+        
+        if($office->level=="branch"){
+            $code = $office->code;
+            $office_ids = $office->getLowerOfficeIDS();
+            $count = Client::whereIn('office_id',$office_ids)->count();
+            return $code . '-PC' . pad($count + 1, 5);
+        }
+        
+        $office = $office->getTopOffice('branch');
+        $code = $office->code;
+        $office_ids = $office->getLowerOfficeIDS();
+        $count = Client::whereIn('office_id',$office_ids)->count();
+        return $code . '-PC' . pad($count + 1, 5);
+    }
     public static function levelCount($level){
         $me = new static;
         return $me->where('level',$level)->count();
@@ -241,12 +257,12 @@ class Office extends Model
             if ($type=='pending') {
                 $ids = $this->getLowerOfficeIDS();
                 $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
-                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Pending Approval')->get();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('approved', false)->get();
             }
             if ($type=='approved') {
                 $ids = $this->getLowerOfficeIDS();
                 $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
-                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Approved')->get();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->whereNull('disbursed_at')->whereNull('disbursed_by')->get();
             }
             if ($type=='active') {
                 $ids = $this->getLowerOfficeIDS();
@@ -260,12 +276,12 @@ class Office extends Model
             if ($type=='pending') {
                 $ids = $this->getLowerOfficeIDS();
                 $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
-                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Pending Approval')->where('loan_id',$loan_product_id)->get();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('approved', false)->where('loan_id',$loan_product_id)->get();
             }
             if ($type=='approved') {
                 $ids = $this->getLowerOfficeIDS();
                 $client_ids = Client::select('id', 'client_id')->whereIn('office_id', $ids)->orderBy('lastname')->pluck('client_id')->toArray();
-                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->where('status', 'Approved')->where('loan_id',$loan_product_id)->get();
+                return $accounts = LoanAccount::whereIn('client_id', $client_ids)->whereNull('disbursed_at')->whereNull('disbursed_by')->where('loan_id',$loan_product_id)->get();
             }
             if ($type=='active') {
                 $ids = $this->getLowerOfficeIDS();
@@ -290,30 +306,37 @@ class Office extends Model
             ->whereIn('office_id',$ids)
             ->pluck('client_id');
 
-        // \DB::raw('Select x.*, la.id, la.total_balance from (SELECT client_id, firstname, lastname from clients c where office_id in 
-        //     (76,131,21)) x 
-        //     left join
-        //     loan_accounts la
-        //     on
-        //     x.client_id = la.client_id');
-        
-        // $accounts = LoanAccount::with(['client'=>function($q){
-        //     $q->select('id');
-        // }])->whereIn('id',$client_ids)->select('id','client_id')->get();
+        $deposit_ids = $array['deposit_product_ids'];
+        $accounts = LoanAccount::with([
+            'client'=>function($q) use($client_ids){
+                $q->select('client_id','firstname','lastname');
+                $q->whereIn('client_id',$client_ids);
+                
+            },
+            'product:id,code',
+            'client.deposits'=>function($q) use ($deposit_ids){
+                $q->select('id','client_id','deposit_id','balance');
+                $q->whereIn('deposit_id',$deposit_ids);
+                $q->orderBy('deposit_id','ASC');
+                
+            },
+            'client.deposits.type' => function($q) {
 
-        $accounts = LoanAccount::with(['client'=>function($q) use($client_ids){
-            $q->select('client_id','firstname','lastname');
-            $q->whereIn('client_id',$client_ids);
-        }])->select('id','client_id',)->get();
+                $q->select('id','product_id');
+            }
+        ])->select('id','client_id','loan_id')->where('loan_id',$loan_product_id)->whereNull('closed_by')->whereIn('client_id',$client_ids)->get();
+        
 
         $list = collect();
 
-        $accounts->map(function($account) use ($date, &$list) {
-            $repayment_info =$account->getDuesFromDate($date);
-            $account->repayment_info = $repayment_info;
+        if ($accounts->count() > 0) {
+            $accounts->map(function ($account) use ($date, &$list) {
+                $repayment_info =$account->getDuesFromDate($date);
+                $account->repayment_info = $repayment_info;
 
-            $list->push($account);
-        });
+                $list->push($account);
+            });
+        }
 
         return $list;
         

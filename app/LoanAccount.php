@@ -6,6 +6,7 @@ use stdClass;
 use App\Client;
 use App\Scheduler;
 use Carbon\Carbon;
+use App\CheckVoucher;
 use App\LoanInstallment;
 use App\LoanAccountFeePayment;
 use Illuminate\Support\Facades\Log;
@@ -469,7 +470,7 @@ class LoanAccount extends Model
         return $this->isActive();
     }
     public function getAmountDueAttribute(){
-        return $this->amountDue();
+        return LoanAccount::find($this->id)->amountDue();
     }
 
     public function latestRepayment(){
@@ -591,12 +592,14 @@ class LoanAccount extends Model
         ]);
     }
     public function pay(array $data){
+        
         $payment_amount = round($data['amount'],2);
         $amount_due = $this->amountDue();
         $paid_by = $data['paid_by'];
         $payment_method_id = $data['payment_method'];
         $repayment_date = $data['repayment_date'];
         $notes = $data['notes'];
+        $receipt_number = $data['receipt_number'];
         
         $method = PaymentMethod::find($data['payment_method']);
         $transaction_number= $this->generateRepaymentTransactionNumber();
@@ -618,8 +621,11 @@ class LoanAccount extends Model
                 'paid_by'=>$paid_by,
                 'payment_method_id'=>$payment_method_id,
                 'repayment_date'=>$repayment_date,
-                'notes'=>$notes
+                'notes'=>$notes,
+                'receipt_number'=>$receipt_number
             ]);
+
+            $this->receipts()->create(['receipt_number'=>$receipt_number]);
             
             
             if($this->total_balance == 0){
@@ -634,6 +640,10 @@ class LoanAccount extends Model
         }
         
        
+    }
+
+    public function receipts(){
+        return $this->morphMany(Receipt::class, 'receiptable');
     }
 
     public function updateBalances(){
@@ -804,7 +814,7 @@ class LoanAccount extends Model
             'disbursed_by'=>null,
             'disbursed_at'=>null,
             'disbursed'=>false,
-            'status'=>'Pending Approval'
+            'status'=>'Approved'
         ]);
     }
 
@@ -870,6 +880,7 @@ class LoanAccount extends Model
         $fee_payments = $account->feePayments;
         $payment_method_id = $payment_info['payment_method_id'];
         $disbursed_by = $payment_info['disbursed_by'];
+        $cv_number = $payment_info['cv_number'];
         \DB::beginTransaction();
       
         try{
@@ -915,14 +926,21 @@ class LoanAccount extends Model
                 'disbursed'=>true
             ]);
             
-            $account->disbursement()->create([
+            $_disbursement = $account->disbursement()->create([
                 'transaction_id'=>$transaction_id,
                 'disbursed_amount'=>$account->disbursed_amount,
                 'disbursed_by'=>auth()->user()->id,
                 'payment_method_id'=>$payment_method_id 
             ]);
-            
+
+            $_disbursement->cv()->create([
+                'check_voucher_number'=>$cv_number,
+                'transaction_date'=>$disbursement_date
+            ]);
+
+        
             $account->updateStatus();
+
             $account->dependents->update([
                 'status'=>'Used',
                 'loan_account_id'=>$account->id,
@@ -991,9 +1009,9 @@ class LoanAccount extends Model
 
     
     public function getDuesFromDate($date){
-        
         $id = $this->id;
         $account = LoanAccount::find($id);
+        
         $date = Carbon::parse($date);
         $installments = $account->installments
             // ->where('amount_due','>',0)

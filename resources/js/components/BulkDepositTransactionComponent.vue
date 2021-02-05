@@ -40,7 +40,7 @@
 						<td><p class="title">Client ID</p></td>
 						<td><p class="title">Name</p></td>
 						<td><p class="title">Balance</p></td>
-						<td style="width:150px"><p class="title">Amount</p></td>
+						<td style="width:400px"><p class="title">Amount</p></td>
 						<td style="padding-left:50px"><p class="title">Linked To</p></td>
 					</tr>
 
@@ -54,7 +54,7 @@
 						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
 						
 						<td>{{item.client.firstname + ' ' + item.client.lastname}}</td>
-						<td>{{item.balance}} </td>
+						<td>{{item.balance_formatted}} </td>
 						<!-- <td> Account ID : {{item.id}} </td> -->
 						
 						<td>{{item.accrued_interest}}</td>
@@ -71,7 +71,7 @@
 						<td><a :href="clientLink(item.client.client_id)">{{item.client.client_id}}</a></td>
 						
 						<td>{{item.client.firstname + ' ' + item.client.lastname}}</td>
-						<td>{{item.balance}} </td>
+						<td>{{item.balance_formatted}} </td>
 						<!-- <td> Account ID : {{item.id}} </td> -->
 						
 						<td>
@@ -103,23 +103,30 @@
 		    <form>
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">Branch</label>
-                    <v2-select @officeSelected="assignOffice" list_level="" :default_value="this.office_id" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
-                    <div class="invalid-feedback" v-if="officeHasError">
+                    <v2-select @officeSelected="assignOffice" list_level="" :default_value="this.office_id" v-bind:class="hasError('office_id') ? 'is-invalid' : ''"></v2-select>
+                    <div class="invalid-feedback" v-if="hasError('office_id')">
                         {{ errors.office_id[0]}}
                     </div>
 		        </div>
 		        <div class="form-group">
 		        	<label class="text-lg">Payment Method</label>
-					<payment-methods payment_type="for_deposit" @paymentSelected="paymentSelected" v-bind:class="paymentMethodHasError ? 'is-invalid' : ''" ></payment-methods>
-					<div class="invalid-feedback" v-if="paymentMethodHasError">
+					<payment-methods payment_type="for_deposit" @paymentSelected="paymentSelected" v-bind:class="hasError('payment_method') ? 'is-invalid' : ''" ></payment-methods>
+					<div class="invalid-feedback" v-if="hasError('payment_method')">
                         {{ errors.payment_method[0]}}
                     </div>
 		        </div>
 		        <div class="form-group">
 		        	<label class="text-lg">Repayment Date</label>
-                    <input type="date" class="form-control" v-model="form.repayment_date" v-bind:class="repaymentDateHasError ? 'is-invalid' : ''">
-					<div class="invalid-feedback" v-if="repaymentDateHasError">
+                    <input type="date" class="form-control" v-model="form.repayment_date" v-bind:class="hasError('repayment_date') ? 'is-invalid' : ''">
+					<div class="invalid-feedback" v-if="hasError('repayment_date')">
                         {{ errors.repayment_date[0]}}
+                    </div>
+				</div>
+		        <div class="form-group">
+		        	<label class="text-lg">OR #:</label>
+                    <input type="date" class="form-control" v-model="form.receipt_number" v-bind:class="hasError('receipt_number') ? 'is-invalid' : ''">
+					<div class="invalid-feedback" v-if="hasError('receipt_number')">
+                        {{ errors.receipt_number[0]}}
                     </div>
 				</div>
 				<div>
@@ -221,6 +228,9 @@ export default {
         ProductComponent,
     },	
     methods : {
+		hasError(field){
+			return this.errors.hasOwnProperty(field)
+		},
 		inputDisabled(id){
 			return this.form.accounts.filter(x=>{
 				return x.id ==id
@@ -263,7 +273,7 @@ export default {
 			this.form.accounts.forEach(item=>{
 				item['repayment_date'] = this.form.repayment_date
 			})
-		},
+		},	
 		depositAll(){
 			this.finalizeData()
 			axios.post(this.postUrl,this.form)
@@ -423,11 +433,14 @@ export default {
 			this.product_id = value['id'];
 		},
 		submit(){
+			this.isLoading = true;
 			if(this.office_id=="" || this.product_id == ""){
-				
+				this.isLoading = false;
 				return;
 			}
+
 			this.fetch()
+			this.isLoading = false;
 		},
         fetch(page){
 			this.checkedAccounts = [];
@@ -593,18 +606,8 @@ export default {
 		hasErrors(){
 			return Object.keys(this.errors).length > 0;
 		},
-		officeHasError(){
-			return this.errors.hasOwnProperty('office_id')
-		},
-		paymentMethodHasError(){
-			return this.errors.hasOwnProperty('payment_method')
-		},
-		amountHasError(){
-			return this.errors.hasOwnProperty('amount')
-		},
-		repaymentDateHasError(){
-			return this.errors.hasOwnProperty('repayment_date')
-		},
+
+
 
 
 	},

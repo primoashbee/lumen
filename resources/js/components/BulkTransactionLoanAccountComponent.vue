@@ -58,7 +58,7 @@
         <button class="btn btn-primary" @click="submit">Submit</button>
         <loading :is-full-page="true" :active.sync="isLoading" ></loading>
 
-        	<b-modal id="deposit-modal" v-model="modal.modalState" size="lg" hide-footer :title="modal.modalTitle" :header-bg-variant="background" :body-bg-variant="background" >
+        <b-modal id="deposit-modal" v-model="modal.modalState" size="lg" hide-footer :title="modal.modalTitle" :header-bg-variant="background" :body-bg-variant="background" >
 		    
             <h1> # of Accounts: {{summary.accounts}} </h1>
             <h1> Total Amount: {{summary.amount}} </h1>
@@ -67,23 +67,23 @@
             <form @submit.prevent="disburse">
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">Branch</label>
-                    <v2-select @officeSelected="assignOfficeForm" :list_level="list_level" v-bind:class="hasError('office') ? 'is-invalid' : ''"></v2-select>
-                    <div class="invalid-feedback" v-if="hasError('office')">
+                    <v2-select @officeSelected="assignOfficeForm" :list_level="list_level" v-bind:class="hasError('office_id') ? 'is-invalid' : ''"></v2-select>
+                    <div class="invalid-feedback" v-if="hasError('office_id')">
                         {{ errors.office_id[0]}}
                     </div>
 		        </div>
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">Disbursement Date</label>
-                    <input type="date" v-model="form.disbursement_date"  class="form-control">
+                    <input type="date" v-model="form.disbursement_date"  class="form-control" v-bind:class="hasError('disbursement_date') ? 'is-invalid' : ''">
                     <div class="invalid-feedback" v-if="hasError('disbursement_date')">
                         {{ errors.disbursement_date[0]}}
                     </div>
 		        </div>
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">First Repayment Date</label>
-                    <input type="date" v-model="form.first_repayment_date"  class="form-control">
-                    <div class="invalid-feedback" v-if="hasError('repayment_date')">
-                        {{ errors.repayment_date[0]}}
+                    <input type="date" v-model="form.first_repayment_date"  class="form-control" v-bind:class="hasError('first_repayment_date') ? 'is-invalid' : ''">
+                    <div class="invalid-feedback" v-if="hasError('first_repayment_date')">
+                        {{ errors.first_repayment_date[0]}}
                     </div>
 		        </div>
 		        <div class="form-group">
@@ -91,6 +91,13 @@
 					<payment-methods :payment_type="payment_type" @paymentSelected="paymentSelected" v-bind:class="hasError('payment_method') ? 'is-invalid' : ''" ></payment-methods>
 					<div class="invalid-feedback" v-if="hasError('payment_method')">
                         {{ errors.payment_method[0]}}
+                    </div>
+		        </div>
+		        <div class="form-group">
+		        	<label class="text-lg">CV #:</label>
+					<input type="text" class="form-control" v-model="form.cv_number" v-bind:class="hasError('check_voucher') ? 'is-invalid' : ''">
+					<div class="invalid-feedback" v-if="hasError('check_voucher')">
+                        {{ errors.check_voucher[0]}}
                     </div>
 		        </div>
 
@@ -123,6 +130,7 @@ export default {
     props: ['type'],
     data(){
         return {
+            errors : [],
             lists : [],
             isLoading:false,
             request : {
@@ -135,6 +143,7 @@ export default {
                 paymentSelected : null,
                 disbursement_date : null,
                 first_repayment_date : null,
+                cv_number: null,
             },
             selected_list : [],
             url : null,
@@ -163,26 +172,29 @@ export default {
     },
     methods :{
         disburse(){
+            this.isLoading = true;
             axios.post(this.post_url,this.form)
             .then(res=>{
+                this.isLoading = false;
                 Swal.fire(
                     'Success',
                     res.data.msg,
                     'success'
                 )
                 .then(()=>{
-                    // location.reload()
+                    location.reload()
                 })
                 
             }).catch(err=>{
-                this.errors = error.response.data || {}
+                this.isLoading = false;
+                this.errors = err.response.data.errors || {}
             })
         },
-        hasError(){
-            return false;
+        hasError(field){
+            return this.errors.hasOwnProperty(field)
         },
         paymentSelected(value){
-            this.form.paymentSelected = value['id']
+            this.form.payment_method = value['id']
         },
         submit(e){
             e.preventDefault()
@@ -307,6 +319,7 @@ export default {
         },
         fetch(){
             this.isLoading = true
+            this.form.accounts = []
             axios.post(this.url, this.request)
             .then(res=>{
                 this.lists = res.data.list

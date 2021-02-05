@@ -126,31 +126,38 @@
 		    <form @submit.prevent="submitDeposit">
 		        <div class="form-group mt-4">
 		        	<label class="text-lg">Branch</label>
-                    <v2-select @officeSelected="assignOffice" :list_level="list_level" v-bind:class="officeHasError ? 'is-invalid' : ''"></v2-select>
-                    <div class="invalid-feedback" v-if="officeHasError">
+                    <v2-select @officeSelected="assignOffice" :list_level="list_level" v-bind:class="hasError('office_id') ? 'is-invalid' : ''"></v2-select>
+                    <div class="invalid-feedback" v-if="hasError('office_id')">
                         {{ errors.office_id[0]}}
                     </div>
 		        </div>
 		        <div class="form-group">
 		        	<label class="text-lg">Payment Method</label>
-					<payment-methods :payment_type="payment_type" @paymentSelected="paymentSelected" v-bind:class="paymentMethodHasError ? 'is-invalid' : ''" ></payment-methods>
-					<div class="invalid-feedback" v-if="paymentMethodHasError">
+					<payment-methods :payment_type="payment_type" @paymentSelected="paymentSelected" v-bind:class="hasError('payment_method') ? 'is-invalid' : ''" ></payment-methods>
+					<div class="invalid-feedback" v-if="hasError('payment_method')">
                         {{ errors.payment_method[0]}}
                     </div>
 		        </div>
 
 		        <div class="form-group">
 		        	<label class="text-lg">Amount</label>
-                    <input type="text" class="form-control" v-model="fields.amount" v-bind:class="amountHasError ? 'is-invalid' : ''">
-					<div class="invalid-feedback" v-if="amountHasError">
+                    <input type="text" class="form-control" v-model="fields.amount" v-bind:class="hasError('amount') ? 'is-invalid' : ''">
+					<div class="invalid-feedback" v-if="hasError('amount')">
                         {{ errors.amount[0]}}
                     </div>
 		        </div>
 		        <div class="form-group">
 		        	<label class="text-lg">Repayment Date</label>
-                    <input type="date" class="form-control" v-model="fields.repayment_date" v-bind:class="repaymentDateHasError ? 'is-invalid' : ''">
-					<div class="invalid-feedback" v-if="repaymentDateHasError">
+                    <input type="date" class="form-control" v-model="fields.repayment_date" v-bind:class="hasError('repayment_date') ? 'is-invalid' : ''">
+					<div class="invalid-feedback" v-if="hasError('repayment_date')">
                         {{ errors.repayment_date[0]}}
+                    </div>
+				</div>
+		        <div class="form-group">
+		        	<label class="text-lg">OR #</label>
+                    <input type="text" class="form-control" v-model="fields.receipt_number" v-bind:class="hasError('receipt_number') ? 'is-invalid' : ''">
+					<div class="invalid-feedback" v-if="hasError('receipt_number')">
+                        {{ errors.receipt_number[0]}}
                     </div>
 				</div>
 		        <button type="submit" class="btn btn-primary">Submit</button>
@@ -210,7 +217,8 @@ import Swal from 'sweetalert2';
 					payment_method: null,
 					amount: null,
 					deposit_account_id: null,
-					repayment_date: null
+					repayment_date: null,
+					receipt_number:null,
 				},
                 errors:{}
 			}
@@ -220,6 +228,9 @@ import Swal from 'sweetalert2';
 			this.fields.deposit_account_id = this.account_info.id
 		},
 		methods:{
+			hasError(field){
+				return this.errors.hasOwnProperty(field)
+			},
 			rowClass(item){
 				if(item.transaction_type=="Withdraw"){
 					return 'badge-danger';

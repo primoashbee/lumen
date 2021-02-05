@@ -91,7 +91,6 @@ $factory->define(Client::class,function (Faker $faker) {
         'city_address' => $faker->city,
         'province_address' => $province,
         'zipcode' => $faker->postCode,
-        'business_address' =>$faker->address,
         'spouse_name' => $faker->name,
         'spouse_contact_number' => $mobile_number,
         'spouse_birthday' =>  $faker->dateTimeThisCentury->format('Y-m-d'),

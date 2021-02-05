@@ -30,8 +30,10 @@
         "chart.js": "^2.9.3",
         "flat": "^5.0.2",
         "js-datepicker": "^5.16.0",
+        "json-form-data": "^1.7.2",
         "moment": "^2.29.0",
         "numeral": "^2.0.6",
+        "object-to-formdata": "^4.1.0",
         "sweetalert2": "^9.17.1",
         "v-mask": "^2.2.3",
         "vue-autosuggest": "^2.2.0",
@@ -41,7 +43,9 @@
         "vue-loading-overlay": "^3.4.0",
         "vue-multiselect": "^2.1.6",
         "vue-paginate": "^3.6.0",
+        "vue-stepper": "^1.4.2",
         "vue2-selectize": "^1.1.7",
-        "vuejs-datepicker": "^1.6.2"
+        "vuejs-datepicker": "^1.6.2",
+        "vuejs-stepper": "^0.2.4"
     }
 }

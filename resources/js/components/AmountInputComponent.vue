@@ -16,14 +16,19 @@ export default {
   props: ['account_info','readonly','amount','tabindex','add_class'],
   data () {
     return {
-        value: 0,
+        value: null,
         input_class:"form-control"
     }
   },
   created(){
+    
       if(this.amount==null){
-          this.value = 0
+          this.value = null
       }
+      if(this.readonly){
+        
+      }
+    
   },
   methods: {
     emitToParent(){
@@ -63,5 +68,8 @@ export default {
       color: white;
     }
 
+    .readonly{
+      background-color:gray;
+    }
 </style>
 

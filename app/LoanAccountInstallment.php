@@ -260,4 +260,9 @@ class LoanAccountInstallment extends Model
             }
         }
     }
+
+    public function status(){
+        $date = $this->date;
+        
+    }
 }

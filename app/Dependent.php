@@ -188,6 +188,8 @@ class Dependent extends Model
     public function getPivotListAttribute(){
         return $this->pivotList();
     }
+    
+    
 
     public static function clientHasActiveDependent($client_id=null){
         $me = new static;

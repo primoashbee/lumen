@@ -98,5 +98,9 @@ export default {
       color: white;
     }
 
+    .is-invalid .multiselect__tags {
+      border: 1px solid red !important;
+    }
+
 </style>
 

@@ -24,6 +24,7 @@ class CreateDepositTransactionsTable extends Migration
             $table->date('repayment_date');
             $table->unsignedInteger('user_id');
             $table->longText('notes')->nullable();
+            $table->string('receipt_number');
             $table->timestamps();
         });
     }

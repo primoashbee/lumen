@@ -20,6 +20,9 @@
                             <p class="title">Dependents</p>
                         </td>
                         <td>
+                            <p class="title">Period Covered</p>
+                        </td>
+                        <td>
                             <p class="title">Expires In</p>
                         </td>
                         <td>
@@ -35,6 +38,7 @@
                         <td>{{item.application_number}}</td>
                         <td>{{item.unit_of_plan}}</td>
                         <td>{{item.count}}</td>
+                        <td>{{item.activated_at}} - {{item._expires_at}}</td>
                         <td>{{item.expires_at}}</td>
                         <td>{{item.status}}</td>
                         <td>

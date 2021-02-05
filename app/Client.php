@@ -33,7 +33,6 @@ class Client extends Model
         'province_address',
         'zipcode',
 
-        'business_address',
         'spouse_name',
         'spouse_contact_number',
         'spouse_birthday',
@@ -81,6 +80,10 @@ class Client extends Model
     }
     public function household_income(){
         return $this->hasOne(HouseholdIncome::class, 'client_id','client_id');
+    }
+
+    public function businesses(){
+        return $this->hasMany(Business::class);
     }
 
     public static function clientExists($request){
@@ -135,6 +138,17 @@ class Client extends Model
                 }
                 $clients = Client::with('office')->select('id','client_id','firstname','middlename','lastname','office_id')->whereIn('office_id', $office_ids);
                 return $clients;
+            }else{
+              
+                if ($query!=null) {
+                    $clients = Client::with('office')->select('id','client_id','firstname','middlename','lastname','office_id')->where('office_id', $office_id)->where(function (Builder $dbQuery) use ($searchables, $query) {
+                        foreach ($searchables as $item) {
+                            $dbQuery->orWhere($item, 'LIKE', '%'.$query.'%');
+                        }
+                    });
+                    return $clients;
+                }
+                return $clients = Client::with('office')->select('id','client_id','firstname','middlename','lastname','office_id')->where('office_id', $office_id);
             }
 
             if ($query!=null) {
@@ -279,6 +293,8 @@ class Client extends Model
     public function getLoanAccountValidationNotesAttribute(){
         return 'nice';
     }
+
+    
 
     
 }

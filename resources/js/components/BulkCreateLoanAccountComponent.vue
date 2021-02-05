@@ -207,7 +207,8 @@ export default {
  
 
         fetch(page){
-            
+            this.isLoading = true;
+            this.form.accounts = []
             if(page==undefined){
                 axios.get(this.queryString)
                 .then(res => {

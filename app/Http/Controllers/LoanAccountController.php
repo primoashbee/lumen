@@ -18,6 +18,7 @@ use App\Rules\LoanAccountCanBeDisbursed;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\ClientHasAvailableDependent;
 use App\Rules\DateIsWorkingDay;
+use Faker\Provider\zh_TW\Payment;
 
 class LoanAccountController extends Controller
 {
@@ -502,20 +503,27 @@ class LoanAccountController extends Controller
             'office_id' =>'required|exists:offices,id',
             'disbursement_date'=>'required|date',
             'first_repayment_date'=>'required|after_or_equal:disbursement_date',
-            'accounts.*' => ['required', 'exists:loan_accounts,id',new LoanAccountCanBeDisbursed]
+            'cv_number'=>'required|unique:check_vouchers,check_voucher_number',
+            'accounts.*' => ['required', 'exists:loan_accounts,id',new LoanAccountCanBeDisbursed],
+            'payment_method' =>['required',new PaymentMethodList]
+        ];
+        $msgs = [
+            'office_id.required' => 'Branch level is required'
         ];
         Validator::make(
             $request->all(),
             $rules,
+            $msgs
         )->validate();
         \DB::beginTransaction();
         try {
             $payment_info = [
                 'disbursement_date'=>$request->disbursement_date,
                 'first_repayment_date'=>$request->first_repayment_date,
-                'payment_method_id'=>$request->paymentSelected,
+                'payment_method_id'=>$request->payment_method,
                 'office_id'=>$request->office_id,
-                'disbursed_by'=>auth()->user()->id
+                'disbursed_by'=>auth()->user()->id,
+                'cv_number'=>$request->cv_number
             ];
             foreach ($request->accounts as $account) {
                 LoanAccount::find($account)->disburse($payment_info);

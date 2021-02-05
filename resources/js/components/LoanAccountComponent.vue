@@ -93,7 +93,7 @@
                                         <td>
                                                 
                                                 <span v-if="item.is_due" class="badge badge-danger"> In Arrears</span>
-
+                                                
                                                 <span v-else-if="item.paid" class="badge badge-success">Paid</span>
                                                     
                                                 <span v-else class="badge badge-light">Not Due</span>
@@ -185,6 +185,13 @@
             <input type="date" class="form-control" v-model="form.repayment_date" v-bind:class="hasError('repayment_date')  ? 'is-invalid' : ''">
             <div class="invalid-feedback" v-if="hasError('repayment_date') ">
                 {{ errors.repayment_date[0]}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="text-lg">OR #</label>
+            <input type="text" class="form-control" v-model="form.receipt_number" v-bind:class="hasError('receipt_number')  ? 'is-invalid' : ''">
+            <div class="invalid-feedback" v-if="hasError('receipt_number') ">
+                {{ errors.receipt_number[0]}}
             </div>
         </div>
         <div class="form-group">

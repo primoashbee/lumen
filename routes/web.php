@@ -9,10 +9,14 @@ use Carbon\Carbon;
 use App\LoanAccount;
 use App\DepositAccount;
 use App\Events\TestEvent;
+use App\Exports\CCRExport;
+use App\Exports\UsersExport;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
+use App\Exports\CollectionSheetExport;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,12 +31,33 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
-Route::get('/ap',function(){
+Route::get('/ccr',function(){
+    $pdf = App::make('dompdf.wrapper');
+    // $pdf->loadHTML('<h1>Test</h1>')->setPaper('a4','landscape');
+    // return $pdf->stream();
+    $d_ids = array(2,1);
+    sort($d_ids);
+    $data = [
+        'office_id' => 21,
+        'date'=>"2021-02-04",
+        'loan_account_id' => 1,
+        'deposit_product_ids'=>$d_ids,
+        
+    ];
+    
+    $list = LoanAccount::repaymentsFromDate($data);
 
-    return LoanAccount::with('client:firstname,middlename,lastname')->first();
-   
-
-   
+    $summary = new stdClass;
+    $summary->data = $list;
+    $summary->deposit_list = $list[0]->client->deposits;
+    $summary->has_deposit = count($data['deposit_product_ids']) > 0;
+    
+    // return view('exports.ccr',compact('summary'));
+    $pdf->loadView('exports.ccr',compact('summary'))->setPaper('a4','landscape');
+    return $pdf->stream();
+    
+    // return Excel::download(new CollectionSheetExport($summary), 'users.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+    // return Excel::download(new CollectionSheetExport($summary), 'users.xlsx');
 });
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -62,9 +87,11 @@ Route::get('/ssss',function(){
     // \App\LoanAccount::first()->updateStatus();
 });
 Route::group(['middleware' => ['auth']], function () {
+
+    Route::get('/stepper','ClientController@step');
     Route::get('/pay','RepaymentController@repayLoan');
     Route::post('/loan/calculator', 'LoanAccountController@calculate')->name('loan.calculator');
-
+    Route::post('/products','ProductController@index');
 
     Route::get('/client/{client_id}/create/dependents', 'ClientController@toCreateDependents')->name('client.create.dependents');
     Route::post('/client/create/dependent', 'DependentController@createDependents')->name('create.dependents.post');
@@ -84,7 +111,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard','DashboardController@index')->name('dashboard');
     Route::group(['middleware' => []], function () { 
         Route::get('/create/client','ClientController@index')->name('precreate.client');
-        Route::post('/create/client','ClientController@create')->name('create.client'); 
+        Route::post('/create/client','ClientController@createV1')->name('create.client'); 
     });
     Route::get('/logout','Auth\LoginController@logout')->name('logout');
     Route::get('/scopes', function(){
@@ -131,6 +158,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/bulk/post_interest', 'DepositAccountController@bulkPostInterest')->name('bulk.deposit.interst_post.post');
     
     Route::get('/bulk/repayment','RepaymentController@showBulkForm')->name('bulk.repayment');
+    Route::post('/bulk/repayments','RepaymentController@bulkRepayment')->name('bulk.repayment.post');
     Route::post('/loans/scheduled/list','RepaymentController@scheduledList');
     
     

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\CheckVoucher;
 use Illuminate\Database\Eloquent\Model;
 
 class LoanAccountDisbursement extends Model
@@ -14,7 +15,9 @@ class LoanAccountDisbursement extends Model
         'disbursed_by',
         'reverted',
         'reverted_by',
-        'disbursed_amount'
+        'disbursed_amount',
+        'disbursed_by'
+        
     ];
     
     protected $appends = [
@@ -32,7 +35,9 @@ class LoanAccountDisbursement extends Model
         return $mutated;   
         
     }
-    
+    public function cv(){
+        return $this->morphOne(CheckVoucher::class,'check_voucherable');
+    }
     public function paidBy(){
         return $this->belongsTo(User::class,'disbursed_by');
     }

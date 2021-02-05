@@ -5,17 +5,26 @@ namespace App;
 use App\User;
 use App\Deposit;
 use Carbon\Carbon;
+use App\Rules\OfficeID;
 use App\DepositTransaction;
 use App\PostedAccruedInterest;
+use App\Rules\TransactionType;
+use App\Rules\PaymentMethodList;
+use App\Rules\PreventFutureDate;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Validator;
 use Illuminate\Database\Eloquent\Model;
+use App\Rules\WithdrawAmountLessThanBalance;
+use App\Rules\PreventLaterThanLastTransactionDate;
+
 class DepositAccount extends Model
 {
     protected $appends = [
         'balance_formatted',
         'new_balance',
         'new_balance_formatted',
-        'accrued_interest_formatted'];
+        'accrued_interest_formatted'
+    ];
     protected $fillable = [
         'client_id',
         'deposit_id',
@@ -45,18 +54,28 @@ class DepositAccount extends Model
     
 
     public function deposit(array $data){
-        
+        // $rules = [
+        //     'office_id' =>['required', new OfficeID()],
+        //     'amount'=>['required','numeric'],
+        //     'payment_method'=>['required',new PaymentMethodList()],
+        //     'deposit_account_id'=>['required','exists:deposit_accounts,id'],
+        //     'repayment_date'=>['required','date', new PreventFutureDate(), new PreventLaterThanLastTransactionDate($data['deposit_account_id'])],
+        //     'type'=>['required', new TransactionType()],
+        //     'receipt_number'=>['required','unique:receipts,receipt_number']
+        // ];
+        // \Validator::make($data,$rules)->validate();
         $new_balance = $this->getRawOriginal('balance') + $data['amount'];
-        $transaction = DepositTransaction::create([
+        $transaction = $this->transactions()->create([
             'transaction_id' => uniqid(),
-            'deposit_account_id' => $this->id,
             'transaction_type'=>'Deposit',
             'amount'=>$data['amount'],
             'payment_method'=>$data['payment_method'],
             'repayment_date'=>$data['repayment_date'],
             'user_id'=> $data['user_id'],
-            'balance' => $new_balance
+            'balance' => $new_balance,
+            'receipt_number'=>$data['receipt_number']
         ]);
+        $transaction->receipt()->create(['receipt_number'=>$data['receipt_number']]);
         
         
 
@@ -72,7 +91,7 @@ class DepositAccount extends Model
         }
         $new_balance = $this->getRawOriginal('balance') - $data['amount'];
 
-        DepositTransaction::create([
+        $transaction = DepositTransaction::create([
             'transaction_id' => uniqid(),
             'deposit_account_id' => $this->id,
             'transaction_type'=>'Withdraw',
@@ -80,8 +99,12 @@ class DepositAccount extends Model
             'payment_method'=>$data['payment_method'],
             'repayment_date'=>$data['repayment_date'],
             'user_id'=> $data['user_id'],
-            'balance' => $new_balance
+            'balance' => $new_balance,
+            'receipt_number'=>$data['receipt_number']
         ]);
+
+        $transaction->receipt()->create(['receipt_number'=>$data['receipt_number']]);
+        
         
         $this->balance = $new_balance;
         return $this->save();

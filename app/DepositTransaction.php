@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DepositTransaction extends Model
 {
-    protected $fillable = ['deposit_account_id','transaction_type','transaction_id','amount','balance','payment_method','user_id','repayment_date'];
+    protected $fillable = ['deposit_account_id','transaction_type','transaction_id','amount','balance','payment_method','user_id','repayment_date','receipt_number'];
     protected $casts = [
         'created_at' => 'datetime:F d, Y',
     ];
@@ -26,6 +26,10 @@ class DepositTransaction extends Model
     }
     public function postedBy(){
         return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function receipt(){
+        return $this->morphOne(Receipt::class, 'receiptable');
     }
 
 }
