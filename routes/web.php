@@ -41,13 +41,15 @@ Route::post('/import',function(Request $request){
 });
 
 Route::get('/download/ccr',function(Request $request){
+    \Cache::flush();
 
+    return 'taeee';
     $summary = session('ccr');
     $file = public_path('temp/').$summary->office.' - '.$summary->repayment_date.'.pdf';            
     $pdf = app()->make('dompdf.wrapper');
-    $pdf->loadView('exports.test',compact('summary'))->setPaper('a4','landscape');
+    $pdf->loadView('exports.test',compact('summary'))->setPaper('a4','landscape')->save($file);
     return $pdf->stream();
-    $pdf->loadView('exports.ccrv2', compact('summary'))->setPaper('a4', 'landscape')->save($file);
+    // $pdf->loadView('exports.ccrv2', compact('summary'))->setPaper('a4', 'landscape')->save($file);
     $headers = ['Content-Type'=> 'application/pdf','Content-Disposition'=> 'attachment;','filename'=>$summary->name];
     return response()->download($file,$summary->name,$headers);
 

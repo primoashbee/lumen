@@ -8,30 +8,31 @@
 
             header {
                 position: fixed;
-                top: -60px;
+                top: -90px;
                 left: 0px;
                 right: 0px;
                 height: 50px;
 
                 /** Extra personal styles **/
-                background-color: #03a9f4;
-                color: white;
+                
+                color: black;
                 text-align: center;
                 line-height: 35px;
             }
 
             footer {
                 position: fixed; 
-                bottom: -60px; 
+                bottom: -100px; 
                 left: 0px; 
                 right: 0px;
                 height: 50px; 
 
                 /** Extra personal styles **/
-                background-color: #03a9f4;
-                color: white;
+                /* background-color: #03a9f4; */
+                color: black;
                 text-align: center;
                 line-height: 35px;
+                font-size: 12px;
             }
 
             body{
@@ -92,13 +93,13 @@
             }
             ul.item_list li{
                 display: inline-block;
-                width: 33%%;
+                width: 33%;
             }
             .d-inline-block{
                 display: inline-block;
             }
             .title{
-                width: 89%;
+                width: 100%;
                 vertical-align: top;
                 margin-top: 20px;
             }
@@ -116,21 +117,18 @@
     <body>
         <!-- Define header and footer blocks before your content -->
         <header>
-            Our Code World
+            <img src="{{public_path('logo.png')}}" style="width:10%; position:absolute;" alt="">
+            <h1 style="margin: 0;" class="d-inline-block title text-center">Collection Sheet</h1>
         </header>
 
         <footer>
-            LIGHT Microfinance Inc &copy; <?php echo date("Y");?>  Lumen v1.00
+            <span id="company" class="d-inline-block" style="text-align:left;width:50%">LIGHT Microfinance Inc &copy; <?php echo date("Y");?> </span>
+            <span class="d-inline-block" style="text-align:right;width:50%"><i>Lumen v1.00</i></span>
         </footer>
 
         <!-- Wrap the content of your PDF inside a main tag -->
         <main>
-            <p style="page-break-after: always;">
-                <div>
-                    <img src="{{public_path('logo.png')}}" style="width: 10%" alt="">
-                    <h1 style="margin: 0;" class="d-inline-block title text-center">Collection Sheet</h1>
-                  </div>
-                  
+            {{-- <p style="page-break-after: always;"> --}}
                   <div class="cs_info">
                       <ul class="item_list">
                           <li class="text-left">Office Level : Angeles</li>
@@ -210,7 +208,7 @@
                           <li>Branch Manager : ______________________ </li>
                       </ul>
                   </div>  
-            </p>
+            {{-- </p> --}}
         </main>
     </body>
 </html>
