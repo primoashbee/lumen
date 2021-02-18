@@ -89,7 +89,15 @@ Vue.component('client-create-loan-account', require('./components/ClientCreateLo
 
 
 Vue.component('loan-profile', require('./components/LoanAccountcomponent.vue').default);
+Vue.component('status', require('./components/AccountStatusComponent.vue').default);
+// Vue.component('account-list', require('./components/VueTable.vue').default);
+Vue.component('account-list', require('./components/AccountListComponent.vue').default);
+// Vue.component('pagination', require('./components/Pagination.vue').default);
+
 Vue.component('random-picker', require('./components/RandomPickerComponent.vue').default);
+
+
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

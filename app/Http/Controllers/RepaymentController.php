@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Account;
 use App\LoanAccount;
 use App\DepositAccount;
 use App\Rules\OfficeID;
@@ -108,8 +109,8 @@ class RepaymentController extends Controller
             'loan_account_id'=>$request->loan_product_id,
             'deposit_product_ids'=>collect($request->deposit_products)->pluck('id')
         ];
-        $list = LoanAccount::repaymentsFromDate($data);
-
+        $list = Account::repaymentsFromDate($data,true);
+        session(['ccr'=>$list]);
         return response()->json(['list'=>$list,'msg'=>'success'],200);
     }
 

@@ -20,8 +20,10 @@
                     <products @productSelected="depositProductSelected" list="deposit" status="1" multi_values="true"></products>
                 </div>
                 <div class="col-1">
-                    
                     <button class="btn btn-primary mt-4">Filter</button>
+                </div>
+                <div class="col-1" v-if="hasRecords">
+                    <button class="btn btn-primary mt-4" @click.prevent="download">Print CCR</button>
                 </div>
             </div>
         </form>
@@ -49,7 +51,7 @@
                     </tr>
                 </thead>
                 <tbody v-if="this.hasRecords">
-                    <tr v-for="(item, key) in list" :key="item.id">
+                    <tr v-for="(item, key) in list.loan_accounts" :key="item.id">
                         <td><input type="checkbox" :id="item.id" @change="checked(item,$event)"></td>
                         <td><label :for="item.id"><p class="title"> {{item.client_id}}</p></label></td>
                         <td><a :href="clientLink(item.client_id)"><p class="title"> {{item.client.full_name}}</p></a></td>
@@ -231,10 +233,24 @@ export default {
 				modalState:false,
 				modal_title:null,
             },
-            tabIndeces: []
+            tabIndeces: [],
+            headers :null
         }
     },
     methods : {
+        download(){
+            this.isLoading = true;
+            axios.get('/download/ccr',{responseType:'blob'})
+                .then(res=>{
+                    const url = window.URL.createObjectURL(new Blob([res.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', res.headers.filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    this.isLoading =false;
+                })
+        },
         errorAddClass(account_id,type="loan",deposit_account_id){
 			if(this.hasInputError(account_id,type,deposit_account_id)){
 				return 'is-invalid'
@@ -366,10 +382,8 @@ export default {
         loanProductSelected(value){
             this.request.loan_product_id = value['id'];
             this.loan_product_selected = value;
-
-
             this.form.accounts = []
-            this.list =  []
+            this.list = null
             
         },
         depositProductSelected(value){
@@ -383,12 +397,12 @@ export default {
             })
             this.request.deposit_products = list
             this.form.accounts = []
-            this.list =  []
+            this.list = null
         },
         fetch(){
             if(this.canFetch){ 
                 this.isLoading = true;
-                this.list = [];
+                this.list = null
                 this.errors = []
                 axios.post(this.url,this.request)
                 .then(res=>{
@@ -596,10 +610,9 @@ export default {
             if(this.list === null){
                 return 0;
             }
-            return this.list.length
+            return this.list.loan_accounts.length;
         },
         hasRecords(){
-            
             if(this.list === null){
                 return false;
             }

@@ -331,5 +331,9 @@ class DepositAccount extends Model
         return $this->client->office;
     }
 
+    public function account(){
+        return $this->morphOne(Account::class, 'accountable');
+    }
+
     
 }

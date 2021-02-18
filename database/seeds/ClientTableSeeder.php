@@ -1,4 +1,4 @@
-<?php
+cl<?php
 
 use App\Client;
 use Illuminate\Database\Seeder;
@@ -12,7 +12,7 @@ class ClientTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Client::class,50)->create()->each(function($user){
+        factory(Client::class,250)->create()->each(function($user){
             $application_number = rand(1000000,2);
             $unit_of_plan = rand(1,2);
             $member_first = $user->firstname;

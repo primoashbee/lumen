@@ -178,10 +178,10 @@
 		                    </a>
 						  </td>
 						  <td>
-							  <p class="title text-base">{{money($item->amount,2)}}</p>
+							  <p class="title text-base">{{money($item->getRawOriginal('amount')0,2)}}</p>
 						  </td>
 						  <td>
-							  <p class="title text-base">{{money($item->total_balance,2)}}</p>
+							  <p class="title text-base">{{money($item->getRawOriginal('total_balance'),2)}}</p>
 						  </td>
 		                  <td>
 							@if($item->status=="In Arrears")

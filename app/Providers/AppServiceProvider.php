@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Loan;
 use App\Client;
+use App\Deposit;
 use Carbon\Carbon;
 use App\LoanAccount;
 use App\PaymentMethod;
@@ -180,8 +182,6 @@ class AppServiceProvider extends ServiceProvider
         },$error);
         Validator::extendDependent('bulk_prevent_previous_deposit_transaction_date',function ($attribute, $value, $parameters, $validator){
 
-
-            
             $arr = explode('.', $attribute);
             $account_key= $arr[1];
             $deposit_key = $arr[3];
@@ -447,6 +447,23 @@ class AppServiceProvider extends ServiceProvider
             $res = Client::where('client_id',$_account['client_id'])->first()->hasUnusedDependent();
             return $res;
 
+            
+        },$error);
+        Validator::extendDependent('valid_loan_ids',function ($attribute, $value, $parameters, $validator){
+            
+            $values = $validator->getData();
+            
+            $loan_ids = json_decode($values[$attribute]);
+            $customMessage = "Invalid Account ID";
+            $validator->addReplacer('bulk_prevent_previous_deposit_transaction_date', 
+                function($message, $attribute, $rule, $parameters) use ($customMessage) {
+                    return \str_replace(':custom_message', $customMessage, $message);
+                }
+            );
+            
+       
+            return true;
+  
             
         },$error);
     }

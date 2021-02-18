@@ -13,6 +13,7 @@
     track-by="name" 
     label="name"
     @input = "emitToParent"
+    
     >
       <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
     </multiselect>
@@ -36,6 +37,7 @@ export default {
       }else{
           this.fetchListByLevel(this.list_level)
       }
+      
       
   },
   data () {
@@ -80,7 +82,8 @@ export default {
           }
         })
     }
-  }
+  },
+  
 }
 
 </script>

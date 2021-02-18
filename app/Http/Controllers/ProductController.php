@@ -23,6 +23,7 @@ class ProductController extends Controller
     }
 
     public function index(Request $request){
+        
         $list = $request->list;
         $status = $request->status;
         $loan = Loan::select('id','name','code')->where('status',$status)->get();
@@ -76,5 +77,9 @@ class ProductController extends Controller
             ];
         }
 
+    }
+
+    public function filter(Request $request){
+        
     }
 }

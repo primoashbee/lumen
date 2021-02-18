@@ -42,7 +42,6 @@
 </template>
 
 <script>
-
 import SelectComponentV2 from './SelectComponentV2';
 import Swal from 'sweetalert2';
 import Paginator from './PaginatorComponent';
@@ -105,7 +104,6 @@ export default {
             return false
         },
         fetch(page){
-            
             this.isLoading =true
             if(page==undefined){
                 axios.get(this.queryString)
@@ -122,7 +120,6 @@ export default {
                     this.isLoading =false
                 })
             }
-
         },
         url(page=1){
             return `/clients/list?office_id=`+this.office_id+`&page=`+page

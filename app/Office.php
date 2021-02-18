@@ -2,8 +2,11 @@
 
 namespace App;
 use App\Holiday;
+use App\LoanAccount;
 use App\PaymentMethod;
+use App\DepositAccount;
 use App\DefaultPaymentMethod;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -106,7 +109,7 @@ class Office extends Model
         $ids = [];
             foreach ($children as $child) {
                 array_push($ids,$child->id);
-                $ids = array_merge($ids, $child->getAllChildrenIDs());
+                $ids = array_merge($ids, $child->getAllChildrenIDS());
             }
         return $ids;
     }
@@ -206,13 +209,12 @@ class Office extends Model
     public static function isChildOf($parent_level, $level){
         $me = new static;
         $schema = $me->schema();
-         
+
         $list = $schema->filter(function($item) use ($parent_level){
             if ($item['level']==$parent_level) {
                 return $item;
             }
         })->values()->first()['children'];
-    
         return in_array($level,$list) ? true : false;
     }
 
@@ -248,6 +250,96 @@ class Office extends Model
         $ids = $this->getLowerOfficeIDS();
         return Client::whereIn('office_id',$ids)->orderBy('lastname')->get();
     }
+
+
+    public function accounts(array $query = []){
+        $ids = $this->getLowerOfficeIDS();
+        $status = $query['status'];
+        $loan_ids = is_null($query['loan_ids']) ? [] : $query['loan_ids'] ;
+        $deposit_ids = is_null($query['deposit_ids']) ? [] : $query['deposit_ids'] ;
+    
+        $q =  Account::select('client_id','accountable_id','accountable_type')
+        ->whereHas('client',function($q) use ($ids,$loan_ids){
+            $q->whereIn('office_id',$ids);
+        });
+        if (count($loan_ids) > 0) {
+            $q->whereHasMorph('accountable', [LoanAccount::class], function ($q) use ($loan_ids, $status) {
+                $q->whereIn('loan_id', $loan_ids);
+                if ($status != 'All') {
+                    $q->where('status', $status);
+                    $q->append('total_balance');
+                }
+            });
+        }
+        if (count($deposit_ids) > 0) {
+            $q->orWhereHasMorph('accountable', [DepositAccount::class], function ($q) use ($deposit_ids, $status) {
+                $q->whereIn('deposit_id', $deposit_ids);
+                if ($status != 'All') {
+                    $q->where('status', $status);
+                }
+            });
+        }
+
+        return $q->with(['accountable.type:id,name',
+        'client'=>function($q){
+            $q->select(['client_id','firstname','lastname']);
+        }
+        ]);
+        
+    }
+
+    public function loanAccounts(array $query = []){
+        
+        $ids = $this->getLowerOfficeIDS();
+        
+        return Client::select('office_id','client_id','firstname','lastname')->whereIn('office_id',$ids)
+        ->whereHas('loanAccounts', function($q)  use ($query) { 
+            foreach($query as $key=>$value){
+                if($key=='loan_id'){
+                    $q->whereIn($key,$value);
+                }elseif($key=='status'){
+                    if($value!="All"){
+                        $q->where($key, $value);
+                    }
+                }else{
+                    $q->where($key, $value);
+                }
+            }
+        })
+        ->with([
+        'loanAccounts',
+        'office'=>function($q){
+            $q->select('id','name');
+        }]);
+        
+    }
+    public function depositAccountsV2(array $query = []){
+        
+        $ids = $this->getLowerOfficeIDS();
+        
+        return Client::select('office_id','client_id','firstname','lastname')->whereIn('office_id',$ids)
+        ->whereHas('deposits', function($q)  use ($query) { 
+            foreach($query as $key=>$value){
+                if($key=='deposit_id'){
+                    $q->whereIn($key,$value);
+                }elseif($key=='status'){
+                    if($value!="All"){
+                        $q->where($key, $value);
+                    }
+                }else{
+                    $q->where($key, $value);
+                }
+            }
+        })
+        ->with([
+        'deposits',
+        'office'=>function($q){
+            $q->select('id','name');
+        }]);
+        
+    }
+
+
 
     public function getLoanAccounts($type=null,$loan_product_id=null){
         if (is_null($loan_product_id)) {
@@ -294,53 +386,6 @@ class Office extends Model
         }
     }
 
-    public static function repaymentSheet(array $array){
-        $office_id = $array['office_id'];
-        $date = $array['date'];
-        $loan_product_id = $array['loan_account_id'];
-
-        $office = Office::find($office_id);
-        $ids = $office->getLowerOfficeIDS();
-
-        $client_ids = Client::select('client_id')
-            ->whereIn('office_id',$ids)
-            ->pluck('client_id');
-
-        $deposit_ids = $array['deposit_product_ids'];
-        $accounts = LoanAccount::with([
-            'client'=>function($q) use($client_ids){
-                $q->select('client_id','firstname','lastname');
-                $q->whereIn('client_id',$client_ids);
-                
-            },
-            'product:id,code',
-            'client.deposits'=>function($q) use ($deposit_ids){
-                $q->select('id','client_id','deposit_id','balance');
-                $q->whereIn('deposit_id',$deposit_ids);
-                $q->orderBy('deposit_id','ASC');
-                
-            },
-            'client.deposits.type' => function($q) {
-
-                $q->select('id','product_id');
-            }
-        ])->select('id','client_id','loan_id')->where('loan_id',$loan_product_id)->whereNull('closed_by')->whereIn('client_id',$client_ids)->get();
-        
-
-        $list = collect();
-
-        if ($accounts->count() > 0) {
-            $accounts->map(function ($account) use ($date, &$list) {
-                $repayment_info =$account->getDuesFromDate($date);
-                $account->repayment_info = $repayment_info;
-
-                $list->push($account);
-            });
-        }
-
-        return $list;
-        
-    }
     public static function depositAccounts($office_id, $deposit_id=null){
         if ($deposit_id!=null) {
             $client_ids = Office::find($office_id)->getClients()->pluck('client_id');
@@ -375,4 +420,5 @@ class Office extends Model
     public function holidays(){
         return $this->hasMany(Holiday::class);
     }
+
 }

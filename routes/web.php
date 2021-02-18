@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Exports\CollectionSheetExport;
+use App\Imports\TestImport;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,33 +32,77 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
-Route::get('/ccr',function(){
+Route::get('/import',function(){
+    return view('test');
+});
+Route::post('/import',function(Request $request){
+    Excel::import(new TestImport , $request->file('file'));
+    
+});
+
+Route::get('/download/ccr',function(Request $request){
+
+    $summary = session('ccr');
+    $file = public_path('temp/').$summary->office.' - '.$summary->repayment_date.'.pdf';            
+    $pdf = app()->make('dompdf.wrapper');
+    $pdf->loadView('exports.test')->setPaper('a4','landscape');
+    return $pdf->stream();
+    $pdf->loadView('exports.ccrv2', compact('summary'))->setPaper('a4', 'landscape')->save($file);
+    $headers = ['Content-Type'=> 'application/pdf','Content-Disposition'=> 'attachment;','filename'=>$summary->name];
+    return response()->download($file,$summary->name,$headers);
+
+});
+Route::post('/ccr',function(Request $request){
     $pdf = App::make('dompdf.wrapper');
-    // $pdf->loadHTML('<h1>Test</h1>')->setPaper('a4','landscape');
-    // return $pdf->stream();
     $d_ids = array(2,1);
-    sort($d_ids);
+    sort($d_ids);   
     $data = [
         'office_id' => 21,
         'date'=>"2021-02-04",
         'loan_account_id' => 1,
         'deposit_product_ids'=>$d_ids,
-        
     ];
+    $d_ids = collect($request->deposit_products)->pluck('id')->sort();
     
-    $list = LoanAccount::repaymentsFromDate($data);
+    $request->merge([
+        'deposit_product_ids' => $d_ids,
+        'loan_account_id' => $request->loan_product_id
+    ]);
+    $request->request->deposit_product_ids = $d_ids;
+    $request->request->loan_account_id = $request->loan_product_id;
+    $data = $request->all();
+    $summary  = \App\Account::repaymentsFromDate($data);
+    
+    $file = public_path('temp/').$summary->office.' - '.$summary->repayment_date.'.pdf';
+    
+    $pdf->loadView('exports.ccrv2',compact('summary'))->setPaper('a4','landscape')->save($file);
+    // return $pdf->stream();
+    
+    $headers = ['Content-Type: application/zip','Content-Disposition: attachment; filename={$file}'];
 
-    $summary = new stdClass;
-    $summary->data = $list;
-    $summary->deposit_list = $list[0]->client->deposits;
-    $summary->has_deposit = count($data['deposit_product_ids']) > 0;
+    return response()->download($file, 200,$headers);
+});
+
+Route::get('/ccr',function(Request $request){
+    $pdf = App::make('dompdf.wrapper');
+    $d_ids = array(2,1);
+    sort($d_ids);   
+    $data = [
+        'office_id' => 21,
+        'date'=>"2021-02-04",
+        'loan_account_id' => 1,
+        'deposit_product_ids'=>$d_ids,
+    ];
+    $d_ids = collect($request->deposit_products)->pluck('id')->sort();
+    $summary  = \App\Account::repaymentsFromDate($data);
     
-    // return view('exports.ccr',compact('summary'));
-    $pdf->loadView('exports.ccr',compact('summary'))->setPaper('a4','landscape');
+    $file = public_path('temp/').$summary->office.' - '.$summary->repayment_date.'.pdf';
+    
+    $pdf->loadView('exports.ccrv2',compact('summary'))->setPaper('a4','landscape')->save($file);
     return $pdf->stream();
-    
-    // return Excel::download(new CollectionSheetExport($summary), 'users.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
-    // return Excel::download(new CollectionSheetExport($summary), 'users.xlsx');
+
+    $headers = ['Content-Type: application/zip','Content-Disposition: attachment; filename={$file}'];
+    return response()->download($file, 200,$headers);
 });
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -168,6 +213,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/deposit/account/post/interest','DepositAccountController@postInterestByUser')->name('deposit.account.post.interest');
 
 
+    Route::get('/accounts/{type}','AccountController@index')->name('accounts.list');
+
+    // Route::post('/accounts/{type}','AccountController@filter')->name('accounts.all');
+
     Route::post('/loans/list','LoanController@postInterestByUser')->name('deposit.account.post.interest');
 
 
@@ -215,5 +264,5 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/settings/create/loan','LoanController@create');
     
     });
-
+ 
 

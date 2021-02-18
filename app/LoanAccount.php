@@ -74,6 +74,9 @@ class LoanAccount extends Model
 
     protected $for_mutation =['amount','principal','interest','disbursed_amount','total_balance','interest_balance','principal_balance','total_deductions','disbursed_amount'];
 
+    public function type(){
+        return $this->belongsTo(Loan::class,'loan_id','id');
+    }
     public static function active(){
         
         return LoanAccount::whereNull('closed_at')->get();
@@ -512,8 +515,9 @@ class LoanAccount extends Model
     }
 
 
-    public function updateStatus($user_id=null){
+    public function updateStatus(){
         $amount_due = $this->amountDue();
+
         if($amount_due->total > 0){
             return $this->update([
                 'status'=>'In Arrears'
@@ -529,8 +533,7 @@ class LoanAccount extends Model
                 'status'=>'Closed'
             ]);
         }
-        
-       
+
     }
     
     public function closeAccount($paid_by){
@@ -645,6 +648,7 @@ class LoanAccount extends Model
     public function receipts(){
         return $this->morphMany(Receipt::class, 'receiptable');
     }
+
 
     public function updateBalances(){
         $interest_paid = $this->totalPaid()->interest;
@@ -777,7 +781,6 @@ class LoanAccount extends Model
         ]);
     }
 
-
     public function remainingInstallments(){
         // return $this->dueInstallments;
         $due_installments = collect($this->dueInstallments);
@@ -809,7 +812,7 @@ class LoanAccount extends Model
     public function revertDisbursement($transaction_id,$user_id){
         $disbursement = LoanAccountDisbursement::where('transaction_id',$transaction_id)->first();
         $disbursement->revert($user_id);
-
+        $this->account()->update(['status'=>'Approved']);
         return $this->update([
             'disbursed_by'=>null,
             'disbursed_at'=>null,
@@ -823,13 +826,17 @@ class LoanAccount extends Model
         
         foreach($fields as $field){
             $attribute = $field;
-            $mutated[$attribute] = env('CURRENCY_SIGN') . ' ' . number_format($this->$field,2);
+            $amount = $this->getRawOriginal($field);
+            $mutated[$attribute] =money($amount,2);
         }
         
 
         return $mutated;
     }
 
+    public function getTotalBalanceAttribute($value){
+        return env('CURRENCY_SIGN') . ' ' . number_format($value,2);
+    }
     public function getTotalPaidAttribute(){
         $paid = $this->totalPaid();
         $payment['interest'] = $paid->interest;
@@ -862,27 +869,31 @@ class LoanAccount extends Model
         if(is_null($this->approved_by) && is_null($this->approved_at) && $this->approved == false){
             return true;
         }
-
         return false;
     }
-
     public function approve($user_id){
-        $this->update([
+        return $this->update([
             'approved_by'=>$user_id,
             'approved_at'=>Carbon::now(),
             'status'=>'Approved',
             'approved'=>true
         ]);
     }
-
     public function disburse(array $payment_info){
+        // $payment_info = [
+        //     'disbursement_date'=>carbon()->now(),
+        //     'first_repayment_date'=>carbon()->now(),
+        //     'payment_method_id'=>1,
+        //     'office_id'=>21,
+        //     'disbursed_by'=>2,
+        //     'cv_number'=>444123123
+        // ];
         $account = $this;
         $fee_payments = $account->feePayments;
         $payment_method_id = $payment_info['payment_method_id'];
         $disbursed_by = $payment_info['disbursed_by'];
         $cv_number = $payment_info['cv_number'];
         \DB::beginTransaction();
-      
         try{
             $transaction_id = $account->generateDisbursementTransactionNumber();
             
@@ -903,10 +914,12 @@ class LoanAccount extends Model
                 $this->installments()->delete();
                 $annual_rate = 0.03 * 12;
                 $product = $this->product;
+                $loan_interest_rate = Loan::rates($this->product->id)->where('installments',$this->number_of_installments)->first()->rate;
+
                 $data = array(
                     'principal'=>$this->amount,
                     'annual_rate'=>$annual_rate,
-                    'interest_rate'=>$product->interest_rate,
+                    'interest_rate'=>$loan_interest_rate,
                     'interest_interval'=>$product->interest_interval,
                     'term'=>$product->installment_method,
                     'term_length'=>$this->number_of_installments,
@@ -946,7 +959,7 @@ class LoanAccount extends Model
                 'loan_account_id'=>$account->id,
                 'activated_at'=>Carbon::now(),
                 'expires_at'=>Carbon::now()->addDays(env('INSURANCE_MATURITY_DAYS'))
-                ]);
+            ]);
             \DB::commit();
             return true;
         }catch(\Exeception $e){
@@ -1073,9 +1086,8 @@ class LoanAccount extends Model
         // return $amount;
     }
 
-    public static function repaymentsFromDate(array $array){
-        return Office::repaymentSheet($array);
+    
+    public function account(){
+        return $this->morphOne(Account::class,'accountable');
     }
- 
-
 }

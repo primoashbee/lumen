@@ -32,4 +32,6 @@ class DepositTransaction extends Model
         return $this->morphOne(Receipt::class, 'receiptable');
     }
 
+    
+
 }

@@ -3,8 +3,9 @@
 namespace App;
 
 use App\Office;
-use App\Events\ClientCreated;
+use App\Account;
 use Carbon\Carbon;
+use App\Events\ClientCreated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -264,6 +265,8 @@ class Client extends Model
         return Carbon::parse($value)->format('F d, Y');
     }
 
+
+
     public function getFullNameAttribute(){
         return $this->firstname. ' '.$this->lastname;
     }
@@ -276,7 +279,9 @@ class Client extends Model
         return $this->dependents->where('active',false);
     }
 
-    
+    public function accounts(){
+        return $this->hasMany(Account::class,'client_id','client_id');
+    }
     public function activeLoans(){
         return $this->loanAccounts->whereNull('closed_at');
     }
@@ -293,6 +298,7 @@ class Client extends Model
     public function getLoanAccountValidationNotesAttribute(){
         return 'nice';
     }
+
 
     
 

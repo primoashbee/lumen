@@ -196,7 +196,6 @@ class LoanAccountController extends Controller
                 'total_deductions'=>$total_deductions,
                 'disbursed_amount'=>$disbursed_amount, //net disbursement
                 
-                            
                 'total_balance'=>$loan_amount + $calculator->total_interest,
                 'principal_balance'=>$loan_amount,
                 'interest_balance'=>0,
@@ -211,7 +210,13 @@ class LoanAccountController extends Controller
             
             $this->createInstallments($loan_acc,$calculator->installments);
             $client->unUsedDependent()->update(['status'=>'For Loan Disbursement','loan_account_id'=>$loan_acc->id]);
+            $loan_acc->account()->create([
+                'status'=>'Pending Approval',
+                'client_id'=>$client->client_id
+            ]);
             \DB::commit();
+            
+            
             return response()->json(['msg'=>'Loan Account successfully created'],200);
         }catch(\Exception $e){
             return response()->json(['msg'=>$e->getMessage()],500);
@@ -302,7 +307,10 @@ class LoanAccountController extends Controller
                 
                 $this->createInstallments($loan_acc,$calculator->installments);
                 $client->unUsedDependent()->update(['status'=>'For Loan Disbursement','loan_account_id'=>$loan_acc->id]);
-
+                $loan_acc->account()->create([
+                    'client_id'=>$client->client_id,
+                    'status'=>'Pending Approval'
+                ]);
             }
             \DB::commit();
             return response()->json(['msg'=>'Loan Account successfully created'],200);
@@ -432,6 +440,9 @@ class LoanAccountController extends Controller
             'activated_at'=>Carbon::now(),
             'expires_at'=>Carbon::now()->addDays(env('INSURANCE_MATURITY_DAYS'))
             ]);
+        $account->account()->update([
+            'status'=>$account->status
+        ]);
         \DB::commit();
         return redirect()->back();
         }catch(\Exception $e){
@@ -451,7 +462,8 @@ class LoanAccountController extends Controller
         \DB::beginTransaction();
         
         try{
-            LoanAccount::findOrFail($id)->approve(auth()->user()->id);
+            $account = LoanAccount::findOrFail($id);
+            $account->approve(auth()->user()->id);
             \DB::commit();
             return redirect()->back();
         }catch(\Exception $e){ 
@@ -526,7 +538,8 @@ class LoanAccountController extends Controller
                 'cv_number'=>$request->cv_number
             ];
             foreach ($request->accounts as $account) {
-                LoanAccount::find($account)->disburse($payment_info);
+                $account =  LoanAccount::find($account);
+                $account->disburse($payment_info);
             }
             \DB::commit();
             return response()->json(['msg'=>'Loan Account successfully created'], 200);

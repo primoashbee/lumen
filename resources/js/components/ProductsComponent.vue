@@ -13,12 +13,11 @@
     track-by="name" 
     label="name"
     @input = "emitToParent"
+    
     >
       <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
     </multiselect>
-    <input type="hidden" name="office_id" :value="value.id" @change="emitToParent">
-    
-  
+    <input type="hidden" name="product" :value="value.id" @change="emitToParent">  
   </div>
 </template>
 
@@ -31,7 +30,7 @@ export default {
   },
   props: ['list','status','multi_values'],
   created(){
-      this.fetchAllProducts();
+      this.fetch();
   },
   data () {
     return {
@@ -43,27 +42,29 @@ export default {
   methods: {
     emitToParent(){
       if(this.value!=null){
-        
         this.$emit('productSelected', this.value);
         
       }
     },
-    fetchAllProducts(){
-      axios.post('/products',{list:this.list, status:this.status})
-    //   axios.get('/usr/branches')
+
+    fetch(){
+       axios.post('/products',{list: this.list, status: this.status})
         .then(res=>{
           this.options=res.data
-            if(this.default_value!==undefined){
-              this.options.filter( obj => {
-                var item = obj.data.filter(office => {
-                   office.id == this.default_value ? this.value = office : ''
-                })
-              })
+          //   if(this.default_value!==undefined){
               
-          }
+          //     this.options.filter( obj => {
+          //       var item = obj.data.filter(office => {
+          //          office.id == this.default_value ? this.value = office : ''
+          //       })
+          //     })
+              
+          // }
         })
-    },
+    }
 
+    
+  
   },
   computed: {
       _status(){
@@ -78,7 +79,8 @@ export default {
           }
           return false;
       }
-  }
+    }
+  
 }
 
 </script>
