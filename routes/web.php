@@ -45,7 +45,7 @@ Route::get('/download/ccr',function(Request $request){
     $summary = session('ccr');
     $file = public_path('temp/').$summary->office.' - '.$summary->repayment_date.'.pdf';            
     $pdf = app()->make('dompdf.wrapper');
-    $pdf->loadView('exports.test')->setPaper('a4','landscape');
+    $pdf->loadView('exports.test',compact('summary'))->setPaper('a4','landscape');
     return $pdf->stream();
     $pdf->loadView('exports.ccrv2', compact('summary'))->setPaper('a4', 'landscape')->save($file);
     $headers = ['Content-Type'=> 'application/pdf','Content-Disposition'=> 'attachment;','filename'=>$summary->name];
