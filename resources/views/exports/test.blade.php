@@ -8,7 +8,7 @@
 
             header {
                 position: fixed;
-                top: -90px;
+                top: 0px;
                 left: 0px;
                 right: 0px;
                 height: 50px;
@@ -22,7 +22,7 @@
 
             footer {
                 position: fixed; 
-                bottom: -100px; 
+                bottom: 0px; 
                 left: 0px; 
                 right: 0px;
                 height: 50px; 
@@ -113,11 +113,13 @@
                 text-align: right;
             }
         </style>
+        <title>{{$summary->office.' - '.$summary->repayment_date}}</title>
     </head>
     <body>
         <!-- Define header and footer blocks before your content -->
         <header>
-            <img src="{{public_path('logo.png')}}" style="width:10%; position:absolute;" alt="">
+            <img src="logo.png" style="width:10%; position:absolute;" alt="">
+            {{-- <img src="{{public_path('logo.png')}}" style="width:10%; position:absolute;" alt=""> --}}
             <h1 style="margin: 0;" class="d-inline-block title text-center">Collection Sheet</h1>
         </header>
 
