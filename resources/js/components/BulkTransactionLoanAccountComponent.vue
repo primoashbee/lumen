@@ -25,7 +25,7 @@
             <table class="table" >
                 <thead>
                     <tr>
-                        <td><p class="title">#</p></td>
+                        <td><p class="title"><input type="checkbox" @change="checkAll($event)" v-if="this.hasRecords" id="check_all"></p></td>
                         <td><p class="title">Client ID</p></td>
                         <td><p class="title">Name</p></td>
                         <td ><p class="title"># of Inst.</p></td>
@@ -38,7 +38,7 @@
                 <tbody v-if="hasRecords">
                     
                     <tr v-for="client in lists" :key="client.client_id">
-                        <td><input type="checkbox" :id="client.client_id" @change="checked(client,$event)"></td>
+                        <td><input type="checkbox" class="checkbox" :id="client.client_id" @change="checked(client,$event)"></td>
                         <td><label :for="client.client_id">{{client.client_id}}</label></td>
                         <td class="text-lg"><a class="text-lg" :href="clientLink(client.client_id)">{{client.basic_client.full_name}}</a></td>
                         <td> {{client.number_of_installments}} </td>
@@ -171,6 +171,23 @@ export default {
         }
     },
     methods :{
+        checkAll(e){
+            
+            if(e.target.checked){
+                $('.checkbox').each(function(k,v){
+                    if($(v).prop('checked')!=true){
+                        $(v).click()
+                    }
+                })
+            }else{
+                $('.checkbox').each(function(k,v){
+                    if($(v).prop('checked')){
+                        $(v).click()
+                    }
+                })
+            }
+            
+        },
         disburse(){
             this.isLoading = true;
             axios.post(this.post_url,this.form)

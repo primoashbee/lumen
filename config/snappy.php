@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 return [
 
     /*
@@ -41,6 +43,11 @@ return [
             'enable-local-file-access' => true,
             'encoding' =>'utf-8',
             'orientation'   => 'landscape',
+            'page-size'=>'a4',
+            'footer-center'=>'Page [page] of [toPage]',
+            'footer-font-size' => 8,
+            'footer-left' => 'LIGHT Microfinance Inc © ' . date('Y'),
+            'footer-right' => 'Printed at: ' . Carbon::now()->timezone('Asia/Manila')->format('Y-m-d h:i:sA')
         ],
         'env'     => [],
     ],

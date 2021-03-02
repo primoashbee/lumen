@@ -77,7 +77,7 @@
 						<td>
 							<div class="form-group">
 								
-								<amount-input :disabled="inputDisabled(item.id) "@amountEncoded="amountEncoded" :add_class="errorAddClass(item.id)"  :account_info="item" :tabindex="key+1" ></amount-input>
+								<amount-input :readonly="inputDisabled(item.id) "@amountEncoded="amountEncoded" :add_class="errorAddClass(item.id)"  :account_info="item" :tabindex="key+1" ></amount-input>
 								<div class="text-danger" v-if="hasInputError(item.id)">
 									{{inputErrorMessage(item.id)}}
 								</div>
@@ -232,9 +232,13 @@ export default {
 			return this.errors.hasOwnProperty(field)
 		},
 		inputDisabled(id){
-			return this.form.accounts.filter(x=>{
-				return x.id ==id
-			}).includes(id)
+			var res = true;
+			this.form.accounts.filter(x=>{
+				if(x.id ==id){
+					res = false
+				}
+			})
+			return res;
 		},
 		errorAddClass(account_id){
 			if(this.hasInputError(account_id)){

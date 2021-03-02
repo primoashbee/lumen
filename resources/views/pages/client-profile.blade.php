@@ -178,7 +178,7 @@
 		                    </a>
 						  </td>
 						  <td>
-							  <p class="title text-base">{{money($item->getRawOriginal('amount')0,2)}}</p>
+							  <p class="title text-base">{{money($item->getRawOriginal('amount'),2)}}</p>
 						  </td>
 						  <td>
 							  <p class="title text-base">{{money($item->getRawOriginal('total_balance'),2)}}</p>
@@ -234,7 +234,7 @@
 			                    </a>
 			                  </td>
 			                  <td>
-									{{$cbu->balance}}
+									{{money($cbu->balance,2)}}
 								
 			                  </td>
 			                  <td>

@@ -32,15 +32,22 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
+// Route::get('/hey',function(){
+//     echo 'test';
+// });
+Route::get('/x',function(){
+    
+    return LoanAccount::first()->installments->each->append('status');
+});
 Route::get('/snappy',function(){
     $summary = session('ccr');
+    
     return view('exports.test',compact('summary'));
     $pdf = App::make('snappy.pdf.wrapper');
     $file = public_path('temp/').$summary->office.' - '.$summary->repayment_date.'.pdf';            
 
     // $pdf->loadView('exports.test',compact('summary'))->setPaper('a4','landscape')->save($file);
-    $pdf->loadView('exports.test',compact('summary'))->setOption('header-html', 'header')
-    ->setOption('footer-html', '<span id="company" class="d-inline-block" style="text-align:left;width:50%">LIGHT Microfinance Inc &copy; '. date("Y") . '</span>')->setPaper('a4','landscape');
+    $pdf->loadView('exports.test',compact('summary'));
     return $pdf->stream();
     return;
     $headers = ['Content-Type'=> 'application/pdf','Content-Disposition'=> 'attachment;','filename'=>$summary->name];
@@ -59,12 +66,15 @@ Route::get('/download/ccr',function(Request $request){
 
     $summary = session('ccr');
     $file = public_path('temp/').$summary->office.' - '.$summary->repayment_date.'.pdf';            
-    $pdf = app()->make('dompdf.wrapper');
-    $pdf->loadView('exports.test',compact('summary'))->setPaper('a4','landscape')->save($file);
-
-    // $pdf->loadView('exports.ccrv2', compact('summary'))->setPaper('a4', 'landscape')->save($file);
+    // $pdf = app()->make('dompdf.wrapper');
+    $pdf = App::make('snappy.pdf.wrapper');
     $headers = ['Content-Type'=> 'application/pdf','Content-Disposition'=> 'attachment;','filename'=>$summary->name];
+
+    $pdf->loadView('exports.test',compact('summary'))->save($file,true);
     return response()->download($file,$summary->name,$headers);
+    // $pdf->loadView('exports.ccrv2', compact('summary'))->setPaper('a4', 'landscape')->save($file);
+    // $headers = ['Content-Type'=> 'application/pdf','Content-Disposition'=> 'attachment;','filename'=>$summary->name];
+    // return response()->download($file,$summary->name,$headers);
 
 });
 Route::post('/ccr',function(Request $request){

@@ -32,14 +32,14 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <td><p class="title">#</p></td>
+                        <td><p class="title"><input type="checkbox" @change="checkall($event)"></p></td>
                         <td><p class="title">Client ID</p></td>
                         <td><p class="title">Name</p></td>
                         <template v-if="_hasLoan">
                             <td><p class="title">Loan</p></td>
-                            <td ><p class="title">Principal</p></td>
-                            <td><p class="title">Interest</p></td>
-                            <td><p class="title">Total</p></td>
+                            <td ><p class="title">Overdue</p></td>
+                            <td><p class="title">Inst Due</p></td>
+                            <td><p class="title">Total Due</p></td>
                             <td><p class="title">Payment</p></td>
                         </template>
                         <template v-if="_hasDeposit" >
@@ -52,16 +52,16 @@
                 </thead>
                 <tbody v-if="this.hasRecords">
                     <tr v-for="(item, key) in list.loan_accounts" :key="item.id">
-                        <td><input type="checkbox" :id="item.id" @change="checked(item,$event)"></td>
+                        <td><input type="checkbox" class="checkbox" :id="item.id" @change="checked(item,$event)"></td>
                         <td><label :for="item.id"><p class="title"> {{item.client_id}}</p></label></td>
                         <td><a :href="clientLink(item.client_id)"><p class="title"> {{item.client.full_name}}</p></a></td>
                         <template v-if="_hasLoan">
                             <td><a :href="accountLink(item.client_id,item.id)"><p class="title"> {{item.product.code}} </p></a></td>
-                            <td><p class="title"> {{item.repayment_info._principal}}</p></td>
-                            <td><p class="title"> {{item.repayment_info._interest}}</p></td>
-                            <td><p class="title"> {{item.repayment_info._amount_due}}</p></td>
+                            <td><p class="title"> <span class="badge badge-pill badge-danger">{{item.overdue._total}}</span> </p></td>
+                            <td><p class="title"> <span class="badge badge-pill badge-dark">{{item.due._total}}</span></p></td>
+                            <td><p class="title"> <span class="badge badge-pill badge-info">{{item.total_due.formatted_total}}</span></p></td>
                             <td>
-                                <amount-input :readonly="inputDisabled(item.id) 
+                                <amount-input :readonly="inputDisabled(item.id, 'loan') 
                                     "@amountEncoded="amountEncoded($event,'loan',item.id)"  
                                     :account_info="item" 
                                     :tabindex="tabIndex('loan',key)" 
@@ -80,7 +80,8 @@
 
                                 <td><p class="title">{{_item.balance_formatted}}</p ></td>                                
                                 <td>
-                                    <amount-input :disabled="inputDisabled(item.id) 
+                                    <amount-input 
+                                        :readonly="inputDisabled(_item.id,'deposit') 
                                         "@amountEncoded="amountEncoded($event,'deposit',_item.id)"  
                                         :account_info="_item" 
                                         :tabindex="tabIndex('loan',key)" 
@@ -238,6 +239,22 @@ export default {
         }
     },
     methods : {
+        checkall(e){
+            console.log(e)
+            $('.checkbox').each(function(k,v){
+                if(e.target.checked){
+                    if(!$(v).prop('checked')){
+                        $(v).click()
+                    }
+                }else{
+                    if($(v).prop('checked')){
+                        $(v).click()
+                    }
+                }
+                
+                
+            })
+        },
         download(){
             this.isLoading = true;
             axios.get('/download/ccr',{responseType:'blob'})
@@ -453,14 +470,11 @@ export default {
                     id: account.id,
                     amount: null,
                     code: account.product.code,
-                    total_amount: account.repayment_info._amount_due,
+                    total_amount: round(account.total_due.total),
                     repayment_date:null
                 },
                 deposit: deposit
             }
-
-
-            
 			this.removeFromArray(this.form.accounts, account.id)
 			if(event.target.checked){
 				this.form.accounts.push(obj)
@@ -468,14 +482,11 @@ export default {
 
         },
 		isInFormAccounts(id){
-			
 			var res = this.form.accounts.filter(item=>{
-				
 				if(item.id == id){
 					return item
 				}
 			})
-			
 			return res.length > 0
 		},
         removeFromArray(obj, id){
@@ -486,18 +497,27 @@ export default {
 				this.form.accounts = res
 			}	
         },
-        inputDisabled(id){
-            
-            this.form.accounts.map(x=>{
-                if(x.id == id){
-                    return true;
-                }
-            })
-
-            return false;
-			// return this.form.accounts.filter(x=>{
-			// 	return x.id ==id
-			// }).includes(id)
+        inputDisabled(id,type){
+            var res = true;
+            if(type=="loan"){
+                this.form.accounts.map(x=>{
+                    if(x.id == id){
+                        res = false;
+                    }
+                })
+                return res
+            }
+            if(type=="deposit"){
+                this.form.accounts.map(x=>{
+                    x.deposit.map(y=>{
+                        if(y.deposit_account_id == id){
+                            res = false;
+                        }
+                    })
+                })
+                return res
+            }
+            return res;
         },
 
 		amountEncoded(value, type, item_id){

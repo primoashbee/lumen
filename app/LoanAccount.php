@@ -24,6 +24,8 @@ class LoanAccount extends Model
         'interest',
         'total_loan_amount',
         'interest_rate',
+        
+        'number_of_months',
         'number_of_installments',
 
         'total_deductions',
@@ -144,7 +146,7 @@ class LoanAccount extends Model
             // $sched = new Scheduler($start_date,$office_id);
             $office_id = $data['office_id'];
             $start_date = Scheduler::getDate($data['start_date'],$office_id);
-            $current_date = Carbon::now();
+            $current_date = now()->startOfDay();
             // $end_date;
             $late = false;
             $date = 'now';
@@ -162,6 +164,7 @@ class LoanAccount extends Model
                         'interest_balance'=>$interest_balance,
                         'principal'=>$principal,
                         'amortization'=>$principal + $interest,
+                        'interest_days_incurred' =>0,
 
                         'formatted_principal_balance'=>money($principal_balance,2),
                         'formatted_interest'=>money($interest,2),
@@ -186,8 +189,17 @@ class LoanAccount extends Model
                     $previous_installment_date  = Carbon::parse($installments[$x-1]->date);
                     $date = Scheduler::getDate($previous_installment_date->addWeek(),$office_id);
 
+                    $diff_in_days = $date->diffInDays(now()->startOfDay(),false);
+                    $interest_days_incurred =  0;
+                    if($diff_in_days >= -6) {
+                        $interest_days_incurred =   $diff_in_days > 0 ? 7 : $diff_in_days + 7;
+                    }
                     
-                    $interest_due = 0;
+                    $per_day_interest = round($interest / 7 ,2);
+                    
+                    $interest_due = round($per_day_interest * ($interest_days_incurred),2);
+
+                    
                     $principal_due = 0;
                     $amount_due = 0;
                     
@@ -214,6 +226,7 @@ class LoanAccount extends Model
                         'interest_due'=>$interest_due,
                         'principal_due'=>$principal_due,
                         'amount_due'=>$amount_due,
+                        'interest_days_incurred'=>$interest_days_incurred,
                         'formatted_amount_due'=>money($amount_due,2),
 
                         'formatted_principal_balance'=>money($principal_balance,2),
@@ -239,7 +252,15 @@ class LoanAccount extends Model
                     $interest_balance =round($interest_balance - $interest,2);
                     $amortization = round($interest + $principal,2);
 
-                    $interest_due = 0;
+                    $diff_in_days = $start_date->diffInDays(now()->startOfDay(),false);
+                    $interest_days_incurred =  0;
+                    if($diff_in_days >= -6) {
+                        $interest_days_incurred =   $diff_in_days > 0 ? 7 : $diff_in_days + 7;
+                    }
+                    
+                    $per_day_interest = round($interest / 7 ,2);
+                    $interest_due = round($per_day_interest * ($interest_days_incurred),2);
+                    
                     $principal_due = 0;
                     $amount_due = 0;
                     
@@ -262,6 +283,7 @@ class LoanAccount extends Model
 
                             'interest_balance'=>$interest_balance,
                             'amortization'=>$amortization,
+                            'interest_days_incurred' =>$interest_days_incurred,
                             
 
                             'formatted_amount_due'=>money($amount_due,2),
@@ -287,7 +309,15 @@ class LoanAccount extends Model
                     $interest_balance = round($interest_balance - $interest,2);
                     $amortization = round($interest + $principal,2);
 
-                    $interest_due = 0;
+                    $diff_in_days = $date->diffInDays(now()->startOfDay(),false);
+                    $interest_days_incurred =  0;
+                    if($diff_in_days >= -6) {
+                        $interest_days_incurred =   $diff_in_days > 0 ? 7 : $diff_in_days + 7;
+                    }
+                    
+                    $per_day_interest = round($interest / 7 ,2);
+                    $interest_due = round($per_day_interest * ($interest_days_incurred),2);
+       
                     $principal_due = 0;
                     $amount_due = 0;
                     if($late){
@@ -295,6 +325,8 @@ class LoanAccount extends Model
                         $principal_due = $principal;
                         $amount_due = $interest + $principal;
                     }
+
+                    
 
                     $installments[] = (object)array(
                             'installment'=>$x,
@@ -308,6 +340,7 @@ class LoanAccount extends Model
                             'interest_due'=>$interest_due,
                             'principal_due'=>$principal_due,
                             'amount_due'=>$amount_due,
+                            'interest_days_incurred' =>$interest_days_incurred,
                             
                             'formatted_amount_due'=>money($amount_due,2),
                             'formatted_principal_balance'=>money($principal_balance,2),
@@ -366,23 +399,42 @@ class LoanAccount extends Model
     
     public function isActive(){
         $inactives = ['Pending Approval','Approved','Disapproved','Closed'];
-        in_array($this->status,$inactives);
+        // in_array($this->status,$inactives);
         return !in_array($this->status,$inactives);
     }
 
     public function updateDueInstallments(){
-        $installments = $this->installments->where('date','<=',Carbon::now());
+        $installments = $this->installments
+            ->whereBetween('date',[
+                    now()->startOfDay(), now()->addDay(6)->startOfDay()
+                ])
+            ->where('paid',0);
         $total = $installments->count();
         $ctr = 0;
         foreach($installments as $item){
-            $interest_due = $item->interest;
-            $principal_due = $item->principal;
-            $amount_due = $interest_due + $principal_due;
-            $item->update([
-                'interest_due'=>$interest_due,
-                'principal_due'=>$principal_due,
-                'amount_due'=>$amount_due,
-            ]);
+            //date -6 = 1/7
+            //date -5 = 2/7
+            //date -4 = 3/7
+            //date -3 = 4/7
+            //date -2 = 5/7
+            //date -1 = 6/7
+            //date 0 = 7/7
+            $now = now()->startOfDay();
+            $diff = $item->date->diffInDays($now,false);
+            $interest = $item->interest;
+            
+            if ($this->interest_due != $this->interest) {
+                $per_day_interest = round($interest / 7 ,2);
+                $new_interest_due = round($per_day_interest * ($diff + 7),2);
+                $principal_due = $item->principal;
+                $amount_due = $new_interest_due + $principal_due;
+                $item->update([
+                    'interest_due'=>$new_interest_due,
+                    'principal_due'=>$principal_due,
+                    'amount_due'=>$amount_due,
+                ]);
+            }
+            
             $ctr++;
         }
         return $ctr  == $total;
@@ -442,8 +494,11 @@ class LoanAccount extends Model
     }
 
     public function amountDue(){
-        $principal = $this->installments->where('paid',false)->where('date','<=',Carbon::now())->sum('principal_due');
-        $interest = $this->installments->where('paid',false)->where('date','<=',Carbon::now())->sum('interest_due');
+
+        $installments = $this->installments->where('paid',false)
+                        ->where('date','<=',Carbon::now()->startOfDay());
+        $principal = $installments->sum('principal_due');
+        $interest = $installments->sum('interest_due');
         $total = $principal + $interest;
         return (object) [
             'principal'=>$principal,
@@ -516,23 +571,36 @@ class LoanAccount extends Model
 
 
     public function updateStatus(){
-        $amount_due = $this->amountDue();
+        
+        $dues = $this->getDuesFromDate(now());
+        
+        //if has past dues
+        if($dues->overdue->total > 0){
+            return $this->update(['status'=>'In Arrears']);
+        }
 
-        if($amount_due->total > 0){
-            return $this->update([
-                'status'=>'In Arrears'
-            ]);
-        }
-        if($amount_due->total == 0){
-            return $this->update([
-                'status'=>'Active'
-            ]);
-        }
         if($this->total_balance == 0){
-            return $this->update([
-                'status'=>'Closed'
-            ]);
+            return $this->update(['status','Closed']);
         }
+
+
+        return $this->update(['status'=>'Active']);
+
+        // if($amount_due->total > 0){
+        //     return $this->update([
+        //         'status'=>'In Arrears'
+        //     ]);
+        // }
+        // if($amount_due->total == 0){
+        //     return $this->update([
+        //         'status'=>'Active'
+        //     ]);
+        // }
+        // if($this->total_balance == 0){
+        //     return $this->update([
+        //         'status'=>'Closed'
+        //     ]);
+        // }
 
     }
     
@@ -581,9 +649,14 @@ class LoanAccount extends Model
             'principal_balance'=>$this->principal,
             'total_balance'=>round($this->interest+$this->principal,2),
             'closed_by'=>null,
-            'closed_at'=>null
+            'closed_at'=>null,
+            'status'=>'Approved',
+            'disbursed'=>0,
+            'disbursed_at'=>null
         ]);
+        $this->dependents->reset();
         $this->updateStatus();
+
        
     }
 
@@ -685,9 +758,9 @@ class LoanAccount extends Model
     
     public function maximumPayment(){ 
         
-       return (object) [
-           'amount'=>$this->total_balance,
-           'formatted_amount'=>money($this->total_balance,2)
+        return (object) [
+            'amount'=>$this->getRawOriginal('total_balance'),
+            'formatted_amount'=>money($this->getRawOriginal('total_balance'),2)
         ];
     }
     
@@ -834,9 +907,9 @@ class LoanAccount extends Model
         return $mutated;
     }
 
-    public function getTotalBalanceAttribute($value){
-        return env('CURRENCY_SIGN') . ' ' . number_format($value,2);
-    }
+    // public function getTotalBalanceAttribute($value){
+    //     return env('CURRENCY_SIGN') . ' ' . number_format($value,2);
+    // }
     public function getTotalPaidAttribute(){
         $paid = $this->totalPaid();
         $payment['interest'] = $paid->interest;
@@ -1013,6 +1086,7 @@ class LoanAccount extends Model
                     'amortization'=>$item->amortization,
                     'principal_balance'=>$item->principal_balance,
                     'interest_balance'=>$item->interest_balance,
+                    'interest_days_incurred'=>$item->interest_days_incurred,
                 ]);
             }
             $x++;
@@ -1020,69 +1094,72 @@ class LoanAccount extends Model
         return $list;
     }
 
-    
+    public function overdue($date = null){
+        $now = Carbon::now()->toDateString();
+        $date = is_null($date) ? $now : Carbon::parse($date)->toDateString();
+        $account = LoanAccount::find($this->id);
+        $overdues = $account->installments
+        ->where('paid',false)
+        ->where('date','<', $date);
+        
+        $amount = new stdClass;
+        $amount->interest = $overdues->sum('interest_due');
+        $amount->_interest = money($overdues->sum('interest_due'),2);
+        $amount->principal = $overdues->sum('principal_due');
+        $amount->_principal = money($overdues->sum('principal_due'),2);
+        $amount->total = round($overdues->sum('interest_due') + $overdues->sum('principal_due'), 2);
+
+        $amount->_total = money(round($overdues->sum('interest_due') + $overdues->sum('principal_due'), 2),2);
+
+        return $amount;
+    }
+
     public function getDuesFromDate($date){
         $id = $this->id;
         $account = LoanAccount::find($id);
         
-        $date = Carbon::parse($date);
+        $date = Carbon::parse($date)->startOfDay();
         $installments = $account->installments
             // ->where('amount_due','>',0)
-            ->where('paid',false)
-            ->where('date','<=', $date);
-        $dues  = $installments->where('interest_due','>',0);
-        
-        $unDues  = $installments->where('interest_due','=',0);
+        ->where('paid',false)
+        ->where('date','=', $date);
 
-        $amount = new stdClass;
-        $due_interest = $dues->sum('interest_due');
-        $undue_interest = $unDues->sum('interest');
-        
-        $due_principal = $dues->sum('principal_due');
-        $undue_principal = $unDues->sum('principal_due');
-        $total_interest = round($due_principal + $undue_principal,2);
-        $total_principal =  round($due_interest + $undue_interest,2);
-        $total_amount = round($total_interest + $total_principal,2);
+        $due = new stdClass;
+        $due->interest = round($installments->sum('interest_due'),2);
+        $due->_interest = money($installments->sum('interest_due'),2);
+        $due->principal = $installments->sum('principal_due');
+        $due->_principal = money($installments->sum('principal_due'),2);
+        $due->total = $installments->sum('interest_due') + $installments->sum('principal_due');
+        $due->_total = money($installments->sum('interest_due') + $installments->sum('principal_due'),2);
 
+        $summary = new stdClass;
+        $summary->overdue = $account->overdue();
+        $summary->due = $due;
         
-        $amount->interest = $total_interest;
-        $amount->_interest= env('CURRENCY_SIGN') . ' ' . number_format($total_interest,2);
-        
-        $amount->principal = $total_principal;
-        $amount->_principal = env('CURRENCY_SIGN') . ' ' . number_format($total_principal,2);
-       
-        $amount->amount_due = $total_amount;
-        $amount->_amount_due = env('CURRENCY_SIGN') . ' ' . number_format($total_amount,2);
+        $summary->total_due = $account->amountDue();
+        return $summary;
+        // $dues  = $installments->where('interest_due','>',0);
+        // $unDues  = $installments->where('interest_due','=',0);
 
-        return $amount;
-        // $dues = $installments->where('interest_due','>',0)->get();
-        // $unDues = $installments->where('interest_due','=',0)->get();
-    
         // $amount = new stdClass;
-
-        // $interest_due  = $dues->sum('interest_due');
-        // $interest_undue  = $unDues->sum('interest');
-
-        // $principal_due = $dues->sum('principal_due');
-        // $principal_undue = $unDues->sum('principal_due');
-
-        // $amount_due = $dues->sum('amount_due');
-        // $amount_unDue = round($interest_undue + $principal_undue,2);
-
-
-        // $interest  = round($interest_due + $interest_undue,2);
-        // $principal = round($principal_due + $principal_undue,2);
+        // $due_interest = $dues->sum('interest_due');
+        // $undue_interest = $unDues->sum('interest');
         
-        // $amount_due_all = round($amount_due + $amount_unDue,2);
-        // $amount->interest = $interest;
-        // $amount->_interest= env('CURRENCY_SIGN') . ' ' . number_format($interest,2);
+        // $due_principal = $dues->sum('principal_due');
+        // $undue_principal = $unDues->sum('principal_due');
+        // $total_interest = round($due_principal + $undue_principal,2);
+        // $total_principal =  round($due_interest + $undue_interest,2);
+        // $total_amount = round($total_interest + $total_principal,2);
+
         
-        // $amount->principal = $principal;
-        // $amount->_principal = env('CURRENCY_SIGN') . ' ' . number_format($principal,2);
+        // $amount->interest = $total_interest;
+        // $amount->_interest= env('CURRENCY_SIGN') . ' ' . number_format($total_interest,2);
+        
+        // $amount->principal = $total_principal;
+        // $amount->_principal = env('CURRENCY_SIGN') . ' ' . number_format($total_principal,2);
        
-        // $amount->amount_due = $amount_due_all;
-        // $amount->_amount_due = env('CURRENCY_SIGN') . ' ' . number_format($amount_due_all,2);
-
+        // $amount->amount_due = $total_amount;
+        // $amount->_amount_due = env('CURRENCY_SIGN') . ' ' . number_format($total_amount,2);
         // return $amount;
     }
 

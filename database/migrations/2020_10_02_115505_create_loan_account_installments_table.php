@@ -17,7 +17,7 @@ class CreateLoanAccountInstallmentsTable extends Migration
             $table->id();
             $table->unsignedInteger('loan_account_id');
             $table->integer('installment');
-            $table->datetime('date');
+            $table->date('date');
             $table->unsignedDouble('original_principal');
             $table->unsignedDouble('original_interest');
 
@@ -31,6 +31,8 @@ class CreateLoanAccountInstallmentsTable extends Migration
             
             $table->unsignedDouble('principal_balance');
             $table->unsignedDouble('interest_balance');
+
+            $table->unsignedDouble('interest_days_incurred')->default(0);
 
             $table->boolean('paid')->default(false);
             

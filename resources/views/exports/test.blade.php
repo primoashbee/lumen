@@ -67,9 +67,11 @@
             table.table thead tr th{
                 padding-top: 12px;
                 padding-bottom: 12px;
-                text-align: left;
+                text-align: center;
                 background-color: #4CAF50;
                 color: white;
+                border-color: green;
+                color:black;
             }
             table.table tbody tr td{
                 border: 1px solid #ddd;
@@ -127,8 +129,8 @@
         </header>
 
         <footer>
-            <span id="company" class="d-inline-block" style="text-align:left;width:49.5%">LIGHT Microfinance Inc &copy; <?php echo date("Y");?> </span>
-            <span class="d-inline-block" style="text-align:right;width:49.5%"><i>Lumen v1.00</i></span>
+            {{-- <span id="company" class="d-inline-block" style="text-align:left;width:49.5%">LIGHT Microfinance Inc &copy; <?php echo date("Y");?> </span>
+            <span class="d-inline-block" style="text-align:right;width:49.5%"><i>Lumen v1.00</i></span> --}}
         </footer>
 
         <!-- Wrap the content of your PDF inside a main tag -->
@@ -145,22 +147,29 @@
                   <table class="table">
                         <thead>
                           <tr>
-                            <th>#</th>
-                            <th>Client ID</th>
-                            <th>Name</th>
+                            <th rowspan="2">#</th>
+                            <th rowspan="2">Client ID</th>
+                            <th rowspan="2">Name</th>
                             @if($summary->has_loan)
-                            <th>Loan</th>
-                            <th>Interest</th>
-                            <th>Principal</th>
-                            <th>Amount Due</th>
-                            <th>Payment</th>
+                            <th rowspan="2">Loan</th>
+                            <th rowspan="2">Term</th>
+                            <th rowspan="2"># of Inst.</th>
+                            <th rowspan="2">Loan Balance (P+I)</th>
+                            <th rowspan="2">Overdue</th>
+                            <th rowspan="2">Installment Due</th>
+                            <th rowspan="2">Total Due</th>
+                            <th colspan="2">Payment</th>
                             @endif
                             @if($summary->has_deposit)
                             @foreach($summary->deposit_types as $type)
-                            <th>{{$type}} - Bal.</th>
-                            <th>{{$type}}
+                            <th rowspan="2">{{$type}} - Bal.</th>
+                            <th rowspan="2">{{$type}}
                             @endforeach
                             @endif
+                          </tr>
+                          <tr>
+                              <th>CTLP</th>
+                              <th>CASH</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -172,9 +181,13 @@
                               <td>{{$item->client->full_name}}</td>
                               @if($summary->has_loan)
                               <td>{{$item->product->code}}</td>
-                              <td>{{$item->repayment_info->_interest}}</td>
-                              <td>{{$item->repayment_info->_principal}}</td>
-                              <td>{{$item->repayment_info->_amount_due}}</td>
+                              <td>{{$item->number_of_months}}</td>
+                              <td>{{$item->number_of_installments}} ({{$item->product->installment_method}})</td>
+                              <td>{{$item->_total_balance}}</td>
+                              <td>{{$item->overdue->_total}}</td>
+                              <td>{{$item->due->_total}}</td>
+                              <td>{{$item->total_due->formatted_total}}</td>
+                              <td></td>
                               <td></td>
                               @endif
                               @if($summary->has_deposit)
@@ -192,9 +205,13 @@
                             <td></td>
                             <td></td>
                             @if($summary->has_loan)
-                            <td>{{$summary->total['loan']['_total_interest']}}</td>
-                            <td>{{$summary->total['loan']['_total_principal']}}</td>
-                            <td>{{$summary->total['loan']['_total_amount_due']}}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{$summary->total['loan']['_loan_balance']}}</td>
+                            <td>{{$summary->total['loan']['overdue']['_total_amount_due']}}</td>
+                            <td>{{$summary->total['loan']['due']['_total_amount_due']}}</td>
+                            <td>{{$summary->total['loan']['total_due']['_total_amount_due']}}</td>
+                            <td></td>
                             <td></td>
                             @endif
                             @if($summary->has_deposit)
@@ -208,7 +225,7 @@
                   </table>
                   <div class="footer">
                       <ul class="item_list">
-                          <li class="text-left">Clusters Leader : ______________________</li>
+                          <li class="text-left">Cluster Leader : ______________________</li>
                           <li class="text-center">Loan Officer : ______________________</li>
                           
                           <li class="text-right">Branch Manager : ______________________ </li>

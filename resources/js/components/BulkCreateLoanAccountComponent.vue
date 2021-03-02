@@ -53,7 +53,7 @@
             <table class="table" >
                 <thead>
                     <tr>
-                        <td><p class="title">#</p></td>
+                        <td><p class="title"><input type="checkbox" @change="checkAll" v-if="hasRecords"></p></td>
                         <td><p class="title">Client ID</p></td>
                         <td><p class="title">Name</p></td>
                         <td><p class="title">Linked To</p></td>
@@ -62,11 +62,11 @@
                 </thead>
                 <tbody v-if="hasRecords">
                     <tr v-for="client in lists.data" :key="client.client_id">
-                        <td><input type="checkbox" :id="client.client_id" @change="checked(client,$event)"></td>
+                        <td><input type="checkbox" class="checkbox" :id="client.client_id" @change="checked(client,$event)"></td>
                         <td><label :for="client.client_id">{{client.client_id}}</label></td>
                         <td class="text-lg"><a class="text-lg" :href="clientLink(client.client_id)">{{client.firstname + ' ' + client.lastname}}</a></td>
                         <td class="text-lg">{{client.office.name}}</td>
-                        <td class="text-lg" style="max-width:50px"><amount-input :disabled="inputDisabled(client.id) "@amountEncoded="amountEncoded" :add_class="errorClass(client.id)"  :account_info="client" :tabindex="key+1" ></amount-input></td>
+                        <td class="text-lg" style="max-width:50px"><amount-input :readonly="inputDisabled(client.id) "@amountEncoded="amountEncoded" :add_class="errorClass(client.id)"  :account_info="client" :tabindex="key+1" ></amount-input></td>
                     </tr>
                 </tbody>
             </table>
@@ -128,6 +128,23 @@ export default {
         AmountInputComponent,
     },
     methods :{
+        checkAll(e){
+            
+            if(e.target.checked){
+                $('.checkbox').each(function(k,v){
+                    if($(v).prop('checked')!=true){
+                        $(v).click()
+                    }
+                })
+            }else{
+                $('.checkbox').each(function(k,v){
+                    if($(v).prop('checked')){
+                        $(v).click()
+                    }
+                })
+            }
+            
+        },
         submit(e){
             e.preventDefault()
             this.isLoading=true
@@ -191,9 +208,13 @@ export default {
 		},
 
 		inputDisabled(id){
-			return this.form.accounts.filter(x=>{
-				return x.id ==id
-			}).includes(id)
+            var res = true;
+			this.form.accounts.filter(x=>{
+                if(x.id == id){
+                    res = false;
+                }
+			})
+            return res;
 		},        
         clientLink(client_id){
             return this.toClient + client_id

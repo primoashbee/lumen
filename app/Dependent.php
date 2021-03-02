@@ -212,5 +212,12 @@ class Dependent extends Model
         return $this->pivotList()->count();
     }
 
+    public function reset(){
+        $this->update([
+            'status'=>'Unused',
+            'activated_at'=>null,
+            'expires_at'=>null,
+        ]);
+    }
   
 }

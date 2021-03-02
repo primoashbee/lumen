@@ -18,11 +18,13 @@ class CreateLoanAccountsTable extends Migration
             $table->id();
             $table->string('client_id');
             $table->unsignedInteger('loan_id');
-            $table->double('amount');
+            $table->unsignedDouble('amount');
             $table->unsignedDouble('principal');
             $table->unsignedDouble('interest');
             $table->unsignedDouble('total_loan_amount');
             $table->unsignedDouble('interest_rate');
+
+            $table->integer('number_of_months');
             $table->integer('number_of_installments');
             $table->unsignedDouble('total_deductions'); 
             $table->unsignedDouble('disbursed_amount'); //net disbursement

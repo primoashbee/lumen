@@ -50,20 +50,15 @@ class Loan extends Model
         "status"
         
     ];
-
     public function fees(){
         return $this->belongsToMany(Fee::class,'loan_fee')->withTimestamps();
     }
-
     public static function active(){
         return Loan::with('fees')->where('status',1)->get();
     }
 
     public static function rates($id=null){
         $me = new static;
-        
-        
-
         $data =  [
                     (object) [
                     'code'=>'MPL',
@@ -72,32 +67,38 @@ class Loan extends Model
                             (object) [
                                 'code'=>'MPL',
                                 'installments'=>22,
-                                'rate'=>5.1097
+                                'rate'=>5.1097,
+                                'number_of_months'=>6
                             ],
                             (object) [
                                 'code'=>'MPL',
                                 'installments'=>24,
-                                'rate'=>5.475225
+                                'rate'=>5.475225,
+                                'number_of_months'=>6
                             ],
                             (object) [
                                 'code'=>'MPL',
                                 'installments'=>44,
-                                'rate'=>5.80480
+                                'rate'=>5.80480,
+                                'number_of_months'=>8,
+
                             ],
                             (object) [
                                 'code'=>'MPL',
                                 'installments'=>48,
-                                'rate'=>5.32911
+                                'rate'=>5.32911,
+                                'number_of_months'=>8
                             ]
                         ]),
                     ],
                     (object) ['code'=>'GML',
-                    'rates'=>                
+                    'rates'=>
                         [
                             (object) [
                                 'code'=>'MPL',
                                 'installments'=>24,
-                                'rate'=>5.475225
+                                'rate'=>5.475225,
+                                'term'=>6
                             ]
                         ]
                     ]

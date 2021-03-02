@@ -26,6 +26,8 @@ class LoanAccountInstallment extends Model
         'principal_balance',
         'interest_balance',
         
+        'interest_days_incurred'
+        
     ];
 
     protected $for_mutation  = [
@@ -118,6 +120,7 @@ class LoanAccountInstallment extends Model
             if($this->loanAccount->remainingInstallments()->count() > 0){
                 $temp = $this->loanAccount->remainingInstallments()->first()->pay($payment,$transaction_id,$paid_by);
             }else{
+                
 
                 return $amount_paid;
             }
@@ -129,18 +132,38 @@ class LoanAccountInstallment extends Model
     }
     public function isDue(){
         
-        return $this->date <= Carbon::now() && $this->paid == 0;
+        return $this->date <= Carbon::now()->startOfDay() && $this->paid == 0;
     }
 
     public function dateIsDue(){
-        return $this->date->diffInDays(Carbon::now(),false) >= 0;
+        return $this->date->diffInDays(Carbon::now()->startOfDay(),false) >= 0;
     }
 
     
     public function getIsDueAttribute(){
-        return $this->date <= Carbon::now() && $this->paid == 0;
+        return $this->date < Carbon::now()->startOfDay() && $this->paid == 0;
     }
  
+    public function getStatusAttribute(){
+        $now = now()->startOfDay();
+        $date = $this->date;
+        $diff = $now->diffInDays($date,false);
+        $paid = $this->paid;
+        if($paid){
+            return 'Paid';
+        }
+        if( $diff < 0  ){
+            return 'In Arrears';
+        }
+
+        if($diff == 0){
+            return 'Due';
+        }
+
+        if($diff > 0 ){
+            return 'Not Due';
+        }
+    }
 
     public function getMutatedAttribute(){
         $fields = $this->for_mutation;

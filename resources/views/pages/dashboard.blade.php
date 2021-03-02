@@ -14,6 +14,7 @@
                         </div>
                     
                 </div>
+
                 <div class="card-body">
                     <chart-par-movement></chart-par-movement>
                 </div>
@@ -105,6 +106,8 @@
             </div>
         </div>
     </div>	
+
+    <actions-notification></actions-notification>
     
 {{-- 
     <div class="row">

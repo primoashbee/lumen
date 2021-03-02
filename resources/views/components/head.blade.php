@@ -11,5 +11,4 @@
 	<script type="text/javascript" src="{{ asset('js/app.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('js/lumen.js') }}" defer></script>
 
-
 </head>

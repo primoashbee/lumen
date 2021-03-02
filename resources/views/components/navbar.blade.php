@@ -35,6 +35,6 @@
     </li>
   </ul>
 </nav>
-<multi-search></multi-search>
+<multi-search ></multi-search>
 
 

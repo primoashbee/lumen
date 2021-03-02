@@ -179,9 +179,6 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         // Barryvdh\Snappy\ServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
-
-
-
     ],
 
     /*

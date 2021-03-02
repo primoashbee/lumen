@@ -92,15 +92,16 @@
                                         <td>{{(item.mutated.amount_due)}}</td>
                                         <td>
                                                 
-                                                <span v-if="item.is_due" class="badge badge-danger"> In Arrears</span>
+                                                <span v-if="item.status=='In Arrears'" class="badge badge-danger"> In Arrears</span>
                                                 
-                                                <span v-else-if="item.paid" class="badge badge-success">Paid</span>
+                                                <span v-else-if="item.status=='Paid'" class="badge badge-success">Paid</span>
+                                                <span v-else-if="item.status=='Due'" class="badge badge-warning">Due</span>
+                                                <span v-else-if="item.status=='Not Due'" class="badge badge-light">Not Due</span>
                                                     
-                                                <span v-else class="badge badge-light">Not Due</span>
                                                     
                                         </td>
                                         
-                                        <td>{{item.status}}</td>
+                                        
                                     </tr>
                                 </tbody>
                             </table>

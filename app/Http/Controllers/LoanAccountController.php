@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Loan;
 use App\Client;
+use App\Events\BulkLoanDisbursed;
 use App\Office;
 use Carbon\Carbon;
 use App\LoanAccount;
@@ -145,6 +146,8 @@ class LoanAccountController extends Controller
 
         $loan_amount = (int) $request->amount;
         $number_of_installments = $request->number_of_installments;
+        $number_of_months = Loan::rates()->where('code',$loan->code)->first()->rates->where('installments',$number_of_installments)->first()->number_of_months;
+
         $fee_repayments = array();
         
         $dependents = $client->unUsedDependent()->pivotList();
@@ -191,6 +194,7 @@ class LoanAccountController extends Controller
                 'interest'=>$calculator->total_interest,
                 'total_loan_amount'=>$calculator->total_loan_amount,
                 'interest_rate'=>$loan_interest_rate,
+                'number_of_months'=>$number_of_months,
                 'number_of_installments'=>$number_of_installments,
 
                 'total_deductions'=>$total_deductions,
@@ -241,7 +245,9 @@ class LoanAccountController extends Controller
                 $total_deductions = 0;
         
                 $loan_amount = (int) $item['amount'];
+                
                 $number_of_installments = $request->number_of_installments;
+                $number_of_months = Loan::rates()->where('code',$loan->code)->first()->rates->where('installments',$number_of_installments)->first()->number_of_months;
                 $fee_repayments = array();
                 
                 $dependents = $client->unUsedDependent()->pivotList();
@@ -287,6 +293,7 @@ class LoanAccountController extends Controller
                     'interest'=>$calculator->total_interest,
                     'total_loan_amount'=>$calculator->total_loan_amount,
                     'interest_rate'=>$loan_interest_rate,
+                    'number_of_months'=>$number_of_months,
                     'number_of_installments'=>$number_of_installments,
 
                     'total_deductions'=>$total_deductions,
@@ -388,6 +395,7 @@ class LoanAccountController extends Controller
                     'amortization'=>$item->amortization,
                     'principal_balance'=>$item->principal_balance,
                     'interest_balance'=>$item->interest_balance,
+                    'interest_days_incurred'=>$item->interest_days_incurred
                 ]);
             }
             $x++;
@@ -475,8 +483,8 @@ class LoanAccountController extends Controller
     public function account(Request $request, $client_id,$loan_id){
 
         if($request->wantsJson()){
-            $account  = LoanAccount::find($loan_id)->append('mutated','total_paid','pre_term_amount');;
-            $installments = $account->installments->each->append('mutated','is_due'); ;
+            $account  = LoanAccount::find($loan_id)->append('mutated','total_paid','pre_term_amount');
+            $installments = $account->installments->each->append('mutated','status');
             
             $client = Client::select('firstname','lastname','client_id')->where('client_id',$client_id)->first();
             
@@ -537,11 +545,21 @@ class LoanAccountController extends Controller
                 'disbursed_by'=>auth()->user()->id,
                 'cv_number'=>$request->cv_number
             ];
+            $disbursed_amount = 0;
+            
             foreach ($request->accounts as $account) {
                 $account =  LoanAccount::find($account);
                 $account->disburse($payment_info);
+                $disbursed_amount+= $account->disbursed_amount;
             }
+
+            
+            $office = Office::select('name','level')->find($request->office_id)->name;
+            $by = auth()->user()->fullname;
+            $msg = 'Disbursed '. money($disbursed_amount,2) .' at ' . $office .' by ' . $by;
+        
             \DB::commit();
+            event(new BulkLoanDisbursed($msg));
             return response()->json(['msg'=>'Loan Account successfully created'], 200);
         } catch (\Exception $e) {
             return response()->json(['msg'=>$e->getMessage()], 500);

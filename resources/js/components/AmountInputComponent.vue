@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input type="text"  :class="lastClass" v-model="value" @keypress="isNumber($event)" :disabled="readonly" v-debounce:200ms="emitToParent" :tabindex="tabindex">
+    <input type="text"  :class="lastClass"  v-model="value" @keypress="isNumber($event)" :disabled="readonly" v-debounce:200ms="emitToParent" :tabindex="tabindex">
   </div>
 </template>
 
@@ -48,6 +48,9 @@ export default {
   },
   computed : {
     lastClass(){
+      if(this.readonly){
+        return 'form-control readonly ' + this.add_class 
+      }
       return 'form-control ' + this.add_class
     }
   }
@@ -69,7 +72,7 @@ export default {
     }
 
     .readonly{
-      background-color:gray;
+      background-color:gray !important;
     }
 </style>
 

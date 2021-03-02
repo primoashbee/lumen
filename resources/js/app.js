@@ -6,8 +6,12 @@
 
 require('./bootstrap');
 global.currency = '₱';
-global.$ = global.jQuery = require('jquery');
 
+
+global.$ = global.jQuery = require('jquery');
+global.round = (x)=>{
+    return Math.round((x + Number.EPSILON) * 100) / 100
+}
 import { VueMaskDirective } from 'v-mask';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 window.numeral = require('numeral');
@@ -33,6 +37,9 @@ window.moment = require('moment');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 import Money from './plugins/money.js';
+import VueNoty from 'vuejs-noty'
+window.Noty = require('noty')
+Vue.use(VueNoty)
 Vue.use(Money)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
@@ -54,6 +61,7 @@ Vue.component('create-office', require('./components/CreateOfficeComponent.vue')
 Vue.component('light-modal', require('./components/ModalComponent.vue').default);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('office-list', require('./components/OfficeListComponent.vue').default);
+
 Vue.component('deposit-dashboard', require('./components/DepositDashboardComponent.vue').default);
 Vue.component('payment-methods', require('./components/PaymentMethodComponent.vue').default);
 Vue.component('payment-methods-dashboard', require('./components/PaymentMethodDashboardComponent.vue').default);
@@ -69,6 +77,7 @@ Vue.component('multi-search', require('./components/MultiSearchComponent.vue').d
 Vue.component('loan-product-list', require('./components/LoanProductSelectComponent.vue').default);
 
 
+Vue.component('actions-notification', require('./components/Dashboard/ActionsNotificationComponent.vue').default);
 Vue.component('chart-par-movement', require('./components/Dashboard/ParMovementComponent.vue').default);
 Vue.component('chart-repayment-trend', require('./components/Dashboard/RepaymentTrendComponent.vue').default);
 Vue.component('chart-disbursement-trend', require('./components/Dashboard/DisbursementTrendComponent.vue').default);
