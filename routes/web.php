@@ -199,6 +199,7 @@ Route::post('/import',function(Request $request){
     
 });
 Route::get('/download/dst/{loan_account_id}','DownloadController@dst');
+Route::get('/download/dst/bulk/{bulk_transaction_id}','DownloadController@dstBulk');
 Route::get('/download/ccr',function(Request $request){
 
     $summary = session('ccr');
@@ -424,7 +425,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/settings/loan/view/{loan}','LoanController@viewLoan');
     
     Route::post('/settings/create/loan','LoanController@create');
-    
-    });
+    Route::get('/reports','ReportController@index')->name('reports.index');
+    Route::get('/reports/bulk/disbursement','ReportController@bulkDisbursementIndex')->name('reports.bulk.disbursement.index');
+});
  
 

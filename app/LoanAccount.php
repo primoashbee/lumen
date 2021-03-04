@@ -664,6 +664,7 @@ class LoanAccount extends Model
             'disbursed_at'=>null
         ]);
         $this->dependents->reset();
+        $this->bulkDisbursed()->delete();
         $this->updateStatus();
     }
 
@@ -1051,8 +1052,15 @@ class LoanAccount extends Model
                 'expires_at'=>Carbon::now()->addDays(env('INSURANCE_MATURITY_DAYS'))
             ]);
             if ($bulk) {
+                
                 $account->bulkDisbursed()->create([
-                    'bulk_disbursement_id'=>$bulk_disbursement_id
+                    'bulk_disbursement_id'=>$bulk_disbursement_id,
+                    'office_id'=>$payment_info['office_id'],
+                    'disbursement_date'=>$payment_info['disbursement_date'],
+                    'first_repayment_date'=>$payment_info['first_repayment_date'],
+                    'disbursed_by'=>$disbursed_by,
+                    'payment_method_id'=>$payment_method_id,
+                    'cv_number'=>$cv_number
                 ]);
             }
             \DB::commit();

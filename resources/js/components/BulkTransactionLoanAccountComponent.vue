@@ -56,6 +56,7 @@
         </div>
         
         <button class="btn btn-primary" @click="submit">Submit</button>
+      
         <loading :is-full-page="true" :active.sync="isLoading" ></loading>
 
         <b-modal id="deposit-modal" v-model="modal.modalState" size="lg" hide-footer :title="modal.modalTitle" :header-bg-variant="background" :body-bg-variant="background" >
@@ -188,18 +189,36 @@ export default {
             }
             
         },
+        exportCCR(string){
+            this.isLoading =true;
+            axios.get('/download/dst/bulk/'+string,{responseType:'blob'})
+                .then(res=>{
+                    const url = window.URL.createObjectURL(new Blob([res.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', res.headers.filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    this.isLoading =false;
+                })
+        },
         disburse(){
             this.isLoading = true;
             axios.post(this.post_url,this.form)
             .then(res=>{
                 this.isLoading = false;
-                Swal.fire(
-                    'Success',
-                    res.data.msg,
-                    'success'
-                )
+                this.modal.modalState = false
+                this.lists = []
+                this.resetForm();
+                Swal.fire({
+                    title: 'Successful!',
+                    text: res.data.msg,
+                    icon: 'success',
+                    confirmButtonText: 'Download CCR'
+                })
                 .then(()=>{
-                    location.reload()
+                    
+                    this.exportCCR(res.data.bulk_disbursement_id);
                 })
                 
             }).catch(err=>{
@@ -302,6 +321,14 @@ export default {
                 }else{
                     this.modal.modalState = true
                 }
+        },
+        resetForm(){
+            this.form.office_id = null,
+            this.form.accounts = [],
+            this.form.paymentSelected = null,
+            this.form.disbursement_date = null,
+            this.form.first_repayment_date = null,
+            this.form.cv_number = null
         },
         checked(account,event){
             if(event.target.checked){

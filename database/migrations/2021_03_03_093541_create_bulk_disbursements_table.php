@@ -17,6 +17,8 @@ class CreateBulkDisbursementsTable extends Migration
             $table->id();
             $table->string('bulk_disbursement_id');
             $table->unsignedBigInteger('loan_account_id');
+            $table->unsignedBigInteger('office_id');
+            $table->date('disbursement_date');
             $table->timestamps();
         });
     }

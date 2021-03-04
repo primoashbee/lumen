@@ -159,7 +159,7 @@
 					</a>
 				</li>
 				<li class="py-2 {{ request()->is('report') ? 'active' : '' }}">
-					<a href="">
+					<a href="{{route('reports.index')}}">
 						<i class="far fa-2x fa-list-alt"></i>
 						<p>Reports</p>
 					</a>
