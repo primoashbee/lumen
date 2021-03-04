@@ -299,8 +299,11 @@ class Client extends Model
         return 'nice';
     }
 
+    public function address(){
+        return $this->street_address. ', '.$this->barangay_address. ', '.$this->city_address.', '.$this->zipcode;
+    }
 
-    
-
-    
+    public function loanCycle(){
+        return $this->loanAccounts->whereIn('status',['Closed','Pre-terminated'])->count();
+    }
 }

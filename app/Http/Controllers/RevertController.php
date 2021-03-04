@@ -88,6 +88,7 @@ class RevertController extends Controller
                 $account  = $transaction->loanAccount;
                 if($account->canRevertDisbursement($request->transaction_id)){
                     if($account->revertDisbursement($request->transaction_id,auth()->user()->id)){
+                        $account->bulkDisbursement->delete();
                         \DB::commit();
                         return response()->json(['msg','Account revert disbursement successful'],200);
                     }

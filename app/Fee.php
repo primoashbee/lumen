@@ -15,7 +15,8 @@ class Fee extends Model
         'automated',
         'calculation_type',
         'gl_account',
-        'fixed_amount'
+        'fixed_amount',
+        'finance_charge'
     ];
 
 

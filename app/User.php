@@ -54,7 +54,7 @@ class User extends Authenticatable
     }
     
     public function office(){
-        return $this->belongsToMany(Office::class)->orderBy('office_id');
+        return $this->belongsToMany(Office::class);
     }
 
 

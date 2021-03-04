@@ -63,5 +63,10 @@ class LoanAccountDisbursement extends Model
         ]);
         return true;
     }
+
+
+    public static function bulkDisbursement($transaction_id){
+        
+    }
     
 }

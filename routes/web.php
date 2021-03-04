@@ -1,25 +1,18 @@
 <?php
-    
+// ini_set('xdebug.max_nesting_level', 9999);
 
-use App\User;
-use App\Client;
-use App\Office;
-use App\Deposit;
-use Carbon\Carbon;
+use App\BulkDisbursement;
 use App\LoanAccount;
-use App\DepositAccount;
-use App\Events\TestEvent;
-use App\Exports\CCRExport;
-use App\Exports\UsersExport;
-use Illuminate\Support\Facades\DB;
+use App\Imports\TestImport;
+use App\Events\BulkLoanDisbursed;
+use App\LoanAccountDisbursement;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
-use App\Exports\CollectionSheetExport;
-use App\Imports\TestImport;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Database\Eloquent\Builder;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\Request;
 /*
 |--------------------------------------------------------------------------
@@ -32,13 +25,157 @@ use Symfony\Component\HttpFoundation\Request;
 |
 */
 
-// Route::get('/hey',function(){
+// Route::get('/sample',function(Request $request){
 //     echo 'test';
 // });
-Route::get('/x',function(){
+// Route::get('/excel',function(){
+//     $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+//     $spreadsheet = $reader->load(public_path('templates/DST.xlsx'));
+//     dd($spreadsheet);
+//     return LoanAccount::first()->installments->each->append('status');
+// });
+
+Route::get('/hey',function(){
+    $file = public_path('templates/DSTv1.xlsx');
     
-    return LoanAccount::first()->installments->each->append('status');
-});
+    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file);
+    // $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+    // $spreadsheet = $reader->load($file);
+    $sheet =$spreadsheet->getSheet(0);
+
+    $accounts = BulkDisbursement::where('bulk_disbursement_id','24afdcfd53ee07d209cd2c6dab4447c70d49db2c')->get();
+    $ctr = 1;
+    $accounts->map(function($acc) use ($sheet,$spreadsheet,&$ctr){
+        $cw = clone $sheet;
+        $loan_account = $acc->loanAccount;
+        $type = $loan_account->type;
+        $feePayments  = $loan_account->feePayments->sortBy('fee_id');
+
+
+        $cw->setTitle('#'.$ctr.' '.$acc->loanAccount->client->full_name);
+        $dst = $spreadsheet->addSheet($cw);
+        $dst->getCell('C18')->setValueExplicit($loan_account->amount,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->setCellValue('D8',$type->code);
+        $dst->getCell('D9')->setValueExplicit($loan_account->amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        
+        $dst->getCell('D10')->setValueExplicit($loan_account->installments->first()->amortization, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getCell('D11')->setValueExplicit($type->interest_rate,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getStyle('D11')->getNumberFormat()->setFormatCode('0.00'); 
+        $dst->getCell('D12')->setValueExplicit($type->interest_rate / 4,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getStyle('D12')->getNumberFormat()->setFormatCode('0.00'); 
+        if ($type->code == "MPL") {
+            $dst->getCell('D13')->setValueExplicit($feePayments->where('fee_id', 6)->first()->fee->percentage, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        }
+        $dst->setCellValue('D14',$loan_account->number_of_installments);
+        
+        $dst->setCellValue('F19','=ROUND((H11*D13),2)');
+        $dst->setCellValue('G19','=C18-F19');
+        
+        
+        $dst->getCell('H9')->setValueExplicit($loan_account->interest, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->setCellValue('H10',$loan_account->number_of_months);
+        $dst->getCell('H11')->setValueExplicit($loan_account->amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->setCellValue('H12',$loan_account->client->loanCycle());
+
+        // $dst->setCellValue('H19',$loan_account->number_of_months);
+  
+        $dst->getCell('I19')->setValueExplicit($loan_account->total_loan_amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+
+        $dst->getCell('J19')->setValueExplicit($loan_account->interest, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+
+        $row = 20;
+        $amortizartion_schedule_row = 5;
+
+
+        $dst->getCell('AC4')->setValueExplicit($loan_account->amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getCell('AD4')->setValueExplicit($loan_account->interest, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getCell('AE4')->setValueExplicit($loan_account->total_loan_amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getCell('AF4')->setValueExplicit($loan_account->total_loan_amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+
+        foreach($loan_account->installments as $item){
+            $dst->setCellValue('C'.$row , $item->date->toDateString());
+            $dst->getCell('D'.$row)->setValueExplicit($item->original_principal, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('E'.$row)->setValueExplicit($item->original_interest, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('G'.$row)->setValueExplicit(($item->amortization) * (-1), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('H'.$row)->setValueExplicit($item->principal_balance, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('I'.$row)->setValueExplicit(round($item->principal_balance + $item->interest_balance,2), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('I'.$row)->setValueExplicit($item->interest_balance, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            
+            
+
+            $dst->setCellValue('AB'.$amortizartion_schedule_row, $item->date->toDateString());
+            $dst->getCell('AC'.$amortizartion_schedule_row)->setValueExplicit($item->original_principal, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('AD'.$amortizartion_schedule_row)->setValueExplicit($item->original_interest, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('AE'.$amortizartion_schedule_row)->setValueExplicit($item->amortization, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('AF'.$amortizartion_schedule_row)->setValueExplicit($item->principal_balance, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+
+            $amortizartion_schedule_row++;
+            $row++;
+        }
+
+        $dst->setCellValue('Q5',$loan_account->client->full_name);
+        $dst->setCellValue('Q6',$loan_account->client->address());
+        $dst->setCellValue('Y7','=D9');
+        
+
+
+        $ctr++;
+        $str = "(  ) Weekly               (  ) Semi-monthly          (  ) Monthly ";
+        $str2 = "(  ) Quarterly           (  ) Semi-Annual            (  ) Annually";
+        if($type->installment_method == 'weeks'){
+            $str = "(X) Weekly               (  ) Semi-monthly          (  ) Monthly ";
+        }
+        $dst->setCellValue('M10',$str);
+        $dst->setCellValue('M11',$str2);
+
+        if($type->code == "MPL"){
+            $dst->setCellValue('N14', $feePayments->where('fee_id', 6)->first()->fee->name);
+            $dst->getCell('Y14')->setValueExplicit($feePayments->where('fee_id', 6)->first()->amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            $dst->getCell('Y16')->setValueExplicit($feePayments->where('fee_id', 6)->first()->amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        }
+
+        $row = 19;
+        
+        $non_finance_charges = $loan_account->nonFinanceCharges();
+        $non_finance_charges->map(function($fee) use (&$row, &$dst){
+            $dst->setCellValue('N'.$row,$fee->fee->name);
+            $dst->getCell('Y'.$row)->setValueExplicit($fee->amount, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+
+            $row++;
+        });
+        
+        $dst->setCellValue('Y24','=SUM(Y19:Y23)');
+        $dst->setCellValue('Y26','=Y16+Y24');
+        $dst->setCellValue('Y28','=Y7-Y26');
+        $dst->setCellValue('Y30','=D13');
+        $dst->setCellValue('Y32','=H80');
+        $dst->setCellValue('Y38','=I19');
+
+        $dst->setCellValue('R36',$loan_account->installments->first()->date->format('F d, Y'));
+        $dst->getCell('Y36')->setValueExplicit($loan_account->installments->first()->amortization, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getCell('O39')->setValueExplicit($loan_account->number_of_installments, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $dst->getCell('O40')->setValueExplicit($loan_account->installments->first()->amortization, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        
+
+        $dst->setCellValue('D69','=SUM(D19:D67)');
+        $dst->setCellValue('E69','=SUM(E19:E67)');
+        $dst->setCellValue('F69','=SUM(F19:F67)');
+        $dst->setCellValue('H76','=(1+G69)^52-1');
+        $dst->setCellValue('H80','=((1+G69)^(52/12)-1)');
+
+
+    });
+    $spreadsheet->removeSheetByIndex(0);
+    $spreadsheet->setActiveSheetIndex(0);
+    
+    $writer = new Xlsx($spreadsheet);
+    $writer->setPreCalculateFormulas(false);
+    $newFile = public_path('templates/test.xlsx');
+    $writer->save($newFile);
+    
+    $headers = ['Content-Type'=> 'application/pdf','Content-Disposition'=> 'attachment;','filename'=>'DST.xlsx'];
+    return response()->download($newFile,'DST.xlsx',$headers)->deleteFileAfterSend(true);
+})->name('testiiiiing');
 Route::get('/snappy',function(){
     $summary = session('ccr');
     
@@ -61,7 +198,7 @@ Route::post('/import',function(Request $request){
     Excel::import(new TestImport , $request->file('file'));
     
 });
-
+Route::get('/download/dst/{loan_account_id}','DownloadController@dst');
 Route::get('/download/ccr',function(Request $request){
 
     $summary = session('ccr');

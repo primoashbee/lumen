@@ -421,4 +421,5 @@ class Office extends Model
         return $this->hasMany(Holiday::class);
     }
 
+   
 }

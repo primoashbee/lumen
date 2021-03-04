@@ -39,6 +39,7 @@ window.moment = require('moment');
 import Money from './plugins/money.js';
 import VueNoty from 'vuejs-noty'
 window.Noty = require('noty')
+
 Vue.use(VueNoty)
 Vue.use(Money)
 Vue.use(BootstrapVue)

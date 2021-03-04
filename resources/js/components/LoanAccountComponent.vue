@@ -24,6 +24,10 @@
                         PreTerminate
                     </button>
     
+                    <button  type="button" class="btn btn-primary" data-toggle="modal" @click="exportDST">
+                        <i class="fas fa-file-invoice"></i> 
+                    </button>
+    
                     
                     
                     <h1> Amortization Schedule </h1>
@@ -255,6 +259,19 @@ export default {
         }
     },
     methods:{
+        exportDST(){
+            this.isLoading = true;
+            axios.get('/download/dst/'+this.loan_account_id,{responseType:'blob'})
+                .then(res=>{
+                    const url = window.URL.createObjectURL(new Blob([res.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', res.headers.filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    this.isLoading =false;
+                })
+        },
         revert(transaction_id,type){
         
             var vm = this

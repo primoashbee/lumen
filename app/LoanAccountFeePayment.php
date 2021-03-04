@@ -95,4 +95,5 @@ class LoanAccountFeePayment extends Model
             'paid_at'=>null
         ]);
     }
+
 }

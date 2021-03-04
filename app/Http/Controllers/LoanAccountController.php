@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Loan;
 use App\Client;
-use App\Events\BulkLoanDisbursed;
 use App\Office;
 use Carbon\Carbon;
 use App\LoanAccount;
+use App\PaymentMethod;
 use Illuminate\Http\Request;
+use App\Rules\DateIsWorkingDay;
 use App\Rules\LoanAmountModulo;
 use App\Rules\PaymentMethodList;
+use App\Events\BulkLoanDisbursed;
+use Faker\Provider\zh_TW\Payment;
 use App\Rules\HasNoUnusedDependent;
 use App\Rules\HasNoPendingLoanAccount;
 use App\Rules\ClientHasActiveDependent;
@@ -18,8 +21,6 @@ use App\Rules\LoanAccountCanBeApproved;
 use App\Rules\LoanAccountCanBeDisbursed;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\ClientHasAvailableDependent;
-use App\Rules\DateIsWorkingDay;
-use Faker\Provider\zh_TW\Payment;
 
 class LoanAccountController extends Controller
 {
@@ -546,17 +547,18 @@ class LoanAccountController extends Controller
                 'cv_number'=>$request->cv_number
             ];
             $disbursed_amount = 0;
-            
+            $bulk_disbursement_id = sha1(time());
             foreach ($request->accounts as $account) {
                 $account =  LoanAccount::find($account);
-                $account->disburse($payment_info);
+                $account->disburse($payment_info,true,$bulk_disbursement_id);
                 $disbursed_amount+= $account->disbursed_amount;
             }
 
             
             $office = Office::select('name','level')->find($request->office_id)->name;
             $by = auth()->user()->fullname;
-            $msg = 'Disbursed '. money($disbursed_amount,2) .' at ' . $office .' by ' . $by;
+            $payment = PaymentMethod::find($request->payment_method)->name;
+            $msg = 'Disbursed '. money($disbursed_amount,2) .' at ' . $office .' by ' . $by. ' ['.$payment.'].';
         
             \DB::commit();
             event(new BulkLoanDisbursed($msg));

@@ -138,13 +138,14 @@ use Maatwebsite\Excel\Facades\Excel;
             'automated'=>true,
             'calculation_type'=>'matrix',
             'gl_account'=>526,
+            'finance_charge'=>false
         ]);
         Fee::create([
             'name'=>'CGLI Premium',
             'automated'=>true,
             'calculation_type'=>'matrix',
-            
             'gl_account'=>526,
+            'finance_charge'=>false
         ]);
 
         Fee::create([
@@ -152,7 +153,8 @@ use Maatwebsite\Excel\Facades\Excel;
             'automated'=>true,
             'calculation_type'=>'fixed',
             'fixed_amount'=>90,
-            'gl_account'=>523
+            'gl_account'=>523,
+            'finance_charge'=>false
         ]);
         Fee::create([
             'name'=>'MI Premium',
@@ -160,21 +162,32 @@ use Maatwebsite\Excel\Facades\Excel;
             'calculation_type'=>'matrix',
             'has_unit_of_plan'=>true,
             'gl_account'=>526,
+            'finance_charge'=>false
         ]);
 
         Fee::create([
             'name'=>'Documentary Stamp Tax',
             'automated'=>true,
             'calculation_type'=>'matrix',
-            'gl_account'=>523
+            'gl_account'=>523,
+            'finance_charge'=>false
         ]);
 
+        Fee::create([
+            'name'=>'Processing Fee 1.5%',
+            'automated'=>true,
+            'calculation_type'=>'percentage',
+            'percentage' => 0.015,
+            'gl_account'=>523,
+            'finance_charge'=>true
+        ]);
         Fee::create([
             'name'=>'Processing Fee 3%',
             'automated'=>true,
             'calculation_type'=>'percentage',
             'percentage' => 0.03,
             'gl_account'=>523,
+            'finance_charge'=>true
         ]);
         Fee::create([
             'name'=>'Processing Fee 5%',
@@ -182,6 +195,7 @@ use Maatwebsite\Excel\Facades\Excel;
             'calculation_type'=>'percentage',
             'percentage' => 0.05,
             'gl_account'=>523,
+            'finance_charge'=>true
         ]);
 
 
@@ -190,6 +204,7 @@ use Maatwebsite\Excel\Facades\Excel;
             'automated'=>true,
             'calculation_type'=>'matrix',
             'gl_account'=>526,
+            'finance_charge'=>false
         ]);
       
     }
@@ -231,11 +246,12 @@ use Maatwebsite\Excel\Facades\Excel;
             "created_by"=>2,
             "status"=>1
         ])->id;
-        Loan::find($id)->fees()->attach([Fee::find(1)->id]);
-        Loan::find($id)->fees()->attach([Fee::find(2)->id]);
-        Loan::find($id)->fees()->attach([Fee::find(4)->id]);
-        Loan::find($id)->fees()->attach([Fee::find(5)->id]);
-        Loan::find($id)->fees()->attach([Fee::find(6)->id]);
+        Loan::find($id)->fees()->attach([Fee::find(3)->id]); //MI FEE
+        Loan::find($id)->fees()->attach([Fee::find(4)->id]); // MI PREMIUM
+        Loan::find($id)->fees()->attach([Fee::find(6)->id]); // PF 1.5%
+        Loan::find($id)->fees()->attach([Fee::find(5)->id]); //DST
+        Loan::find($id)->fees()->attach([Fee::find(2)->id]); //CGLI 
+        Loan::find($id)->fees()->attach([Fee::find(1)->id]); //CGLI PREMIUM
         $id = Loan::create([
             "code"=>'AGL',
             "name"=>'AGRICULTURAL LOAN',

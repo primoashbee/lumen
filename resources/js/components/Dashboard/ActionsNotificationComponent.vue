@@ -27,14 +27,20 @@ export default {
     },
     methods :{
         notify(msg){
-        
-             new Noty({
-                    theme:'sunset',
-                    type: 'success',
-                    layout: 'topRight',
-                    text: msg
-                }).show();
-        
+            Noty.setMaxVisible(25)
+            // Noty.setProgressBar(true)
+            new Noty({
+                theme:'sunset',
+                type: 'success',
+                layout: 'topRight',
+                text: msg,
+                timeout: 4500,
+                // animation: {
+                //     open : 'animated fadeInRight',
+                //     close: 'animated fadeOutRight'
+                // }
+            }).show();
+    
             
         }
     }

@@ -21,6 +21,7 @@ class CreateFeesTable extends Migration
             $table->unsignedDouble('fixed_amount')->nullable();
             $table->boolean('has_unit_of_plan')->default(false);
             $table->string('percentage')->nullable();
+            $table->boolean('finance_charge');
             $table->unsignedInteger('gl_account');
             $table->boolean('disabled')->default(false);
             $table->timestamps();
