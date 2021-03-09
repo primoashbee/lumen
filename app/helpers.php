@@ -18,6 +18,149 @@ use App\Imports\OfficeImport;
 use App\Scheduler;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
+use Faker\Factory as Faker;
+
+    function seed($office_id,$count=20,$with_loans=false){
+        $offices = Office::find($office_id)->children;
+        if($offices->count() == 0){
+            $office = Office::find($office_id);
+            for ($x=1; $x<= $count; $x++) {
+                $faker = Faker::create();
+            
+                $gender = $faker->randomElement(['MALE', 'FEMALE']);
+                $civil_status = $faker->randomElement(['SINGLE', 'MARRIED','DIVORCED']);
+                $education = $faker->randomElement(['ELEMENTARY', 'HIGH SCHOOL','COLLEGE','VOCATIONAL']);
+                $barangay = $faker->randomElement(['San Jose', 'Sta. Rita','Gordon Heights','Pag-asa']);
+                $province = $faker->randomElement(['Zambales', 'Pampanga','Bataan']);
+                $dependents = rand(1, 5);
+                $house_type = $faker->randomElement(['RENTED','OWNED']);
+                $mobile_number = '09'.rand(100000000, 199999999);
+                // $office = Office::where('name', '')->first();
+                static $id = 1;
+                $user  = Client::create([
+                    'client_id' => Office::makeClientID($office->id),
+                    'firstname' => $faker->firstName,
+                    'middlename'=>$faker->lastname,
+                    'lastname'  =>$faker->lastname,
+                    'suffix'=>$faker->suffix,
+                    'nickname'=>$faker->firstname,
+                    'gender'=> $gender,
+                    'profile_picture_path' => 'https://via.placeholder.com/150',
+                    'signature_path' => 'https://via.placeholder.com/150',
+                    'birthday' => $faker->dateTimeThisCentury->format('Y-m-d'),
+                    'birthplace' => $faker->city,
+                    'civil_status' => $civil_status,
+                    'education' => $education,
+                    'fb_account' => 'fb.com/primoashbee',
+                    'contact_number'=>$mobile_number,
+                    'street_address'=> $faker->address,
+                    'barangay_address' => $barangay,
+                    'city_address' => $faker->city,
+                    'province_address' => $province,
+                    'zipcode' => $faker->postCode,
+                    'spouse_name' => $faker->name,
+                    'spouse_contact_number' => $mobile_number,
+                    'spouse_birthday' =>  $faker->dateTimeThisCentury->format('Y-m-d'),
+                    'number_of_dependents' => $dependents,
+                    'household_size' =>$dependents +2,
+                    'years_of_stay_on_house' => $dependents + 5,
+                    'house_type' => $house_type,
+                    'tin' => rand(100000, 199999),
+                    'umid' => rand(10000, 19999),
+                    'sss' =>rand(10000, 19999),
+                    'mother_maiden_name' => $faker->firstNameFemale.' '.$faker->lastname,
+                    'notes' => $faker->realText($faker->numberBetween(10, 200)),
+                    'office_id' => $office->id,
+                    'created_by' => 0
+                ]);
+                $application_number = rand(1000000,2);
+
+                $unit_of_plan = rand(1,2);
+                $member_first = $user->firstname;
+                $member_middle = $user->middlename;
+                $member_last = $user->lastname;
+                $birthday= $user->getRawOriginal('birthday');
+                $user->dependents()->create([
+                    'application_number'=>$application_number,
+                    'unit_of_plan'=>$unit_of_plan,
+                    'member_firstname'=>$member_first,
+                    'member_middlename'=>$member_middle,
+                    'member_lastname'=>$member_last,
+                    'created_by'=>2,
+                    'member_birthday'=>$birthday
+                ]);
+            }
+        }
+        $offices->map(function($office) use($count, $with_loans){
+            for ($x=1; $x<= $count; $x++) {
+                $faker = Faker::create();
+            
+                $gender = $faker->randomElement(['MALE', 'FEMALE']);
+                $civil_status = $faker->randomElement(['SINGLE', 'MARRIED','DIVORCED']);
+                $education = $faker->randomElement(['ELEMENTARY', 'HIGH SCHOOL','COLLEGE','VOCATIONAL']);
+                $barangay = $faker->randomElement(['San Jose', 'Sta. Rita','Gordon Heights','Pag-asa']);
+                $province = $faker->randomElement(['Zambales', 'Pampanga','Bataan']);
+                $dependents = rand(1, 5);
+                $house_type = $faker->randomElement(['RENTED','OWNED']);
+                $mobile_number = '09'.rand(100000000, 199999999);
+                // $office = Office::where('name', '')->first();
+                static $id = 1;
+                $user  = Client::create([
+                    'client_id' => Office::makeClientID($office->id),
+                    'firstname' => $faker->firstName,
+                    'middlename'=>$faker->lastname,
+                    'lastname'  =>$faker->lastname,
+                    'suffix'=>$faker->suffix,
+                    'nickname'=>$faker->firstname,
+                    'gender'=> $gender,
+                    'profile_picture_path' => 'https://via.placeholder.com/150',
+                    'signature_path' => 'https://via.placeholder.com/150',
+                    'birthday' => $faker->dateTimeThisCentury->format('Y-m-d'),
+                    'birthplace' => $faker->city,
+                    'civil_status' => $civil_status,
+                    'education' => $education,
+                    'fb_account' => 'fb.com/primoashbee',
+                    'contact_number'=>$mobile_number,
+                    'street_address'=> $faker->address,
+                    'barangay_address' => $barangay,
+                    'city_address' => $faker->city,
+                    'province_address' => $province,
+                    'zipcode' => $faker->postCode,
+                    'spouse_name' => $faker->name,
+                    'spouse_contact_number' => $mobile_number,
+                    'spouse_birthday' =>  $faker->dateTimeThisCentury->format('Y-m-d'),
+                    'number_of_dependents' => $dependents,
+                    'household_size' =>$dependents +2,
+                    'years_of_stay_on_house' => $dependents + 5,
+                    'house_type' => $house_type,
+                    'tin' => rand(100000, 199999),
+                    'umid' => rand(10000, 19999),
+                    'sss' =>rand(10000, 19999),
+                    'mother_maiden_name' => $faker->firstNameFemale.' '.$faker->lastname,
+                    'notes' => $faker->realText($faker->numberBetween(10, 200)),
+                    'office_id' => $office->id,
+                    'created_by' => 0
+                ]);
+                $application_number = rand(1000000,2);
+
+                $unit_of_plan = rand(1,2);
+                $member_first = $user->firstname;
+                $member_middle = $user->middlename;
+                $member_last = $user->lastname;
+                $birthday= $user->getRawOriginal('birthday');
+                $user->dependents()->create([
+                    'application_number'=>$application_number,
+                    'unit_of_plan'=>$unit_of_plan,
+                    'member_firstname'=>$member_first,
+                    'member_middlename'=>$member_middle,
+                    'member_lastname'=>$member_last,
+                    'created_by'=>2,
+                    'member_birthday'=>$birthday
+                ]);
+            }
+        });
+    }
+    
     function carbon(){
         return new \Carbon\Carbon();
     }
@@ -89,7 +232,7 @@ use Maatwebsite\Excel\Facades\Excel;
             'birthday' => Carbon::parse('1995-11-28'),
             'email' => 'nelsontan1128@gmail.com',
             'notes'=>'ajalksdjfdlksafjaldf',
-            'password' => Hash::make('tannelsona')
+            'password' => Hash::make('      ')
         ]);
     
         $user->offices()->attach(1);
@@ -504,7 +647,18 @@ use Maatwebsite\Excel\Facades\Excel;
             'gl_account_code'=>1,
             'created_at'=>Carbon::now(),
             'updated_at'=>Carbon::now()
-            ]            
+            ],
+            [
+            'name'=>'INTEREST POSTING',
+            'for_disbursement'=>false,
+            'for_repayment'=>false,
+            'for_deposit'=>false,
+            'for_withdrawal'=>false,
+            'for_recovery'=>false,
+            'gl_account_code'=>1,
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ]
         );
         PaymentMethod::insert($methods);
     }

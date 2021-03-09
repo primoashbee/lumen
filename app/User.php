@@ -198,8 +198,10 @@ class User extends Authenticatable
         return $users->get();
     }
 
-    public function offices(){
-        return $this->belongsToMany(Office::class)->withTimestamps();;
+    public function officeListIDS(){
+        \DB::select(
+            DB::raw('')
+        );
     }
 
 

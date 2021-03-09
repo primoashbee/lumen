@@ -125,13 +125,14 @@ class DepositAccountController extends Controller
         
         $validator = Validator::make($request->all(),
             [
-                'deposit_account_id'=>['required','exists:deposit_accounts,id']
+                'deposit_account_id'=>['required','exists:deposit_accounts,id'],
+                'jv_number'=>['required','unique:journal_vouchers,journal_voucher_number']
             ]
-        );
+        )->validate();
 
-        if($validator->passes()){
-            return DepositAccount::find($request->deposit_account_id)->postInterestByUser(auth()->user()->id);
-        }
+        $data = ['user_id'=>auth()->user()->id, 'journal_voucher_number'=>$request->jv_number];
+        return DepositAccount::find($request->deposit_account_id)->postInterestByUser($data);
+        
     }
     public function showBulkView(Request $request){
         return view('pages.bulk.deposit');

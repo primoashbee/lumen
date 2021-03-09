@@ -23,4 +23,8 @@ class PaymentMethod extends Model
     public function isCTLP(){
         return $this->name == 'CTLP' ? true : false;
     }
+
+    public static function interestPosting(){
+        return PaymentMethod::where('name','INTEREST POSTING')->first();
+    }
 }

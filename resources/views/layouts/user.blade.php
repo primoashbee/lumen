@@ -20,7 +20,7 @@
         window.addEventListener('DOMContentLoaded', function() {
                 setTimeout((x)=>{
                         
-                        console.log($('#sidebar-toggle').click())
+                        $('#sidebar-toggle')
                 },100)
                 
         },(jQuery))

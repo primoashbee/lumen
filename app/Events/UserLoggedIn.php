@@ -24,8 +24,16 @@ class UserLoggedIn
     public function __construct($user)
     {
         $this->user = $user;
-        $accessible_ids = $user->office->first()->getLowerOfficeIDS();
-        session(['accessible_office_ids' => $accessible_ids]);
+        $office_list = $user->office->first()->getLowerOfficeIDS();
+        session(['office_list' => $office_list]);
+
+        $ids = [];
+        $user->office->map(function($x) use(&$ids){
+            $ids = array_merge($ids, $x->getLowerOfficeIDS());
+        });
+        
+        session(['office_list_ids'=>array_unique($ids)]);
+        
     }
 
     /**

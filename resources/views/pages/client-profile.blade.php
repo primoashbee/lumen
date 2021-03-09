@@ -102,7 +102,7 @@
 			                 		</div>
 			                 		<div class="p-details mt-4">
 			                 			<span class="title text-xl mr-8">Business Type:</span>
-										<span class="text-muted text-lg">{{$client->household_income->service_type}}</span>
+										{{-- <span class="text-muted text-lg"> {{$client->household_income->service_type}}</span> --}}
 			                 		</div>
 			                 		
 

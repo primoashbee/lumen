@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
         generateFees();
         generateLoanProducts();
 
-        $this->call(ClientTableSeeder::class);
-        createLoanAccount();
+        // $this->call(ClientTableSeeder::class);
+        // createLoanAccount();
         // generateMPLLoan();
         
         

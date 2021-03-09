@@ -684,9 +684,32 @@ class ClientController extends Controller
 
         return $request;
     }
-    public function depositAccount($client_id,$deposit_id){
-        $account = DepositAccount::find($deposit_id)->load(['type','transactions.paymentMethod','transactions.postedBy','client.office']);
-        return view('pages.deposit-dashboard',compact('account'));
+    public function depositAccount(Request $request, $client_id,$deposit_account_id){
+        if($request->wantsJson()){
+            $data = DepositAccount::find($deposit_account_id)
+                ->load([
+                    // 'type:id,name,product_id,description,interest_rate',
+                    'type'=>function($q){
+                        $q->select('id','name','product_id','description','interest_rate');       
+                    },
+                    'client'=>function($q){
+                        $q->select('client_id', 'firstname', 'lastname');
+                    },
+                    'transactions'=>function($q){
+                        $q->select('*');
+                        $q->with([
+                            'paymentMethod'=>function($q){
+                                $q->select('id','name');
+                            },
+                            'postedBy'=>function($q){
+                                $q->select('id','firstname','lastname');
+                            }
+                        ]);
+                    }
+                ]);
+            return response()->json(['data'=>$data],200);
+        }
+        return view('pages.deposit-dashboard',compact('deposit_account_id','client_id'));
     }
 
     public function dependents($client_id){

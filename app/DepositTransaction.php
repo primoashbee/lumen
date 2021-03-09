@@ -21,6 +21,9 @@ class DepositTransaction extends Model
     public function getBalanceAttribute($value){
         return env('CURRENCY_SIGN').' '.number_format($value,2,'.',',');
     }
+    public function getFormattedRepaymentDateAttribute($value){
+        return $value->format('F d, Y');
+    }
     public function paymentMethod(){
         return $this->hasOne(PaymentMethod::class,'id','payment_method');
     }
@@ -32,6 +35,10 @@ class DepositTransaction extends Model
         return $this->morphOne(Receipt::class, 'receiptable');
     }
 
+
+    public function journal(){
+        return $this->morphOne(JournalVoucher::class, 'journal_voucherable');
+    }
     
 
 }

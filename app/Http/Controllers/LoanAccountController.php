@@ -561,7 +561,9 @@ class LoanAccountController extends Controller
             $msg = 'Disbursed '. money($disbursed_amount,2) .' at ' . $office .' by ' . $by. ' ['.$payment.'].';
         
             \DB::commit();
-            event(new BulkLoanDisbursed($msg));
+            
+            event(new BulkLoanDisbursed($msg,$request->office_id));
+            
             return response()->json(['msg'=>'Loan Account successfully created','bulk_disbursement_id'=>$bulk_disbursement_id], 200);
         } catch (\Exception $e) {
             return response()->json(['msg'=>$e->getMessage()], 500);

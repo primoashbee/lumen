@@ -14,16 +14,18 @@ class BulkLoanDisbursed implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+    public $data;
+    public $office_id;
 
-    public function __construct($message)
+    public function __construct($msg,$office_id)
     {
-        $this->message = $message;
+        $this->data['msg'] = $msg;
+        $this->office_id = $office_id;
     }
   
     public function broadcastOn()
     {
-        return new Channel('dashboard-notification');
+        return new PrivateChannel('dashboard.notifications.' .$this->office_id);
     }
   
     public function broadcastAs()

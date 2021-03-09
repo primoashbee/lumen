@@ -49,6 +49,8 @@ class Account extends Model
         ])
         ->select('id','client_id','loan_id','number_of_months','number_of_installments','total_balance')
         ->where('loan_id',$loan_product_id)
+        ->whereNotNull('approved_by')
+        ->whereNotNull('disbursed_by')
         ->whereNull('closed_by')
         ->whereIn('client_id',$client_ids)
         ->get();

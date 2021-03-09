@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\CheckVoucher;
 use App\LoanInstallment;
 use App\LoanAccountFeePayment;
+use App\Events\LoanAccountPayment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 
@@ -39,6 +40,7 @@ class LoanAccount extends Model
         'approved_at',
 
 
+        'disbursed_by',
         'disbursed_at',
         'disbursed',
 
@@ -81,7 +83,7 @@ class LoanAccount extends Model
     }
     public static function active()
     {
-        return LoanAccount::whereNull('closed_at')->get();
+        return LoanAccount::where('disbursed',1)->whereNull('closed_at')->get();
     }
     public function disbursement()
     {
@@ -495,10 +497,15 @@ class LoanAccount extends Model
         ];
     }
 
-    public function amountDue()
+    public function amountDue($date = null)
     {
-        $installments = $this->installments->where('paid', false)
+        if (!is_null($date)) {
+            $installments = $this->installments->where('paid', false)
+                        ->where('date', '<=', Carbon::parse($date)->startOfDay());
+        }else{
+            $installments = $this->installments->where('paid', false)
                         ->where('date', '<=', Carbon::now()->startOfDay());
+        }
         $principal = $installments->sum('principal_due');
         $interest = $installments->sum('interest_due');
         $total = $principal + $interest;
@@ -579,6 +586,14 @@ class LoanAccount extends Model
 
     public function updateStatus()
     {
+
+        if (is_null($this->disbursed_by)){
+            return $this->update(['status','Approved']);
+        }
+        if (is_null($this->approved_by)){
+            return $this->update(['status','Pending Approval']);
+        }
+
         $dues = $this->getDuesFromDate(now());
         
         //if has past dues
@@ -593,21 +608,7 @@ class LoanAccount extends Model
 
         return $this->update(['status'=>'Active']);
 
-        // if($amount_due->total > 0){
-        //     return $this->update([
-        //         'status'=>'In Arrears'
-        //     ]);
-        // }
-        // if($amount_due->total == 0){
-        //     return $this->update([
-        //         'status'=>'Active'
-        //     ]);
-        // }
-        // if($this->total_balance == 0){
-        //     return $this->update([
-        //         'status'=>'Closed'
-        //     ]);
-        // }
+        
     }
     
     public function closeAccount($paid_by)
@@ -661,6 +662,7 @@ class LoanAccount extends Model
             'closed_at'=>null,
             'status'=>'Approved',
             'disbursed'=>0,
+            'disbursed_by'=>null,
             'disbursed_at'=>null
         ]);
         $this->dependents->reset();
@@ -718,6 +720,9 @@ class LoanAccount extends Model
             }
             $this->fresh()->updateStatus();
             $this->updateBalances();
+            $loanPayload = ['date'=>$repayment_date,'amount'=>$payment_amount];
+
+            event(new LoanAccountPayment($loanPayload,$data['office_id'],$paid_by,$payment_method_id));
             \DB::commit();
         } catch (\Execption $e) {
             return $e->getMessage();
@@ -991,16 +996,20 @@ class LoanAccount extends Model
             
             $account->payFeePayments($fee_payments, $payment_method_id, $disbursed_by, $transaction_id);
             
-            $disbursement_date = Carbon::parse($payment_info['disbursement_date']);
-            $start_date = Carbon::parse($payment_info['first_repayment_date']);
+            $disbursement_date = Carbon::parse($payment_info['disbursement_date'])->startOfDay();
+            $start_date = Carbon::parse($payment_info['first_repayment_date'])->startOfDay();
             $office_id = $payment_info['office_id'];
-            if ($this->disbursement_date->diffInDays($disbursement_date, false) > 0) {
+            $original_disbursement_date = $this->disbursement_date;
+            $diff = $original_disbursement_date->diffInDays($disbursement_date, false);
+            if ($diff < 0) {
                 $this->disbursement_date = $disbursement_date;
                 $this->save();
             }
 
             //first payment is not the same as created payment
-            if ($this->installments->first()->date->diffInDays($disbursement_date, false) > 0) {
+            $original_start_date_date = $this->installments()->first()->date;
+            $diff = $original_start_date_date->diffInDays($start_date, false);
+            if ($diff < 0) {
                 //create new installments
                 $this->installments()->delete();
                 $annual_rate = 0.03 * 12;

@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Account;
 use App\LoanAccount;
 use App\DepositAccount;
+use App\Events\DepositTransaction;
 use App\Rules\OfficeID;
+use App\Events\LoanPayment;
 use Illuminate\Http\Request;
 use App\LoanAccountRepayment;
 use App\Rules\PaymentMethodList;
 use App\Rules\PreventFutureDate;
+use App\Events\LoanAccountPayment;
 use App\Rules\AccountMustBeActive;
 use Illuminate\Support\Facades\DB;
 use App\Rules\DepositAccountActive;
@@ -28,6 +31,7 @@ class RepaymentController extends Controller
         $request->request->add(['paid_by'=>auth()->user()->id]);
         $request->request->add(['user_id'=>auth()->user()->id]);
         $account->pay($request->all());
+        
         $account->updateBalances();
     
         
@@ -122,7 +126,7 @@ class RepaymentController extends Controller
         $this->validateBulk($request->all())->validate();
 
         $data = $request->all();
-        
+        $total_payment = $data['accounts'];
         \DB::beginTransaction();
         try {
             $payment_method = $request->payment_method;
@@ -130,8 +134,12 @@ class RepaymentController extends Controller
             $receipt_number = $request->receipt_number;
             $notes = $request->notes;
             $user = auth()->user()->id;
+            $repayment = 0;
+            $deposit = 0;
+            $repayment_date = $request->repayment_date;
             foreach($data['accounts'] as $key=>$value){
                 $loan = $value['loans'];
+                $repayment+=$loan['amount'];
                 $payment_info = [
                     'amount'=> $loan['amount'],
                     'payment_method'=>$payment_method,
@@ -146,6 +154,7 @@ class RepaymentController extends Controller
                 if($has_deposit){
                     foreach($deposits as $key=>$value){
                         $amount = $value['amount'];
+                        $deposit+= $amount;
                         $deposit_info = [
                             'amount'=>$amount,
                             'payment_method'=>$payment_method,
@@ -158,7 +167,18 @@ class RepaymentController extends Controller
                 }
                 
             }
+
+            // $office
+            // $msg = 'Repayment '. money($repayment,2) .' at ' . $office .' by ' . $by. ' ['.$payment.'].';
+
+            $loanPayload = ['date'=>$repayment_date,'amount'=>$repayment];
+            $depositPayload = ['date'=>$repayment_date,'amount'=>$deposit];
+            event(new LoanAccountPayment($loanPayload, $request->office_id, $user, $payment_method ));
+            if ($has_deposit) {
+                event(new DepositTransaction($depositPayload, $request->office_id, $user, $payment_method, 'deposit'));
+            }
             \DB::commit();
+            
         return response()->json(['msg'=>'Payment Successful','code'=>200],200);    
         } catch (\Exception $e){
             return response()->json(['msg'=>$e->getMessage()],404);

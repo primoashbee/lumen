@@ -332,7 +332,7 @@ class AppServiceProvider extends ServiceProvider
             $payment = $loan['amount'];
     
 
-            $disbursed_date = LoanAccount::find($loan['id'])->disbursed_at;
+            $disbursed_date = LoanAccount::find($loan['id'])->disbursement_date;
             
             
             
@@ -358,7 +358,7 @@ class AppServiceProvider extends ServiceProvider
 
             $values = $validator->getData();
 
-            $disbursed_date = LoanAccount::find($values['loan_account_id'])->disbursed_at;
+            $disbursed_date = LoanAccount::find($values['loan_account_id'])->disbursement_date;
             
             
             
